@@ -1,0 +1,155 @@
+
+    
+    <style>
+    .bloco-reboot {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
+        padding: 50px 100px 60px 100px;
+        max-width: 2000px;
+        margin: 0 auto 40px auto;
+    }
+    .bloco-reboot .dashboard-title-reboot {
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.1em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .bloco-reboot .faixa-legenda-reboot {
+        text-align: center;
+        font-size: 14px;
+        color: #898989;
+        margin-bottom: 25px;
+        background: #f8f9fa;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        display: block;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .bloco-reboot .resumo-reboot {
+        text-align: center;
+        font-size: 1.1em;
+        font-family: Arial, Helvetica, sans-serif;
+        margin-bottom: 25px;
+        color: #333;
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 18px 0;
+        box-shadow: 0 2px 8px rgba(102, 51, 153, 0.07);
+        width: 100%;
+        display: block;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .bloco-reboot .tabela-reboot-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        overflow-x: auto;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bloco-reboot .tabela-reboot-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    .bloco-reboot .tabela-reboot {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+        margin: 0 auto;
+    }
+    .bloco-reboot .tabela-reboot th, .bloco-reboot .tabela-reboot td {
+        border: 1px solid #e9ecef;
+        padding: 12px 18px;
+        text-align: center;
+    }
+    .bloco-reboot .tabela-reboot th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: bold;
+    }
+    .bloco-reboot .grafico-titulo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .bloco-reboot .grafico-titulo {
+        text-align: center;
+        color: #495057;
+        margin: 0;
+        font-size: 1.5em;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        display: inline-block;  
+    }
+    </style>
+    
+    <div class="bloco-reboot">
+        <span class="dashboard-title-reboot">Reboots do Equipamento</span>
+        <div class="tabela-reboot-container">
+            <div class="resumo-reboot">
+                Total de reboots encontrados: <b>4</b>
+            </div>
+            <div class="grafico-titulo-container">
+                <h3 class="grafico-titulo">Histórico de Reboots</h3>
+            </div>
+            <table class="tabela-reboot">
+                <thead>
+                    <tr>
+                        <th>Contagem</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Motivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+        <tr>
+            <td>1</td>
+            <td>12/06</td>
+            <td>06:13:45</td>
+            <td>FOTA reboot</td>
+        </tr>
+        
+        <tr>
+            <td>2</td>
+            <td>12/06</td>
+            <td>06:13:48</td>
+            <td>RTO reboot</td>
+        </tr>
+        
+        <tr>
+            <td>3</td>
+            <td>12/06</td>
+            <td>06:13:58</td>
+            <td>Normal power on: Acionamento normal do dispositivo.</td>
+        </tr>
+        
+        <tr>
+            <td>4</td>
+            <td>12/06</td>
+            <td>06:14:00</td>
+            <td>Configuration upgrade reboot</td>
+        </tr>
+        
+                </tbody>
+            </table>
+        </div>
+    </div>
+    

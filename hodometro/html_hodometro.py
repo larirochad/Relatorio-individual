@@ -26,7 +26,7 @@ def gerar_bloco_hodometro_from_csv(csv_path, meta_km=12000, filename='bloco_hodo
 
     # HTML/CSS/JS
     html = f"""
-<div class="dashboard-bloco-analise" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 900px; margin: 0 auto 40px auto;">
+<div class="dashboard-bloco-analise" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 2000px; margin: 0 auto 40px auto;">
     <span class="dashboard-title-analise" style="
         font-family: 'Saira', sans-serif;
         background: linear-gradient(to right, #764ba2, #667eea);

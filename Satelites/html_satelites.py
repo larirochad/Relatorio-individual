@@ -24,7 +24,7 @@ def gerar_bloco_satelites(
         border-radius: 30px;
         box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
         padding: 50px 100px 60px 100px;
-        max-width: 1000px;
+        max-width: 2000px;
         margin: 0 auto 40px auto;
     }
     .bloco-satelites .dashboard-title-analise {
