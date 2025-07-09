@@ -294,7 +294,7 @@ def unir_blocos(df_raw):
     }
     
     .btn-maximizar {
-        position: absolute;
+        position: relative;
         top: 15px;
         right: 15px;
         padding: 8px 15px;

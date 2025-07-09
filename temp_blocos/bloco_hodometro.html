@@ -1,0 +1,71 @@
+
+<div class="dashboard-bloco-analise" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 900px; margin: 0 auto 40px auto;">
+    <span class="dashboard-title-analise" style="
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.1em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    ">Hodômetro</span>
+    <div class="grafico-container" style="background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 0;">
+        <h4 style="text-align:center; font-family: Arial, Helvetica, sans-serif; font-weight: 700; margin-bottom: 10px; color: #111;">Teste</h4>
+        <div class="canvas-wrapper" style="position: relative; width: 350px; height: 180px; margin: 0 auto;">
+            <canvas id="hodometro_teste" width="350" height="180" style="display: block; box-sizing: border-box; border:0;"></canvas>
+            <div style="position: absolute; left: 10px;  font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">0 km</div>
+            <div style="position: absolute; right: 0px; font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">12,000 km</div>
+        </div>
+        <div style="text-align:center; font-size: 1.3em; font-weight: bold; margin-top: 20px; color: #222; font-family: Arial, Helvetica, sans-serif;">
+            3.777,70 km
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+    const ctx = document.getElementById('hodometro_teste').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Concluído', 'Restante'],
+            datasets: [{
+                data: [31.48, 68.52],
+                backgroundColor: ['#17becf', '#f5f5f5'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: false,
+            cutout: '70%',
+            circumference: 180,
+            rotation: -90,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            if(context.dataIndex === 0) {
+                                return 'Concluído: 3.777,70 km';
+                            } else {
+                                return 'Restante: ' + (12000 - 3777.6999999999994).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' km';
+                            }
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true
+            }
+        }
+    });
+})();
+</script>
