@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dashboard Individual</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Saira:wght@600;700;800&display=swap" rel="stylesheet">
+
+
+        <!-- Global CSS -->
+        <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .dashboard-container { 
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .logo-container {
+        text-align: center; 
+        margin-bottom: 40px; 
+    }
+
+    .logo-wrapper {
+        background-color: #e6e6fa;
+        border-radius: 50px;
+        box-shadow: 0 4px 20px rgba(102, 51, 153, 0.2);
+        padding: 30px 100px;
+        margin: 0 auto;
+        
+        display: block;
+        max-width: 90%;    
+        width: 90%;
+    }
+        
+    .logo-image {
+        max-width: 350px;
+        height: auto;
+    }
+    
+    .dashboard-title {
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(135deg, #e6e6fa 0%, #d8bfd8 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.5em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: inline-block;
+        padding: 15px 30px;
+
+        
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(102, 51, 153, 0.15);
+        margin: 0 0 30px 0;
+        text-align: center;
+    }
+    
+    .grafico-container { 
+        width: 100%; 
+        max-width: 900px;   
+        background: white; 
+        padding: 25px; 
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+        position: relative; 
+        text-align: center;
+        border: 1px solid #e9ecef;
+        transition: transform 0.3s ease;
+        margin: 0 auto 40px auto;
+    }
+    
+    .grafico-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .grafico-titulo-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .grafico-titulo {
+        text-align: center;
+        color: #495057;
+        margin: 0;
+        font-size: 1.8em; 
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    
+    .chart-wrapper {
+        position: relative;
+        height: 600px;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    canvas { 
+        width: 100% !important; 
+        height: 100% !important; 
+    }
+    
+    .zoom-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+    }
+    
+    .zoom-controls button {
+        padding: 6px 15px;
+        border: none;
+        border-radius: 15px;
+        font-size: 12px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .zoom-controls button:hover {
+        transform: translateY(-1px);
+        opacity: 0.9;
+    }
+    
+    .btn-maximizar {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 8px 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-maximizar:hover {
+        transform: scale(1.05);
+    }
+
+    /* Modal para gráfico maximizado */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+        background: white;
+        margin: 2% auto;
+        padding: 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow: auto;
+    }
+
+    .close-modal {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        float: right;
+    }
+
+    .modal-chart-container {
+        width: 100%;
+        height: 70vh;
+        position: relative;
+        margin-top: 20px;
+    }
+
+    .modal-titulo {
+        margin: 0 0 20px 0;
+        font-size: 1.5em;
+        color: #333;
+        text-align: center;
+    }
+    
+    .legend-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .grafico-container h4 {
+        margin-bottom: 8px;
+    }
+
+    .grafico-container div {
+        margin-top: 4px;
+    }
+    .tabela-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow-x: auto;
+    }
+
+    </style>
+
+        <!-- Inline CSS from blocks -->
+        <style>
+        
+    .btn-maximizar { position: absolute; top: 15px; right: 15px; padding: 8px 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; z-index: 10; transition: all 0.3s ease; }
+    .btn-maximizar:hover { transform: scale(1.05); }
+    .grafico-container { width: 100%; max-width: 900px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); position: relative; text-align: center; border: 1px solid #e9ecef; transition: transform 0.3s ease; margin: 0 auto 40px auto;}
+    .grafico-container:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
+    .grafico-titulo-container { display: flex; justify-content: center; width: 100%; margin-bottom: 15px;}
+    .grafico-titulo { text-align: center; color: #495057; margin: 0; font-size: 1.5em; padding: 10px 25px; background: #f8f9fa; border-radius: 20px; display: inline-block;}
+    .chart-wrapper { position: relative; height: 400px; width: 100%; margin-bottom: 15px;}
+    .zoom-controls { display: flex; justify-content: center; gap: 10px; margin: 15px 0;}
+    .zoom-controls button { padding: 6px 15px; border: none; border-radius: 15px; font-size: 12px; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 500; transition: all 0.3s ease;}
+    .zoom-controls button:hover { transform: translateY(-1px); opacity: 0.9;}
+    .dashboard-bloco-analise {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
+        padding: 40px 30px 30px 30px;
+        margin: 0 auto 40px auto;
+        max-width: 1100px;
+    }
+    .dashboard-title-analise {
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.5em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+        </style>
+    </head>
+    <body>
+        <div class='dashboard-container'>
+            <!-- Logo com fundo roxo -->
+            <div class="logo-container">
+                <div class="logo-wrapper">
+                        <img src="https://conteudo.golfleet.com.br/wp-content/uploads/2022/03/Logo-principal-2.png" alt="" class="logo-image">
+                </div>
+            </div>
+            <!-- Título preto com emoji colorido -->
+            <div style="text-align: center; width: 100%;">
+                <h1 class="dashboard-title" style="color: #222; font-family: 'Saira', sans-serif; font-weight: 800; font-size: 2.2em; background: none; text-shadow: none; display: inline-block;">📊 Dashboard de análise Individual</h1>
+            </div>
+            
+        
+    <div class="tabela-container">
+    <div class="grafico-container">
+        <div class='grafico-titulo-container'>
+            <h2 class='grafico-titulo'>Resumo Técnico do Equipamento</h2>
+        </div>
+        <table style='width: 100%; border-collapse: collapse; margin: 20px auto; font-size: 14px;'>
+            <thead>
+                <tr style='background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;'>
+                    <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>Nome Comercial</th>
+                    <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>IMEI</th>
+                    <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>Versão Firmware</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style='border-bottom: 1px solid #dee2e6;'>
+                    <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px;'>TM-10</td>
+                    <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px; font-family: monospace;'>867488061317839</td>
+                    <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px; font-family: monospace;'>0x0a14</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <!-- Block: bloco_eventos_diarios.html -->
+
+    
+    <!-- BLOCO DE GRÁFICO - INÍCIO -->
+    <div class='dashboard-bloco-analise'>
+        <span class='dashboard-title-analise'>Análise de eventos</span>
+        <div class='grafico-container'>
+            <button class='btn-maximizar' onclick="maximizeChart('barrasTotais')">🔍 Maximizar</button>
+            <div class='grafico-titulo-container'>
+                <h3 class='grafico-titulo'>Total de Eventos por Categoria</h3>
+            </div>
+            <div class='chart-wrapper'>
+                <canvas id="barrasTotais"></canvas>
+            </div>
+            <div class='zoom-controls'>
+                <button onclick="resetZoom('barrasTotais')">Reset Zoom</button>
+            </div>
+            <div class='zoom-instruction' style='margin-top:8px; color:#666; font-size:0.8em; font-style:italic;'>
+                Use o scroll do mouse para zoom ou duplo clique para resetar
+            </div>
+        </div>
+        <div class='grafico-container'>
+            <button class='btn-maximizar' onclick="maximizeChart('linhaEventos')">🔍 Maximizar</button>
+            <div class='grafico-titulo-container'>
+                <h3 class='grafico-titulo'>Evolução Diária dos Eventos</h3>
+            </div>
+            <div class='chart-wrapper'>
+                <canvas id="linhaEventos"></canvas>
+            </div>
+            <div class='zoom-controls'>
+                <button onclick="resetZoom('linhaEventos')">Reset Zoom</button>
+            </div>
+            <div class='zoom-instruction' style='margin-top:8px; color:#666; font-size:0.8em; font-style:italic;'>
+                Use o scroll do mouse para zoom ou duplo clique para resetar
+            </div>
+        </div>
+    </div>
+    
+    <!-- BLOCO DE GRÁFICO - FIM -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            if (typeof window.charts === 'undefined') {
+                
+            }
+            if (typeof Chart !== 'undefined' && Chart.register && typeof ChartZoom !== 'undefined') {
+                Chart.register(ChartZoom);
+            }
+            // Barras
+            const barrasCanvas = document.getElementById('barrasTotais');
+            if (barrasCanvas && !window.charts['barrasTotais']) {
+                window.charts['barrasTotais'] = new Chart(barrasCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ["HBD", "Temporizadas", "GTSTT", "Modo Econ\u00f4mico", "GTIGL", "GTIGN", "GTIGF", "GTPDP", "GTPNR", "ACK", "GTBTC", "GTSTC", "GTRTL", "AT+GTCFG"],
+                        datasets: [{
+                            label: 'Total por categoria',
+                            data: [13836, 5905, 742, 549, 447, 224, 223, 101, 4, 2, 1, 1, 1, 1],
+                            backgroundColor: ["#0e0561", "#3ae8ff", "#3b08b3", "#4ff9ff", "#3c04d6", "#00bfff", "#2519CC", "#48d8f1", "#9370db", "#000000", "#0e0561", "#3ae8ff", "#3b08b3", "#4ff9ff"],
+                            borderColor: ["#0e0561", "#3ae8ff", "#3b08b3", "#4ff9ff", "#3c04d6", "#00bfff", "#2519CC", "#48d8f1", "#9370db", "#000000", "#0e0561", "#3ae8ff", "#3b08b3", "#4ff9ff"],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            zoom: {
+                                pan: { enabled: true, mode: 'xy' },
+                                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true }, mode: 'xy' }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'TOTAL',
+                                    font: { size: 14, weight: 'bold', family: 'Arial' },
+                                    color: '#000000'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'CATEGORIA',
+                                    font: { size: 14, weight: 'bold', family: 'Arial' },
+                                    color: '#000000'
+                                }
+                            }
+                        }
+                    }
+                });
+                barrasCanvas.addEventListener('dblclick', function() {
+                    if(window.charts['barrasTotais']) {
+                        window.charts['barrasTotais'].resetZoom();
+                    }
+                });
+            }
+            // Linha
+            const linhaCanvas = document.getElementById('linhaEventos');
+            if (linhaCanvas && !window.charts['linhaEventos']) {
+                window.charts['linhaEventos'] = new Chart(linhaCanvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ["12/06/2025", "13/06/2025", "14/06/2025", "15/06/2025", "16/06/2025", "17/06/2025", "18/06/2025", "19/06/2025", "20/06/2025", "21/06/2025", "22/06/2025", "23/06/2025", "24/06/2025", "25/06/2025", "26/06/2025", "27/06/2025", "28/06/2025", "29/06/2025", "30/06/2025", "01/07/2025"],
+                        datasets: [{"label": "GTBTC", "data": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#0e0561", "backgroundColor": "#0e0561", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#0e0561", "pointBorderColor": "#0e0561", "hidden": false}, {"label": "GTIGF", "data": [20, 13, 11, 17, 19, 0, 8, 2, 2, 0, 1, 24, 29, 15, 10, 19, 0, 0, 25, 8], "borderColor": "#3ae8ff", "backgroundColor": "#3ae8ff", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#3ae8ff", "pointBorderColor": "#3ae8ff", "hidden": false}, {"label": "GTIGL", "data": [40, 26, 22, 34, 38, 0, 16, 4, 4, 0, 2, 48, 58, 30, 20, 38, 0, 0, 50, 17], "borderColor": "#3b08b3", "backgroundColor": "#3b08b3", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#3b08b3", "pointBorderColor": "#3b08b3", "hidden": false}, {"label": "GTIGN", "data": [20, 13, 11, 17, 19, 0, 8, 2, 2, 0, 1, 24, 29, 15, 10, 19, 0, 0, 25, 9], "borderColor": "#4ff9ff", "backgroundColor": "#4ff9ff", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#4ff9ff", "pointBorderColor": "#4ff9ff", "hidden": false}, {"label": "GTPDP", "data": [23, 11, 1, 0, 10, 0, 5, 1, 0, 1, 0, 9, 16, 0, 9, 7, 0, 1, 7, 0], "borderColor": "#3c04d6", "backgroundColor": "#3c04d6", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#3c04d6", "pointBorderColor": "#3c04d6", "hidden": false}, {"label": "GTPNR", "data": [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#00bfff", "backgroundColor": "#00bfff", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#00bfff", "pointBorderColor": "#00bfff", "hidden": false}, {"label": "GTRTL", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "borderColor": "#2519CC", "backgroundColor": "#2519CC", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#2519CC", "pointBorderColor": "#2519CC", "hidden": false}, {"label": "GTSTC", "data": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#48d8f1", "backgroundColor": "#48d8f1", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#48d8f1", "pointBorderColor": "#48d8f1", "hidden": false}, {"label": "GTSTT", "data": [68, 52, 50, 59, 63, 0, 26, 6, 6, 0, 3, 69, 101, 32, 37, 53, 0, 0, 82, 35], "borderColor": "#9370db", "backgroundColor": "#9370db", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#9370db", "pointBorderColor": "#9370db", "hidden": false}, {"label": "Modo Econ\u00f4mico", "data": [26, 25, 33, 33, 31, 24, 25, 25, 26, 24, 24, 37, 39, 28, 25, 31, 24, 24, 31, 14], "borderColor": "#000000", "backgroundColor": "#000000", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#000000", "pointBorderColor": "#000000", "hidden": false}, {"label": "Temporizadas", "data": [803, 780, 205, 202, 562, 0, 361, 7, 6, 0, 0, 596, 874, 7, 451, 299, 0, 0, 552, 200], "borderColor": "#0e0561", "backgroundColor": "#0e0561", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#0e0561", "pointBorderColor": "#0e0561", "hidden": false}]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { position: 'top' },
+                            zoom: {
+                                pan: { enabled: true, mode: 'xy' },
+                                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true }, mode: 'xy' }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'QUANTIDADE',
+                                    font: { size: 14, weight: 'bold', family: 'Arial' },
+                                    color: '#000000'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'DIAS',
+                                    font: { size: 14, weight: 'bold', family: 'Arial' },
+                                    color: '#000000'
+                                }
+                            }
+                        }
+                    }
+                });
+                linhaCanvas.addEventListener('dblclick', function() {
+                    if(window.charts['linhaEventos']) {
+                        window.charts['linhaEventos'].resetZoom();
+                    }
+                });
+            }
+        }, 100);
+    });
+</script>
+
+
+        </div>
+
+        <div id="maximizedModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2 class="modal-titulo" id="modalTitle">Maximized Chart</h2>
+                    <div class="modal-chart-container">
+                        <canvas id="maximizedChart"></canvas>
+                        <div class="zoom-controls">
+                            <button onclick="if (maximizedChartInstance) maximizedChartInstance.resetZoom();">Reset Zoom</button>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <script>
+        // Global variables
+        window.charts = window.charts || {};
+        let charts = window.charts;
+        let maximizedChartInstance = null;
+
+        // Function to maximize charts
+        function maximizeChart(chartId) {
+            const originalChart = charts[chartId];
+            if (!originalChart) return console.error('Chart not found:', chartId);
+            
+            const modal = document.getElementById('maximizedModal');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            // Update modal title
+            modalTitle.textContent = document.querySelector('#' + chartId).closest('.grafico-container').querySelector('.grafico-titulo').textContent;
+            
+            modal.style.display = 'block';
+            
+            const ctx = document.getElementById('maximizedChart').getContext('2d');
+            if (maximizedChartInstance) maximizedChartInstance.destroy();
+            
+            // Create copy of data maintaining current visibility
+            const chartData = JSON.parse(JSON.stringify(originalChart.data));
+            
+            maximizedChartInstance = new Chart(ctx, {
+                type: originalChart.config.type,
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'nearest', intersect: false },
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'xy'
+                            },
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                    speed: 0.1
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                drag: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(225,225,225,0.3)',
+                                    borderWidth: 2
+                                },
+                                mode: 'xy'
+                            }
+                        }
+                    },
+                    scales: originalChart.options.scales
+                }
+            });
+
+            // Sync dataset visibility
+            originalChart.data.datasets.forEach((dataset, index) => {
+                const isVisible = originalChart.getDatasetMeta(index).visible !== false;
+                maximizedChartInstance.setDatasetVisibility(index, isVisible);
+            });
+            maximizedChartInstance.update();
+            
+            // Add double click event to reset zoom
+            const maximizedCanvas = document.getElementById('maximizedChart');
+            maximizedCanvas.addEventListener('dblclick', function() {
+                if (maximizedChartInstance) {
+                    maximizedChartInstance.resetZoom();
+                }
+            });
+        }
+
+        // Function to close modal
+        function closeModal() {
+            const modal = document.getElementById('maximizedModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            
+            if (maximizedChartInstance) {
+                maximizedChartInstance.destroy();
+                maximizedChartInstance = null;
+            }
+        }
+        
+        // Function to reset zoom
+        function resetZoom(chartId) {
+            const chart = charts[chartId];
+            if (chart && chart.resetZoom) {
+                chart.resetZoom();
+            }
+        }
+        </script>
+        
+        <script>
+        // Initialize events when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('maximizedModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
+            
+            // Close modal with ESC key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        });
+        </script>
+    </body>
+    </html>
