@@ -1,0 +1,5 @@
+Reboot Nº,Data/Hora Evento,Tipo Mensagem,Motivo Power On,Descrição Motivo Power On
+1,2025-06-12 06:13:45,GTPNR,1,FOTA reboot
+2,2025-06-12 06:13:48,GTPNR,2,RTO reboot
+3,2025-06-12 06:13:58,GTPNR,0,Normal power on: Acionamento normal do dispositivo.
+4,2025-06-12 06:14:00,GTPNR,6,Configuration upgrade reboot

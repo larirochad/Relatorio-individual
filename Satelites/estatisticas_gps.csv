@@ -1,0 +1,15 @@
+﻿Métrica,Satélites,HDOP
+Média (com válidos),11.956285544520838,1.0025013400035734
+Moda (com válidos),12.0,1.0
+Desvio Padrão (com válidos),0.4054475252199483,0.07438359368897589
+Mínimo (com válidos),3.0,1.0
+Máximo (com válidos),12.0,5.0
+Média (todos os dados),11.956285544520838,0.9525507172565996
+Moda (todos os dados),12.0,1.0
+Desvio Padrão (todos os dados),0.4054475252199483,0.22987334132404394
+Mínimo (todos os dados),3.0,0.0
+Máximo (todos os dados),12.0,5.0
+Total de registros,11781.0,11781.0
+Registros inválidos (zeros),0.0,587.0
+Registros válidos,11781.0,11194.0
+Percentual de inválidos (%),0.0,4.982599100246159
