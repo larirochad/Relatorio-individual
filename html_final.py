@@ -2,6 +2,7 @@ import os
 import re
 from pathlib import Path
 import pandas as pd
+import json
 
 
 def extract_css_from_blocks(blocks):
@@ -586,6 +587,109 @@ def unir_blocos(df_raw):
     final_html += "\n"
     final_html += global_scripts             # Consolidated scripts
     final_html += "\n"
+    # Embutir o DataFrame principal como JSON
+    df = df_raw.reset_index()  # Garante que o índice vira coluna 'index'
+    data_json = json.dumps(df.to_dict(orient='records'), ensure_ascii=False)
+    # Botão de teste para abrir o modal do primeiro registro
+    botao_teste = '''<div style="text-align:center; margin-bottom:20px;">
+        <button onclick="mostrarModal(0)" style="padding:10px 22px; font-size:1em; border-radius:12px; background:linear-gradient(90deg,#764ba2,#667eea); color:#fff; border:none; font-family:'Saira',sans-serif; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(102,51,153,0.07);">Ver detalhes do primeiro registro do CSV</button>
+    </div>'''
+    final_html += botao_teste
+    # Modal global + script
+    modal_html = f'''
+    <div class="modal-bg" id="modalBg">
+        <div class="modal-content" id="modalContent">
+            <button class="close-modal" onclick="fecharModal()">&times;</button>
+            <h3>Detalhes do Registro</h3>
+            <table id="modalTable"></table>
+        </div>
+    </div>
+    <script>
+    const eventosData = {data_json};
+    function mostrarModal(idx) {{
+        const registro = eventosData[idx];
+        let html = '';
+        const cols = ['index', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
+        const labels = ['Linha do CSV', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
+        for (let i = 0; i < cols.length; i++) {{
+            html += `<tr><th>` + labels[i] + `</th><td>` + (registro[cols[i]] ?? '') + `</td></tr>`;
+        }}
+        document.getElementById('modalTable').innerHTML = html;
+        document.getElementById('modalBg').classList.add('active');
+    }}
+    function fecharModal() {{
+        document.getElementById('modalBg').classList.remove('active');
+    }}
+    document.getElementById('modalBg').addEventListener('click', function(e) {{
+        if (e.target === this) fecharModal();
+    }});
+    document.addEventListener('keydown', function(e) {{
+        if (e.key === 'Escape') fecharModal();
+    }});
+    </script>
+    <style>
+    .modal-bg {{
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.4);
+        align-items: center;
+        justify-content: center;
+    }}
+    .modal-bg.active {{
+        display: flex;
+    }}
+    .modal-content {{
+        background: #fff;
+        border-radius: 18px;
+        padding: 32px 32px 24px 32px;
+        min-width: 320px;
+        max-width: 90vw;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        position: relative;
+        animation: fadeIn 0.2s;
+    }}
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: scale(0.95); }}
+        to {{ opacity: 1; transform: scale(1); }}
+    }}
+    .modal-content h3 {{
+        margin-top: 0;
+        font-size: 1.3em;
+        color: #764ba2;
+        font-family: 'Saira', sans-serif;
+    }}
+    .modal-content table {{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }}
+    .modal-content th, .modal-content td {{
+        text-align: left;
+        padding: 8px 12px;
+    }}
+    .modal-content th {{
+        color: #495057;
+        font-weight: bold;
+        background: #f8f9fa;
+    }}
+    .close-modal {{
+        position: absolute;
+        top: 12px; right: 18px;
+        font-size: 1.5em;
+        color: #888;
+        cursor: pointer;
+        font-weight: bold;
+        background: none;
+        border: none;
+    }}
+    @media (max-width: 600px) {{
+        .modal-content {{ padding: 18px 6px 12px 6px; }}
+    }}
+    </style>
+    '''
+    final_html += modal_html
     final_html += html_footer                # Close HTML with global JS + modal
 
     # Write final file
