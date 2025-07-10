@@ -1,0 +1,105 @@
+
+    
+    <style>
+    .bloco-ignicao {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
+        padding: 50px 100px 60px 100px;
+        max-width: 2000px;
+        margin: 0 auto 40px auto;
+    }
+    .bloco-ignicao .dashboard-title-ignicao {
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.1em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .bloco-ignicao .tabela-ignicao-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        overflow-x: auto;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bloco-ignicao .tabela-ignicao-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    .bloco-ignicao .tabela-ignicao {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+        margin: 0 auto;
+    }
+    .bloco-ignicao .tabela-ignicao th, .bloco-ignicao .tabela-ignicao td {
+        border: 1px solid #e9ecef;
+        padding: 12px 18px;
+        text-align: center;
+    }
+    .bloco-ignicao .tabela-ignicao th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: bold;
+    }
+    .Linha-link {
+        color: #764ba2;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .Linha-link:hover {
+        color: #667eea;
+    }
+    </style>
+    
+    <div class="bloco-ignicao">
+        <span class="dashboard-title-ignicao">Tempos de Ignição (ON/OFF)</span>
+        <div class="tabela-ignicao-container">
+            <table class="tabela-ignicao">
+                <thead>
+                    <tr>
+                        <th>Linha</th>
+                        <th>Ignição</th>
+                        <th>Tempo (s)</th>
+                        <th>Data</th>
+                        <th>Resumo</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+        <tr>
+            <td><a href="#" class="Linha-link" onclick="mostrarModal(1648); return false;">1648</a></td>
+            <td>on</td>
+            <td>16444</td>
+            <td>21/06/2025</td>
+            <td>Maior tempo ON</td>
+        </tr>
+        
+        <tr>
+            <td><a href="#" class="Linha-link" onclick="mostrarModal(2593); return false;">2593</a></td>
+            <td>off</td>
+            <td>352652</td>
+            <td>27/06/2025</td>
+            <td>Maior tempo OFF</td>
+        </tr>
+        
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
