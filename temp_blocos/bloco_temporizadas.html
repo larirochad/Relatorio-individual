@@ -1,0 +1,2886 @@
+
+    <style>
+    
+    .bloco-temporizadas {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
+        padding: 50px 100px 60px 100px;
+        max-width: 2000px;
+        margin: 0 auto 40px auto;
+    }
+    .bloco-temporizadas .dashboard-title-temporizadas {
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.1em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .bloco-temporizadas .grafico-titulo-container {
+        text-align: center;
+        color: #495057;
+        margin: 0;
+        font-size: 1.5em;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    .bloco-temporizadas .tabela-temporizadas-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        overflow-x: auto;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bloco-temporizadas .tabela-temporizadas-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    .bloco-temporizadas .tabela-temporizadas {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+        margin: 0 auto;
+    }
+    .bloco-temporizadas .tabela-temporizadas th, .bloco-temporizadas .tabela-temporizadas td {
+        border: 1px solid #e9ecef;
+        padding: 12px 18px;
+        text-align: center;
+    }
+    .bloco-temporizadas .tabela-temporizadas th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: bold;
+    }
+    .Linha-link {
+        color: #764ba2;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .Linha-link:hover {
+        color: #667eea;
+    }
+    /* Adiciona o fundo arredondado e fonte padrão para os títulos das tabelas */
+    .bloco-temporizadas .grafico-titulo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .bloco-temporizadas .grafico-titulo {
+        display: inline-block;
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 10px 32px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #495057;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        font-style: normal;
+        text-shadow: none;
+        margin: 0;
+    }
+    .ver-todos-btn {
+        margin-bottom: 10px;
+        background: linear-gradient(90deg,#764ba2,#667eea);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 22px;
+        font-size: 1em;
+        font-family: 'Saira', Arial, Helvetica, sans-serif;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        transition: background 0.2s, color 0.2s;
+    }
+    .ver-todos-btn:hover {
+        background: linear-gradient(90deg,#667eea,#764ba2);
+        color: #fff;
+    }
+    .extra-row { display: none; }
+    .expanded .extra-row { display: table-row; }
+    
+    
+    
+    .resumo-anomalias-container {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin: 0 0 24px 0;
+    }
+    .resumo-anomalia-card {
+        background: #f8f9fa;
+        border-radius: 18px;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        padding: 18px 36px 14px 36px;
+        text-align: center;
+        min-width: 160px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .resumo-anomalia-titulo {
+        font-size: 1.1em;
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    .resumo-anomalia-numero {
+        font-size: 2em;
+        font-weight: bold;
+        color: #764ba2;
+        margin-bottom: 2px;
+    }
+    .resumo-anomalia-legenda {
+        font-size: 0.95em;
+        color: #888;
+    }
+    
+    </style>
+    <div class="bloco-temporizadas">
+        <span class="dashboard-title-temporizadas">Anomalias de Intervalo entre mensagens temporizadas</span>
+        
+    <div class="resumo-anomalias-container">
+        <div class="resumo-anomalia-card">
+            <div class="resumo-anomalia-titulo">Analomalias por tempo em movimento</div>
+            <div class="resumo-anomalia-numero">166</div>
+            <div class="resumo-anomalia-legenda">de 557 eventos de temporização</div>
+        </div>
+        <div class="resumo-anomalia-card">
+            <div class="resumo-anomalia-titulo">Anomalias por modo econômico</div>
+            <div class="resumo-anomalia-numero">214</div>
+            <div class="resumo-anomalia-legenda">de 743 eventos de temporização</div>
+        </div>
+    </div>
+    
+        
+        <div class="tabela-temporizadas-container">
+            <div class="grafico-titulo-container"><span class="grafico-titulo">Anomalias por tempo em movimento</span></div>
+            <table class="tabela-temporizadas" id="tabela-on">
+                <thead>
+                    <tr>
+                        <th>Linha</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Tempo (s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(27); return false;">27</a></td>
+                <td>11/06/2025</td>
+                <td>17:50:42</td>
+                <td>24</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(29); return false;">29</a></td>
+                <td>11/06/2025</td>
+                <td>17:53:26</td>
+                <td>164</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(52); return false;">52</a></td>
+                <td>11/06/2025</td>
+                <td>18:08:26</td>
+                <td>170</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(74); return false;">74</a></td>
+                <td>11/06/2025</td>
+                <td>18:23:26</td>
+                <td>144</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(117); return false;">117</a></td>
+                <td>12/06/2025</td>
+                <td>07:25:42</td>
+                <td>30</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(121); return false;">121</a></td>
+                <td>12/06/2025</td>
+                <td>07:28:22</td>
+                <td>160</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(148); return false;">148</a></td>
+                <td>12/06/2025</td>
+                <td>07:55:23</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(179); return false;">179</a></td>
+                <td>12/06/2025</td>
+                <td>18:02:12</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(181); return false;">181</a></td>
+                <td>12/06/2025</td>
+                <td>18:05:06</td>
+                <td>174</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(242); return false;">242</a></td>
+                <td>13/06/2025</td>
+                <td>07:42:05</td>
+                <td>17</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(244); return false;">244</a></td>
+                <td>13/06/2025</td>
+                <td>07:44:53</td>
+                <td>168</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(280); return false;">280</a></td>
+                <td>13/06/2025</td>
+                <td>12:40:36</td>
+                <td>32</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(284); return false;">284</a></td>
+                <td>13/06/2025</td>
+                <td>12:43:13</td>
+                <td>157</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(309); return false;">309</a></td>
+                <td>13/06/2025</td>
+                <td>17:48:06</td>
+                <td>28</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(311); return false;">311</a></td>
+                <td>13/06/2025</td>
+                <td>17:50:46</td>
+                <td>160</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(428); return false;">428</a></td>
+                <td>15/06/2025</td>
+                <td>17:04:12</td>
+                <td>47</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(430); return false;">430</a></td>
+                <td>15/06/2025</td>
+                <td>17:06:32</td>
+                <td>140</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(526); return false;">526</a></td>
+                <td>16/06/2025</td>
+                <td>07:34:36</td>
+                <td>17</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(528); return false;">528</a></td>
+                <td>16/06/2025</td>
+                <td>07:37:28</td>
+                <td>172</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(577); return false;">577</a></td>
+                <td>16/06/2025</td>
+                <td>17:58:19</td>
+                <td>21</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(579); return false;">579</a></td>
+                <td>16/06/2025</td>
+                <td>18:01:05</td>
+                <td>166</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(606); return false;">606</a></td>
+                <td>16/06/2025</td>
+                <td>18:22:05</td>
+                <td>155</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(649); return false;">649</a></td>
+                <td>17/06/2025</td>
+                <td>07:02:57</td>
+                <td>12</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(653); return false;">653</a></td>
+                <td>17/06/2025</td>
+                <td>07:05:55</td>
+                <td>178</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(659); return false;">659</a></td>
+                <td>17/06/2025</td>
+                <td>07:08:54</td>
+                <td>179</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(734); return false;">734</a></td>
+                <td>17/06/2025</td>
+                <td>17:51:45</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(736); return false;">736</a></td>
+                <td>17/06/2025</td>
+                <td>17:54:36</td>
+                <td>171</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(770); return false;">770</a></td>
+                <td>17/06/2025</td>
+                <td>18:21:36</td>
+                <td>134</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(815); return false;">815</a></td>
+                <td>18/06/2025</td>
+                <td>07:33:45</td>
+                <td>100</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(817); return false;">817</a></td>
+                <td>18/06/2025</td>
+                <td>07:35:13</td>
+                <td>88</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(897); return false;">897</a></td>
+                <td>19/06/2025</td>
+                <td>09:44:29</td>
+                <td>46</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(898); return false;">898</a></td>
+                <td>19/06/2025</td>
+                <td>09:46:52</td>
+                <td>143</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(918); return false;">918</a></td>
+                <td>19/06/2025</td>
+                <td>09:58:52</td>
+                <td>124</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(933); return false;">933</a></td>
+                <td>19/06/2025</td>
+                <td>10:10:52</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(932); return false;">932</a></td>
+                <td>19/06/2025</td>
+                <td>10:10:52</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(931); return false;">931</a></td>
+                <td>19/06/2025</td>
+                <td>10:10:52</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(936); return false;">936</a></td>
+                <td>19/06/2025</td>
+                <td>10:13:53</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1072); return false;">1072</a></td>
+                <td>19/06/2025</td>
+                <td>15:09:48</td>
+                <td>41</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1074); return false;">1074</a></td>
+                <td>19/06/2025</td>
+                <td>15:12:15</td>
+                <td>147</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1121); return false;">1121</a></td>
+                <td>19/06/2025</td>
+                <td>15:54:16</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1141); return false;">1141</a></td>
+                <td>19/06/2025</td>
+                <td>16:27:16</td>
+                <td>97</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1147); return false;">1147</a></td>
+                <td>19/06/2025</td>
+                <td>16:30:18</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1154); return false;">1154</a></td>
+                <td>19/06/2025</td>
+                <td>16:36:19</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1169); return false;">1169</a></td>
+                <td>19/06/2025</td>
+                <td>17:11:27</td>
+                <td>12</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1170); return false;">1170</a></td>
+                <td>19/06/2025</td>
+                <td>17:14:23</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1175); return false;">1175</a></td>
+                <td>19/06/2025</td>
+                <td>17:17:24</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1189); return false;">1189</a></td>
+                <td>19/06/2025</td>
+                <td>20:08:10</td>
+                <td>12</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1191); return false;">1191</a></td>
+                <td>19/06/2025</td>
+                <td>20:11:07</td>
+                <td>177</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1196); return false;">1196</a></td>
+                <td>19/06/2025</td>
+                <td>20:14:08</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1232); return false;">1232</a></td>
+                <td>20/06/2025</td>
+                <td>09:07:21</td>
+                <td>23</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1233); return false;">1233</a></td>
+                <td>20/06/2025</td>
+                <td>09:10:09</td>
+                <td>168</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1249); return false;">1249</a></td>
+                <td>20/06/2025</td>
+                <td>09:19:09</td>
+                <td>152</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1258); return false;">1258</a></td>
+                <td>20/06/2025</td>
+                <td>10:34:31</td>
+                <td>9</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1261); return false;">1261</a></td>
+                <td>20/06/2025</td>
+                <td>10:37:33</td>
+                <td>182</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1264); return false;">1264</a></td>
+                <td>20/06/2025</td>
+                <td>10:43:34</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1272); return false;">1272</a></td>
+                <td>20/06/2025</td>
+                <td>11:02:17</td>
+                <td>10</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1275); return false;">1275</a></td>
+                <td>20/06/2025</td>
+                <td>11:05:13</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1285); return false;">1285</a></td>
+                <td>20/06/2025</td>
+                <td>11:29:31</td>
+                <td>10</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1287); return false;">1287</a></td>
+                <td>20/06/2025</td>
+                <td>11:32:27</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1295); return false;">1295</a></td>
+                <td>20/06/2025</td>
+                <td>11:38:29</td>
+                <td>182</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1309); return false;">1309</a></td>
+                <td>20/06/2025</td>
+                <td>12:20:41</td>
+                <td>12</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1311); return false;">1311</a></td>
+                <td>20/06/2025</td>
+                <td>12:23:37</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1323); return false;">1323</a></td>
+                <td>20/06/2025</td>
+                <td>13:33:44</td>
+                <td>15</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1328); return false;">1328</a></td>
+                <td>20/06/2025</td>
+                <td>13:36:37</td>
+                <td>173</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1330); return false;">1330</a></td>
+                <td>20/06/2025</td>
+                <td>13:39:39</td>
+                <td>182</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1347); return false;">1347</a></td>
+                <td>20/06/2025</td>
+                <td>16:32:17</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1348); return false;">1348</a></td>
+                <td>20/06/2025</td>
+                <td>16:35:11</td>
+                <td>174</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1350); return false;">1350</a></td>
+                <td>20/06/2025</td>
+                <td>16:38:12</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1362); return false;">1362</a></td>
+                <td>20/06/2025</td>
+                <td>17:40:53</td>
+                <td>9</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1363); return false;">1363</a></td>
+                <td>20/06/2025</td>
+                <td>17:43:51</td>
+                <td>178</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1366); return false;">1366</a></td>
+                <td>20/06/2025</td>
+                <td>17:46:53</td>
+                <td>182</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1378); return false;">1378</a></td>
+                <td>20/06/2025</td>
+                <td>19:50:42</td>
+                <td>12</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1380); return false;">1380</a></td>
+                <td>20/06/2025</td>
+                <td>19:53:40</td>
+                <td>178</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1388); return false;">1388</a></td>
+                <td>20/06/2025</td>
+                <td>19:59:41</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1391); return false;">1391</a></td>
+                <td>20/06/2025</td>
+                <td>20:02:42</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1394); return false;">1394</a></td>
+                <td>20/06/2025</td>
+                <td>20:05:44</td>
+                <td>182</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1425); return false;">1425</a></td>
+                <td>21/06/2025</td>
+                <td>06:50:58</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1426); return false;">1426</a></td>
+                <td>21/06/2025</td>
+                <td>06:53:57</td>
+                <td>179</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1430); return false;">1430</a></td>
+                <td>21/06/2025</td>
+                <td>06:56:58</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1432); return false;">1432</a></td>
+                <td>21/06/2025</td>
+                <td>06:59:59</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1445); return false;">1445</a></td>
+                <td>21/06/2025</td>
+                <td>07:41:25</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1446); return false;">1446</a></td>
+                <td>21/06/2025</td>
+                <td>07:44:24</td>
+                <td>179</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1456); return false;">1456</a></td>
+                <td>21/06/2025</td>
+                <td>07:53:25</td>
+                <td>96</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1465); return false;">1465</a></td>
+                <td>21/06/2025</td>
+                <td>07:59:29</td>
+                <td>81</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1476); return false;">1476</a></td>
+                <td>21/06/2025</td>
+                <td>08:20:16</td>
+                <td>9</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1494); return false;">1494</a></td>
+                <td>21/06/2025</td>
+                <td>08:35:21</td>
+                <td>98</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1500); return false;">1500</a></td>
+                <td>21/06/2025</td>
+                <td>08:38:22</td>
+                <td>119</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1506); return false;">1506</a></td>
+                <td>21/06/2025</td>
+                <td>08:41:23</td>
+                <td>131</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1514); return false;">1514</a></td>
+                <td>21/06/2025</td>
+                <td>08:47:15</td>
+                <td>8</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1522); return false;">1522</a></td>
+                <td>21/06/2025</td>
+                <td>08:53:16</td>
+                <td>92</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1527); return false;">1527</a></td>
+                <td>21/06/2025</td>
+                <td>08:56:17</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1533); return false;">1533</a></td>
+                <td>21/06/2025</td>
+                <td>08:59:18</td>
+                <td>35</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1538); return false;">1538</a></td>
+                <td>21/06/2025</td>
+                <td>09:02:18</td>
+                <td>9</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1553); return false;">1553</a></td>
+                <td>21/06/2025</td>
+                <td>09:14:20</td>
+                <td>50</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1565); return false;">1565</a></td>
+                <td>21/06/2025</td>
+                <td>09:58:16</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1566); return false;">1566</a></td>
+                <td>21/06/2025</td>
+                <td>10:01:13</td>
+                <td>177</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1572); return false;">1572</a></td>
+                <td>21/06/2025</td>
+                <td>10:04:14</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1623); return false;">1623</a></td>
+                <td>21/06/2025</td>
+                <td>16:24:33</td>
+                <td>44</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1624); return false;">1624</a></td>
+                <td>21/06/2025</td>
+                <td>16:26:56</td>
+                <td>143</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1670); return false;">1670</a></td>
+                <td>21/06/2025</td>
+                <td>16:47:56</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1646); return false;">1646</a></td>
+                <td>21/06/2025</td>
+                <td>16:47:56</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1642); return false;">1642</a></td>
+                <td>21/06/2025</td>
+                <td>16:47:56</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1645); return false;">1645</a></td>
+                <td>21/06/2025</td>
+                <td>16:47:56</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1644); return false;">1644</a></td>
+                <td>21/06/2025</td>
+                <td>16:47:56</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1671); return false;">1671</a></td>
+                <td>21/06/2025</td>
+                <td>17:17:57</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1769); return false;">1769</a></td>
+                <td>21/06/2025</td>
+                <td>19:14:57</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1815); return false;">1815</a></td>
+                <td>21/06/2025</td>
+                <td>19:14:57</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1816); return false;">1816</a></td>
+                <td>21/06/2025</td>
+                <td>20:11:58</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1834); return false;">1834</a></td>
+                <td>21/06/2025</td>
+                <td>20:32:59</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1898); return false;">1898</a></td>
+                <td>22/06/2025</td>
+                <td>10:39:40</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1900); return false;">1900</a></td>
+                <td>22/06/2025</td>
+                <td>10:42:36</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1924); return false;">1924</a></td>
+                <td>22/06/2025</td>
+                <td>10:57:36</td>
+                <td>92</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1944); return false;">1944</a></td>
+                <td>22/06/2025</td>
+                <td>11:06:36</td>
+                <td>28</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1967); return false;">1967</a></td>
+                <td>22/06/2025</td>
+                <td>11:18:36</td>
+                <td>179</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1988); return false;">1988</a></td>
+                <td>22/06/2025</td>
+                <td>16:23:28</td>
+                <td>15</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1990); return false;">1990</a></td>
+                <td>22/06/2025</td>
+                <td>16:26:19</td>
+                <td>171</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2042); return false;">2042</a></td>
+                <td>23/06/2025</td>
+                <td>07:37:17</td>
+                <td>10</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2044); return false;">2044</a></td>
+                <td>23/06/2025</td>
+                <td>07:40:16</td>
+                <td>179</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2101); return false;">2101</a></td>
+                <td>23/06/2025</td>
+                <td>17:46:38</td>
+                <td>24</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2103); return false;">2103</a></td>
+                <td>23/06/2025</td>
+                <td>17:49:20</td>
+                <td>162</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2135); return false;">2135</a></td>
+                <td>23/06/2025</td>
+                <td>18:16:20</td>
+                <td>161</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2226); return false;">2226</a></td>
+                <td>25/06/2025</td>
+                <td>07:20:58</td>
+                <td>18</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2230); return false;">2230</a></td>
+                <td>25/06/2025</td>
+                <td>07:23:47</td>
+                <td>169</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2291); return false;">2291</a></td>
+                <td>25/06/2025</td>
+                <td>17:49:50</td>
+                <td>64</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2293); return false;">2293</a></td>
+                <td>25/06/2025</td>
+                <td>17:51:55</td>
+                <td>125</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2323); return false;">2323</a></td>
+                <td>25/06/2025</td>
+                <td>18:12:55</td>
+                <td>107</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2379); return false;">2379</a></td>
+                <td>26/06/2025</td>
+                <td>12:21:07</td>
+                <td>17</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2383); return false;">2383</a></td>
+                <td>26/06/2025</td>
+                <td>12:23:58</td>
+                <td>171</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2415); return false;">2415</a></td>
+                <td>26/06/2025</td>
+                <td>12:44:58</td>
+                <td>169</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2455); return false;">2455</a></td>
+                <td>26/06/2025</td>
+                <td>18:01:45</td>
+                <td>21</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2457); return false;">2457</a></td>
+                <td>26/06/2025</td>
+                <td>18:04:32</td>
+                <td>167</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2472); return false;">2472</a></td>
+                <td>26/06/2025</td>
+                <td>18:10:32</td>
+                <td>41</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2505); return false;">2505</a></td>
+                <td>26/06/2025</td>
+                <td>18:31:32</td>
+                <td>174</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2571); return false;">2571</a></td>
+                <td>27/06/2025</td>
+                <td>17:58:31</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2573); return false;">2573</a></td>
+                <td>27/06/2025</td>
+                <td>18:01:23</td>
+                <td>172</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2798); return false;">2798</a></td>
+                <td>01/07/2025</td>
+                <td>20:15:21</td>
+                <td>30</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2801); return false;">2801</a></td>
+                <td>01/07/2025</td>
+                <td>20:17:57</td>
+                <td>156</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2815); return false;">2815</a></td>
+                <td>01/07/2025</td>
+                <td>20:23:57</td>
+                <td>136</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2854); return false;">2854</a></td>
+                <td>02/07/2025</td>
+                <td>07:28:52</td>
+                <td>4</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2856); return false;">2856</a></td>
+                <td>02/07/2025</td>
+                <td>07:31:53</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2908); return false;">2908</a></td>
+                <td>02/07/2025</td>
+                <td>17:58:17</td>
+                <td>49</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2910); return false;">2910</a></td>
+                <td>02/07/2025</td>
+                <td>18:00:36</td>
+                <td>139</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2930); return false;">2930</a></td>
+                <td>02/07/2025</td>
+                <td>18:12:36</td>
+                <td>147</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2984); return false;">2984</a></td>
+                <td>03/07/2025</td>
+                <td>07:19:44</td>
+                <td>18</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2986); return false;">2986</a></td>
+                <td>03/07/2025</td>
+                <td>07:22:35</td>
+                <td>171</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3038); return false;">3038</a></td>
+                <td>03/07/2025</td>
+                <td>17:35:28</td>
+                <td>30</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3040); return false;">3040</a></td>
+                <td>03/07/2025</td>
+                <td>17:38:05</td>
+                <td>157</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3092); return false;">3092</a></td>
+                <td>03/07/2025</td>
+                <td>18:20:05</td>
+                <td>5</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3136); return false;">3136</a></td>
+                <td>04/07/2025</td>
+                <td>07:12:22</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3138); return false;">3138</a></td>
+                <td>04/07/2025</td>
+                <td>07:15:18</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3208); return false;">3208</a></td>
+                <td>04/07/2025</td>
+                <td>17:47:47</td>
+                <td>29</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3210); return false;">3210</a></td>
+                <td>04/07/2025</td>
+                <td>17:50:23</td>
+                <td>156</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3230); return false;">3230</a></td>
+                <td>04/07/2025</td>
+                <td>17:59:23</td>
+                <td>48</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3257); return false;">3257</a></td>
+                <td>04/07/2025</td>
+                <td>18:17:23</td>
+                <td>153</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3279); return false;">3279</a></td>
+                <td>04/07/2025</td>
+                <td>18:53:34</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3281); return false;">3281</a></td>
+                <td>04/07/2025</td>
+                <td>18:56:29</td>
+                <td>175</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3332); return false;">3332</a></td>
+                <td>05/07/2025</td>
+                <td>11:03:23</td>
+                <td>4</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3336); return false;">3336</a></td>
+                <td>05/07/2025</td>
+                <td>11:06:28</td>
+                <td>185</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3367); return false;">3367</a></td>
+                <td>05/07/2025</td>
+                <td>15:18:10</td>
+                <td>22</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3370); return false;">3370</a></td>
+                <td>05/07/2025</td>
+                <td>15:20:57</td>
+                <td>167</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3399); return false;">3399</a></td>
+                <td>05/07/2025</td>
+                <td>16:31:03</td>
+                <td>18</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3401); return false;">3401</a></td>
+                <td>05/07/2025</td>
+                <td>16:33:51</td>
+                <td>168</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3508); return false;">3508</a></td>
+                <td>07/07/2025</td>
+                <td>07:25:34</td>
+                <td>15</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3510); return false;">3510</a></td>
+                <td>07/07/2025</td>
+                <td>07:28:28</td>
+                <td>174</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3567); return false;">3567</a></td>
+                <td>07/07/2025</td>
+                <td>17:54:20</td>
+                <td>55</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3575); return false;">3575</a></td>
+                <td>07/07/2025</td>
+                <td>17:56:34</td>
+                <td>13</td>
+            </tr>
+            
+                </tbody>
+            </table>
+            <div style='text-align:center; margin-top: 12px;'>
+                <button class='ver-todos-btn' onclick="toggleExpand('tabela-on')" id="btn-tabela-on">Ver todos os dados</button>
+            </div>
+        </div>
+        
+        
+        <div class="tabela-temporizadas-container">
+            <div class="grafico-titulo-container"><span class="grafico-titulo">Anomalias por modo econômico</span></div>
+            <table class="tabela-temporizadas" id="tabela-off">
+                <thead>
+                    <tr>
+                        <th>Linha</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Tempo (s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(47); return false;">47</a></td>
+                <td>11/06/2025</td>
+                <td>18:05:26</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(70); return false;">70</a></td>
+                <td>11/06/2025</td>
+                <td>18:20:26</td>
+                <td>70</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(85); return false;">85</a></td>
+                <td>11/06/2025</td>
+                <td>18:26:26</td>
+                <td>55</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(87); return false;">87</a></td>
+                <td>11/06/2025</td>
+                <td>18:29:26</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class=''>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(89); return false;">89</a></td>
+                <td>11/06/2025</td>
+                <td>18:30:31</td>
+                <td>65</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(91); return false;">91</a></td>
+                <td>11/06/2025</td>
+                <td>19:30:26</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(156); return false;">156</a></td>
+                <td>12/06/2025</td>
+                <td>08:01:23</td>
+                <td>128</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(157); return false;">157</a></td>
+                <td>12/06/2025</td>
+                <td>08:04:15</td>
+                <td>172</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(159); return false;">159</a></td>
+                <td>12/06/2025</td>
+                <td>09:04:10</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(208); return false;">208</a></td>
+                <td>12/06/2025</td>
+                <td>18:23:06</td>
+                <td>39</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(211); return false;">211</a></td>
+                <td>12/06/2025</td>
+                <td>18:26:06</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(212); return false;">212</a></td>
+                <td>12/06/2025</td>
+                <td>18:27:27</td>
+                <td>81</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(214); return false;">214</a></td>
+                <td>12/06/2025</td>
+                <td>19:27:22</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(265); return false;">265</a></td>
+                <td>13/06/2025</td>
+                <td>07:59:53</td>
+                <td>136</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(267); return false;">267</a></td>
+                <td>13/06/2025</td>
+                <td>08:02:41</td>
+                <td>168</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(269); return false;">269</a></td>
+                <td>13/06/2025</td>
+                <td>09:02:32</td>
+                <td>3591</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(293); return false;">293</a></td>
+                <td>13/06/2025</td>
+                <td>12:46:13</td>
+                <td>98</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(296); return false;">296</a></td>
+                <td>13/06/2025</td>
+                <td>12:49:13</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(297); return false;">297</a></td>
+                <td>13/06/2025</td>
+                <td>12:49:37</td>
+                <td>24</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(299); return false;">299</a></td>
+                <td>13/06/2025</td>
+                <td>13:49:30</td>
+                <td>3593</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(327); return false;">327</a></td>
+                <td>13/06/2025</td>
+                <td>17:59:46</td>
+                <td>90</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(329); return false;">329</a></td>
+                <td>13/06/2025</td>
+                <td>18:02:46</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(330); return false;">330</a></td>
+                <td>13/06/2025</td>
+                <td>18:03:17</td>
+                <td>31</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(332); return false;">332</a></td>
+                <td>13/06/2025</td>
+                <td>19:03:11</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(492); return false;">492</a></td>
+                <td>15/06/2025</td>
+                <td>18:03:32</td>
+                <td>135</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(495); return false;">495</a></td>
+                <td>15/06/2025</td>
+                <td>18:06:17</td>
+                <td>165</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(497); return false;">497</a></td>
+                <td>15/06/2025</td>
+                <td>19:06:12</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(550); return false;">550</a></td>
+                <td>16/06/2025</td>
+                <td>07:52:28</td>
+                <td>154</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(553); return false;">553</a></td>
+                <td>16/06/2025</td>
+                <td>07:54:57</td>
+                <td>149</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(555); return false;">555</a></td>
+                <td>16/06/2025</td>
+                <td>08:54:49</td>
+                <td>3592</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(602); return false;">602</a></td>
+                <td>16/06/2025</td>
+                <td>18:19:05</td>
+                <td>99</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(617); return false;">617</a></td>
+                <td>16/06/2025</td>
+                <td>18:25:05</td>
+                <td>49</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(619); return false;">619</a></td>
+                <td>16/06/2025</td>
+                <td>18:28:05</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(621); return false;">621</a></td>
+                <td>16/06/2025</td>
+                <td>18:29:16</td>
+                <td>71</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(623); return false;">623</a></td>
+                <td>16/06/2025</td>
+                <td>19:29:11</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(706); return false;">706</a></td>
+                <td>17/06/2025</td>
+                <td>07:47:54</td>
+                <td>94</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(709); return false;">709</a></td>
+                <td>17/06/2025</td>
+                <td>07:50:54</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(710); return false;">710</a></td>
+                <td>17/06/2025</td>
+                <td>07:51:21</td>
+                <td>27</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(712); return false;">712</a></td>
+                <td>17/06/2025</td>
+                <td>08:51:15</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(766); return false;">766</a></td>
+                <td>17/06/2025</td>
+                <td>18:18:36</td>
+                <td>112</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(781); return false;">781</a></td>
+                <td>17/06/2025</td>
+                <td>18:24:36</td>
+                <td>19</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(783); return false;">783</a></td>
+                <td>17/06/2025</td>
+                <td>18:27:36</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(785); return false;">785</a></td>
+                <td>17/06/2025</td>
+                <td>18:29:17</td>
+                <td>101</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(787); return false;">787</a></td>
+                <td>17/06/2025</td>
+                <td>19:29:12</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(837); return false;">837</a></td>
+                <td>18/06/2025</td>
+                <td>07:50:13</td>
+                <td>122</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(840); return false;">840</a></td>
+                <td>18/06/2025</td>
+                <td>07:53:11</td>
+                <td>178</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(842); return false;">842</a></td>
+                <td>18/06/2025</td>
+                <td>08:53:06</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(911); return false;">911</a></td>
+                <td>19/06/2025</td>
+                <td>09:52:52</td>
+                <td>35</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(914); return false;">914</a></td>
+                <td>19/06/2025</td>
+                <td>09:55:52</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1059); return false;">1059</a></td>
+                <td>19/06/2025</td>
+                <td>12:37:53</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1062); return false;">1062</a></td>
+                <td>19/06/2025</td>
+                <td>12:40:53</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1063); return false;">1063</a></td>
+                <td>19/06/2025</td>
+                <td>12:42:39</td>
+                <td>106</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1066); return false;">1066</a></td>
+                <td>19/06/2025</td>
+                <td>13:42:34</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1164); return false;">1164</a></td>
+                <td>19/06/2025</td>
+                <td>16:48:19</td>
+                <td>58</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1165); return false;">1165</a></td>
+                <td>19/06/2025</td>
+                <td>16:51:19</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1166); return false;">1166</a></td>
+                <td>19/06/2025</td>
+                <td>16:52:22</td>
+                <td>63</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1180); return false;">1180</a></td>
+                <td>19/06/2025</td>
+                <td>17:20:25</td>
+                <td>65</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1181); return false;">1181</a></td>
+                <td>19/06/2025</td>
+                <td>17:23:26</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1182); return false;">1182</a></td>
+                <td>19/06/2025</td>
+                <td>17:24:21</td>
+                <td>55</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1183); return false;">1183</a></td>
+                <td>19/06/2025</td>
+                <td>18:24:16</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1203); return false;">1203</a></td>
+                <td>19/06/2025</td>
+                <td>20:20:08</td>
+                <td>42</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1204); return false;">1204</a></td>
+                <td>19/06/2025</td>
+                <td>20:23:08</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1205); return false;">1205</a></td>
+                <td>19/06/2025</td>
+                <td>20:24:27</td>
+                <td>79</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1207); return false;">1207</a></td>
+                <td>19/06/2025</td>
+                <td>21:24:21</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1252); return false;">1252</a></td>
+                <td>20/06/2025</td>
+                <td>09:22:09</td>
+                <td>124</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1253); return false;">1253</a></td>
+                <td>20/06/2025</td>
+                <td>09:25:06</td>
+                <td>177</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1255); return false;">1255</a></td>
+                <td>20/06/2025</td>
+                <td>10:25:01</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1267); return false;">1267</a></td>
+                <td>20/06/2025</td>
+                <td>10:46:35</td>
+                <td>119</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1268); return false;">1268</a></td>
+                <td>20/06/2025</td>
+                <td>10:49:35</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1269); return false;">1269</a></td>
+                <td>20/06/2025</td>
+                <td>10:49:36</td>
+                <td>1</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1279); return false;">1279</a></td>
+                <td>20/06/2025</td>
+                <td>11:08:14</td>
+                <td>33</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1280); return false;">1280</a></td>
+                <td>20/06/2025</td>
+                <td>11:11:15</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1281); return false;">1281</a></td>
+                <td>20/06/2025</td>
+                <td>11:12:41</td>
+                <td>86</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1301); return false;">1301</a></td>
+                <td>20/06/2025</td>
+                <td>11:41:29</td>
+                <td>60</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1304); return false;">1304</a></td>
+                <td>20/06/2025</td>
+                <td>11:44:29</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1305); return false;">1305</a></td>
+                <td>20/06/2025</td>
+                <td>11:45:30</td>
+                <td>61</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1316); return false;">1316</a></td>
+                <td>20/06/2025</td>
+                <td>12:26:38</td>
+                <td>107</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1317); return false;">1317</a></td>
+                <td>20/06/2025</td>
+                <td>12:29:38</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1318); return false;">1318</a></td>
+                <td>20/06/2025</td>
+                <td>12:29:52</td>
+                <td>14</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1320); return false;">1320</a></td>
+                <td>20/06/2025</td>
+                <td>13:29:46</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1338); return false;">1338</a></td>
+                <td>20/06/2025</td>
+                <td>13:45:39</td>
+                <td>46</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1339); return false;">1339</a></td>
+                <td>20/06/2025</td>
+                <td>13:48:40</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1340); return false;">1340</a></td>
+                <td>20/06/2025</td>
+                <td>13:49:53</td>
+                <td>73</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1342); return false;">1342</a></td>
+                <td>20/06/2025</td>
+                <td>14:49:49</td>
+                <td>3596</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1356); return false;">1356</a></td>
+                <td>20/06/2025</td>
+                <td>16:47:12</td>
+                <td>67</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1357); return false;">1357</a></td>
+                <td>20/06/2025</td>
+                <td>16:50:12</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1358); return false;">1358</a></td>
+                <td>20/06/2025</td>
+                <td>16:51:05</td>
+                <td>53</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1372); return false;">1372</a></td>
+                <td>20/06/2025</td>
+                <td>17:55:53</td>
+                <td>171</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1373); return false;">1373</a></td>
+                <td>20/06/2025</td>
+                <td>17:58:02</td>
+                <td>129</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1374); return false;">1374</a></td>
+                <td>20/06/2025</td>
+                <td>18:57:58</td>
+                <td>3596</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1398); return false;">1398</a></td>
+                <td>20/06/2025</td>
+                <td>20:08:44</td>
+                <td>29</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1400); return false;">1400</a></td>
+                <td>20/06/2025</td>
+                <td>20:08:44</td>
+                <td>0</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1401); return false;">1401</a></td>
+                <td>20/06/2025</td>
+                <td>20:11:44</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1402); return false;">1402</a></td>
+                <td>20/06/2025</td>
+                <td>20:13:16</td>
+                <td>92</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1404); return false;">1404</a></td>
+                <td>20/06/2025</td>
+                <td>21:13:11</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1438); return false;">1438</a></td>
+                <td>21/06/2025</td>
+                <td>07:03:00</td>
+                <td>148</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1440); return false;">1440</a></td>
+                <td>21/06/2025</td>
+                <td>07:05:32</td>
+                <td>152</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1451); return false;">1451</a></td>
+                <td>21/06/2025</td>
+                <td>07:50:24</td>
+                <td>93</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1460); return false;">1460</a></td>
+                <td>21/06/2025</td>
+                <td>07:56:27</td>
+                <td>60</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1472); return false;">1472</a></td>
+                <td>21/06/2025</td>
+                <td>08:05:29</td>
+                <td>173</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1473); return false;">1473</a></td>
+                <td>21/06/2025</td>
+                <td>08:07:36</td>
+                <td>127</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1481); return false;">1481</a></td>
+                <td>21/06/2025</td>
+                <td>08:23:18</td>
+                <td>52</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1482); return false;">1482</a></td>
+                <td>21/06/2025</td>
+                <td>08:26:18</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1488); return false;">1488</a></td>
+                <td>21/06/2025</td>
+                <td>08:29:19</td>
+                <td>22</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1489); return false;">1489</a></td>
+                <td>21/06/2025</td>
+                <td>08:32:20</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1510); return false;">1510</a></td>
+                <td>21/06/2025</td>
+                <td>08:44:24</td>
+                <td>153</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1511); return false;">1511</a></td>
+                <td>21/06/2025</td>
+                <td>08:46:51</td>
+                <td>147</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1518); return false;">1518</a></td>
+                <td>21/06/2025</td>
+                <td>08:50:14</td>
+                <td>46</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1542); return false;">1542</a></td>
+                <td>21/06/2025</td>
+                <td>09:05:18</td>
+                <td>56</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1543); return false;">1543</a></td>
+                <td>21/06/2025</td>
+                <td>09:08:18</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1549); return false;">1549</a></td>
+                <td>21/06/2025</td>
+                <td>09:11:19</td>
+                <td>13</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1560); return false;">1560</a></td>
+                <td>21/06/2025</td>
+                <td>09:17:21</td>
+                <td>4</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1561); return false;">1561</a></td>
+                <td>21/06/2025</td>
+                <td>09:20:22</td>
+                <td>181</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1562); return false;">1562</a></td>
+                <td>21/06/2025</td>
+                <td>09:22:17</td>
+                <td>115</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1605); return false;">1605</a></td>
+                <td>21/06/2025</td>
+                <td>10:31:14</td>
+                <td>109</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1608); return false;">1608</a></td>
+                <td>21/06/2025</td>
+                <td>10:34:14</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1609); return false;">1609</a></td>
+                <td>21/06/2025</td>
+                <td>10:34:25</td>
+                <td>11</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1611); return false;">1611</a></td>
+                <td>21/06/2025</td>
+                <td>11:34:20</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1865); return false;">1865</a></td>
+                <td>21/06/2025</td>
+                <td>20:59:59</td>
+                <td>126</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1868); return false;">1868</a></td>
+                <td>21/06/2025</td>
+                <td>21:02:54</td>
+                <td>175</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1870); return false;">1870</a></td>
+                <td>21/06/2025</td>
+                <td>22:02:48</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1892); return false;">1892</a></td>
+                <td>22/06/2025</td>
+                <td>09:02:50</td>
+                <td>3602</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1920); return false;">1920</a></td>
+                <td>22/06/2025</td>
+                <td>10:54:36</td>
+                <td>141</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1961); return false;">1961</a></td>
+                <td>22/06/2025</td>
+                <td>11:15:36</td>
+                <td>141</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1973); return false;">1973</a></td>
+                <td>22/06/2025</td>
+                <td>11:21:36</td>
+                <td>123</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1976); return false;">1976</a></td>
+                <td>22/06/2025</td>
+                <td>11:24:33</td>
+                <td>177</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(1978); return false;">1978</a></td>
+                <td>22/06/2025</td>
+                <td>12:24:28</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2006); return false;">2006</a></td>
+                <td>22/06/2025</td>
+                <td>16:35:19</td>
+                <td>64</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2008); return false;">2008</a></td>
+                <td>22/06/2025</td>
+                <td>16:38:19</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2010); return false;">2010</a></td>
+                <td>22/06/2025</td>
+                <td>16:39:16</td>
+                <td>57</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2012); return false;">2012</a></td>
+                <td>22/06/2025</td>
+                <td>17:39:10</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2071); return false;">2071</a></td>
+                <td>23/06/2025</td>
+                <td>07:58:16</td>
+                <td>127</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2074); return false;">2074</a></td>
+                <td>23/06/2025</td>
+                <td>08:01:09</td>
+                <td>173</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2076); return false;">2076</a></td>
+                <td>23/06/2025</td>
+                <td>09:01:04</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2131); return false;">2131</a></td>
+                <td>23/06/2025</td>
+                <td>18:13:20</td>
+                <td>43</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2146); return false;">2146</a></td>
+                <td>23/06/2025</td>
+                <td>18:19:20</td>
+                <td>54</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2148); return false;">2148</a></td>
+                <td>23/06/2025</td>
+                <td>18:22:20</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2150); return false;">2150</a></td>
+                <td>23/06/2025</td>
+                <td>18:23:27</td>
+                <td>67</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2152); return false;">2152</a></td>
+                <td>23/06/2025</td>
+                <td>19:23:21</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2265); return false;">2265</a></td>
+                <td>25/06/2025</td>
+                <td>07:53:47</td>
+                <td>73</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2267); return false;">2267</a></td>
+                <td>25/06/2025</td>
+                <td>07:56:47</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2269); return false;">2269</a></td>
+                <td>25/06/2025</td>
+                <td>07:57:35</td>
+                <td>48</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2271); return false;">2271</a></td>
+                <td>25/06/2025</td>
+                <td>08:57:29</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2336); return false;">2336</a></td>
+                <td>25/06/2025</td>
+                <td>18:18:55</td>
+                <td>38</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2339); return false;">2339</a></td>
+                <td>25/06/2025</td>
+                <td>18:21:55</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2341); return false;">2341</a></td>
+                <td>25/06/2025</td>
+                <td>18:23:17</td>
+                <td>82</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2343); return false;">2343</a></td>
+                <td>25/06/2025</td>
+                <td>19:23:12</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2407); return false;">2407</a></td>
+                <td>26/06/2025</td>
+                <td>12:38:58</td>
+                <td>12</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2409); return false;">2409</a></td>
+                <td>26/06/2025</td>
+                <td>12:41:58</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2437); return false;">2437</a></td>
+                <td>26/06/2025</td>
+                <td>12:56:58</td>
+                <td>42</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2439); return false;">2439</a></td>
+                <td>26/06/2025</td>
+                <td>12:59:58</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2441); return false;">2441</a></td>
+                <td>26/06/2025</td>
+                <td>13:01:17</td>
+                <td>79</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2443); return false;">2443</a></td>
+                <td>26/06/2025</td>
+                <td>14:01:11</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2499); return false;">2499</a></td>
+                <td>26/06/2025</td>
+                <td>18:28:32</td>
+                <td>31</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2518); return false;">2518</a></td>
+                <td>26/06/2025</td>
+                <td>18:37:32</td>
+                <td>150</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2521); return false;">2521</a></td>
+                <td>26/06/2025</td>
+                <td>18:40:02</td>
+                <td>150</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2523); return false;">2523</a></td>
+                <td>26/06/2025</td>
+                <td>19:39:57</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2598); return false;">2598</a></td>
+                <td>27/06/2025</td>
+                <td>18:19:23</td>
+                <td>124</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2600); return false;">2600</a></td>
+                <td>27/06/2025</td>
+                <td>18:22:19</td>
+                <td>176</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2602); return false;">2602</a></td>
+                <td>27/06/2025</td>
+                <td>19:22:14</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2672); return false;">2672</a></td>
+                <td>29/06/2025</td>
+                <td>06:22:17</td>
+                <td>3603</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2674); return false;">2674</a></td>
+                <td>29/06/2025</td>
+                <td>07:22:16</td>
+                <td>3599</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2811); return false;">2811</a></td>
+                <td>01/07/2025</td>
+                <td>20:20:57</td>
+                <td>87</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2826); return false;">2826</a></td>
+                <td>01/07/2025</td>
+                <td>20:26:57</td>
+                <td>45</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2828); return false;">2828</a></td>
+                <td>01/07/2025</td>
+                <td>20:29:57</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2830); return false;">2830</a></td>
+                <td>01/07/2025</td>
+                <td>20:31:12</td>
+                <td>75</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2832); return false;">2832</a></td>
+                <td>01/07/2025</td>
+                <td>21:31:07</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2884); return false;">2884</a></td>
+                <td>02/07/2025</td>
+                <td>07:52:53</td>
+                <td>153</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2886); return false;">2886</a></td>
+                <td>02/07/2025</td>
+                <td>07:55:21</td>
+                <td>148</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2888); return false;">2888</a></td>
+                <td>02/07/2025</td>
+                <td>08:55:15</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2894); return false;">2894</a></td>
+                <td>02/07/2025</td>
+                <td>12:55:15</td>
+                <td>7200</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2926); return false;">2926</a></td>
+                <td>02/07/2025</td>
+                <td>18:09:36</td>
+                <td>118</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2953); return false;">2953</a></td>
+                <td>02/07/2025</td>
+                <td>18:27:36</td>
+                <td>77</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2955); return false;">2955</a></td>
+                <td>02/07/2025</td>
+                <td>18:30:36</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2956); return false;">2956</a></td>
+                <td>02/07/2025</td>
+                <td>18:31:20</td>
+                <td>44</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(2958); return false;">2958</a></td>
+                <td>02/07/2025</td>
+                <td>19:31:14</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3014); return false;">3014</a></td>
+                <td>03/07/2025</td>
+                <td>07:46:35</td>
+                <td>137</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3016); return false;">3016</a></td>
+                <td>03/07/2025</td>
+                <td>07:49:21</td>
+                <td>166</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3018); return false;">3018</a></td>
+                <td>03/07/2025</td>
+                <td>08:49:14</td>
+                <td>3593</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3105); return false;">3105</a></td>
+                <td>03/07/2025</td>
+                <td>18:26:05</td>
+                <td>103</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3107); return false;">3107</a></td>
+                <td>03/07/2025</td>
+                <td>18:29:05</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3108); return false;">3108</a></td>
+                <td>03/07/2025</td>
+                <td>18:29:22</td>
+                <td>17</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3110); return false;">3110</a></td>
+                <td>03/07/2025</td>
+                <td>19:29:17</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3182); return false;">3182</a></td>
+                <td>04/07/2025</td>
+                <td>07:54:18</td>
+                <td>91</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3185); return false;">3185</a></td>
+                <td>04/07/2025</td>
+                <td>07:57:18</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3186); return false;">3186</a></td>
+                <td>04/07/2025</td>
+                <td>07:57:50</td>
+                <td>32</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3188); return false;">3188</a></td>
+                <td>04/07/2025</td>
+                <td>08:57:42</td>
+                <td>3592</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3250); return false;">3250</a></td>
+                <td>04/07/2025</td>
+                <td>18:11:23</td>
+                <td>9</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3253); return false;">3253</a></td>
+                <td>04/07/2025</td>
+                <td>18:14:23</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3273); return false;">3273</a></td>
+                <td>04/07/2025</td>
+                <td>18:26:23</td>
+                <td>130</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3275); return false;">3275</a></td>
+                <td>04/07/2025</td>
+                <td>18:29:13</td>
+                <td>170</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3294); return false;">3294</a></td>
+                <td>04/07/2025</td>
+                <td>19:02:29</td>
+                <td>108</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3296); return false;">3296</a></td>
+                <td>04/07/2025</td>
+                <td>19:05:29</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3298); return false;">3298</a></td>
+                <td>04/07/2025</td>
+                <td>19:05:42</td>
+                <td>13</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3300); return false;">3300</a></td>
+                <td>04/07/2025</td>
+                <td>20:05:37</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3352); return false;">3352</a></td>
+                <td>05/07/2025</td>
+                <td>11:15:28</td>
+                <td>72</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3354); return false;">3354</a></td>
+                <td>05/07/2025</td>
+                <td>11:18:28</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3355); return false;">3355</a></td>
+                <td>05/07/2025</td>
+                <td>11:19:16</td>
+                <td>48</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3358); return false;">3358</a></td>
+                <td>05/07/2025</td>
+                <td>12:19:11</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3391); return false;">3391</a></td>
+                <td>05/07/2025</td>
+                <td>15:35:57</td>
+                <td>72</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3393); return false;">3393</a></td>
+                <td>05/07/2025</td>
+                <td>15:38:57</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3395); return false;">3395</a></td>
+                <td>05/07/2025</td>
+                <td>15:39:45</td>
+                <td>48</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3426); return false;">3426</a></td>
+                <td>05/07/2025</td>
+                <td>16:51:51</td>
+                <td>131</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3428); return false;">3428</a></td>
+                <td>05/07/2025</td>
+                <td>16:54:40</td>
+                <td>169</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3430); return false;">3430</a></td>
+                <td>05/07/2025</td>
+                <td>17:54:35</td>
+                <td>3595</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3442); return false;">3442</a></td>
+                <td>05/07/2025</td>
+                <td>23:54:37</td>
+                <td>3602</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3540); return false;">3540</a></td>
+                <td>07/07/2025</td>
+                <td>07:52:28</td>
+                <td>95</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3543); return false;">3543</a></td>
+                <td>07/07/2025</td>
+                <td>07:55:28</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3544); return false;">3544</a></td>
+                <td>07/07/2025</td>
+                <td>07:55:54</td>
+                <td>26</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3546); return false;">3546</a></td>
+                <td>07/07/2025</td>
+                <td>08:55:48</td>
+                <td>3594</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3589); return false;">3589</a></td>
+                <td>07/07/2025</td>
+                <td>18:02:34</td>
+                <td>85</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3592); return false;">3592</a></td>
+                <td>07/07/2025</td>
+                <td>18:05:34</td>
+                <td>180</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3593); return false;">3593</a></td>
+                <td>07/07/2025</td>
+                <td>18:06:09</td>
+                <td>35</td>
+            </tr>
+            
+            <tr class='extra-row'>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(3595); return false;">3595</a></td>
+                <td>07/07/2025</td>
+                <td>19:06:04</td>
+                <td>3595</td>
+            </tr>
+            
+                </tbody>
+            </table>
+            <div style='text-align:center; margin-top: 12px;'>
+                <button class='ver-todos-btn' onclick="toggleExpand('tabela-off')" id="btn-tabela-off">Ver todos os dados</button>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+    function toggleExpand(tableId) {
+        var table = document.getElementById(tableId);
+        var btn = document.getElementById('btn-' + tableId);
+        if (table.classList.contains('expanded')) {
+            table.classList.remove('expanded');
+            btn.textContent = 'Ver todos os dados';
+        } else {
+            table.classList.add('expanded');
+            btn.textContent = 'Ver menos';
+        }
+    }
+    </script>
+    
+    

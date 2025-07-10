@@ -142,7 +142,7 @@ def create_device_summary_html(df_raw):
     return html
 
 
-        
+
 def unir_blocos(df_raw):
     blocks_dir = Path(__file__).parent / "temp_blocos"
     output_file = Path(__file__).parent / "dashboard_final.html"

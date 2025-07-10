@@ -14,13 +14,20 @@ def viagens(caminho_csv, caminho_saida='hodometro/resultado_viagens.csv'):
             return
 
         def get_evento(row):
-            tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
-            codigo = str(row.get('Event Code', '')).strip()
-            if tipo:
-                return tipo
-            elif codigo:
-                mapa = {'20': 'GTIGF', '21': 'GTIGN'}
-                return mapa.get(codigo, '')
+            motion_status = str(row.get('Motion Status', '')).strip()
+            if motion_status.startswith('1'):
+                return 'IGF'  # Ignição desligada
+            elif motion_status.startswith('2'):
+                return 'IGN'  # Ignição ligada
+            else:
+                # Fallback para o método anterior se Motion Status não estiver disponível
+                tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
+                codigo = str(row.get('Event Code', '')).strip()
+                if tipo:
+                    return tipo
+                elif codigo:
+                    mapa = {'20': 'GTIGF', '21': 'GTIGN'}
+                    return mapa.get(codigo, '')
             return ''
 
         def extrair_viagens(df):
@@ -31,8 +38,8 @@ def viagens(caminho_csv, caminho_saida='hodometro/resultado_viagens.csv'):
             df = df.sort_values('Data/Hora Evento')
             df['Dia'] = df['Data/Hora Evento'].dt.strftime('%d/%m/%Y')
 
-            ignicoes = df[df.apply(lambda row: get_evento(row) == 'GTIGN', axis=1)].reset_index(drop=True)
-            desligamentos = df[df.apply(lambda row: get_evento(row) == 'GTIGF', axis=1)].reset_index(drop=True)
+            ignicoes = df[df.apply(lambda row: get_evento(row) in ['GTIGN', 'IGN'], axis=1)].reset_index(drop=True)
+            desligamentos = df[df.apply(lambda row: get_evento(row) in ['GTIGF', 'IGF'], axis=1)].reset_index(drop=True)
 
             viagens = []
 

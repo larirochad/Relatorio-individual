@@ -43,26 +43,39 @@ def gerar_bloco_satelites(
         border-radius: 0;
         box-shadow: none;
     }
-    .bloco-satelites .resumo-satelites {
+    .resumo-anomalias-container {
         display: flex;
-        justify-content: space-around;
-        gap: 20px;
-        margin: 20px 0 30px 0;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 1.1em;
+        justify-content: center;
+        gap: 32px;
+        margin: 0 0 24px 0;
     }
-    .bloco-satelites .resumo-satelites .resumo-item {
+    .resumo-anomalia-card {
         background: #f8f9fa;
-        border-radius: 12px;
-        padding: 18px 28px;
-        box-shadow: 0 2px 8px rgba(102, 51, 153, 0.07);
+        border-radius: 18px;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        padding: 18px 36px 14px 36px;
         text-align: center;
-        min-width: 120px;
-        font-weight: bold;
-        color: #333;
+        min-width: 160px;
+        font-family: Arial, Helvetica, sans-serif;
     }
-    .bloco-satelites .resumo-satelites .resumo-item.percent {
+    .resumo-anomalia-titulo {
+        font-size: 1.1em;
+        color: #222;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .resumo-anomalia-numero {
+        font-size: 2em;
+        font-weight: bold;
+        color: #764ba2;
+        margin-bottom: 2px;
+    }
+    .resumo-anomalia-numero.red {
         color: #dc3545;
+    }
+    .resumo-anomalia-legenda {
+        font-size: 0.95em;
+        color: #888;
     }
     .bloco-satelites .tabela-container {
         background: #fff;
@@ -128,10 +141,22 @@ def gerar_bloco_satelites(
         validos = df_resumo.loc[df_resumo['Métrica'] == 'Registros válidos', 'Valor'].values[0]
         perc_invalidos = df_resumo.loc[df_resumo['Métrica'] == '% Inválidos', 'Valor'].values[0]
         return f'''
-        <div class="resumo-satelites">
-            <div class="resumo-item">Total de registros<br><span>{total}</span></div>
-            <div class="resumo-item">Registros válidos<br><span>{validos}</span></div>
-            <div class="resumo-item percent">Porcentagem de Inválidos<br><span>{perc_invalidos}</span></div>
+        <div class="resumo-anomalias-container">
+            <div class="resumo-anomalia-card">
+                <div class="resumo-anomalia-titulo">Total de registros</div>
+                <div class="resumo-anomalia-numero">{total}</div>
+                <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+            </div>
+            <div class="resumo-anomalia-card">
+                <div class="resumo-anomalia-titulo">Registros válidos</div>
+                <div class="resumo-anomalia-numero">{validos}</div>
+                <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
+            </div>
+            <div class="resumo-anomalia-card">
+                <div class="resumo-anomalia-titulo">Porcentagem de registros inválidos</div>
+                <div class="resumo-anomalia-numero red">{perc_invalidos}</div>
+                <div class="resumo-anomalia-legenda">Proporção de dados inválidos</div>
+            </div>
         </div>
         '''
 

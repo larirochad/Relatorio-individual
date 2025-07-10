@@ -20,15 +20,18 @@ def velocidade(df_path, caminho_saida='Velocidade/velocidade_analisada.csv'):
         # Verifica velocidades extremas
         df['Alerta_Velocidade'] = df['Velocidade'].apply(lambda x: 'Acima de 150 km/h' if x is not None and x > 150 else '')
 
-        # Identifica linhas com GTIGF (ignição desligada)
-        df['GTIGF'] = df['Tipo Mensagem'].astype(str).str.upper() == 'GTIGF'
-        df['GTIGN'] = df['Tipo Mensagem'].astype(str).str.upper() == 'GTIGN'
+        # Identifica linhas com ignição desligada e ligada baseado no Motion Status
+        # Motion Status prefix "1" = ignição desligada (IGF)
+        # Motion Status prefix "2" = ignição ligada (IGN)
+        df['Motion_Status_Str'] = df['Motion Status'].astype(str).str.strip()
+        df['IGF'] = df['Motion_Status_Str'].str.startswith('1')
+        df['IGN'] = df['Motion_Status_Str'].str.startswith('2')
 
         # Inicializa listas para os dois tipos de alerta
         alerta_velocidade_absurda = []
         alerta_ignicao_off = []
         linhas_originais = []
-        analise_ignicao_off = False  # Estado: só analisa entre GTIGF e GTIGN
+        analise_ignicao_off = False  # Estado: só analisa entre IGF e IGN
 
         for i, row in df.iterrows():
             try:
@@ -41,9 +44,9 @@ def velocidade(df_path, caminho_saida='Velocidade/velocidade_analisada.csv'):
             else:
                 alerta_velocidade_absurda.append('')
             # Controle de análise de ignição OFF
-            if bool(row['GTIGF']):
+            if bool(row['IGF']):
                 analise_ignicao_off = True  # Ativa análise
-            if bool(row['GTIGN']):
+            if bool(row['IGN']):
                 analise_ignicao_off = False  # Desativa análise
             # Só processa alerta de ignição OFF se dentro do bloco
             if analise_ignicao_off and pd.notna(vel_float) and vel_float > 0:

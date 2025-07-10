@@ -34,7 +34,17 @@ def temporizadas_entre_si_com_ign(df_path: str, caminho_saida: str = 'Tempo de p
 
         resultado = []
 
-        for _, row in df.iterrows():
+        for idx, row in df.iterrows():
+            # Garante que idx_int seja sempre inteiro
+            try:
+                if isinstance(idx, (int, float)):
+                    idx_int = int(idx)
+                elif isinstance(idx, str) and idx.isdigit():
+                    idx_int = int(idx)
+                else:
+                    idx_int = 0
+            except Exception:
+                idx_int = 0
             tipo = row['Tipo Mensagem']
             report_type = row['Position Report Type']
             motion_status = row['Motion Status']
@@ -49,6 +59,7 @@ def temporizadas_entre_si_com_ign(df_path: str, caminho_saida: str = 'Tempo de p
                 last_ign = data
                 last_gteri_ign = None
                 resultado.append({
+                    'linha': idx_int + 2,
                     'Data/Hora Evento': data,
                     'Tipo Mensagem': tipo,
                     # 'Position Report Type': '',
@@ -61,6 +72,7 @@ def temporizadas_entre_si_com_ign(df_path: str, caminho_saida: str = 'Tempo de p
                 last_igf = data
                 last_gteri_igf = None
                 resultado.append({
+                    'linha': idx_int + 2,
                     'Data/Hora Evento': data,
                     'Tipo Mensagem': tipo,
                     # 'Position Report Type': '',
@@ -85,6 +97,7 @@ def temporizadas_entre_si_com_ign(df_path: str, caminho_saida: str = 'Tempo de p
                     last_gteri_igf = data
 
                 resultado.append({
+                    'linha': idx_int + 2,
                     'Data/Hora Evento': data,
                     'Tipo Mensagem': tipo,
                     # 'Position Report Type': report_type,
@@ -102,4 +115,4 @@ def temporizadas_entre_si_com_ign(df_path: str, caminho_saida: str = 'Tempo de p
         print(f"❌ Erro inesperado: {e}")
 
 if __name__ == "__main__":
-    temporizadas_entre_si_com_ign('logs/analise_par09.csv')
+    temporizadas_entre_si_com_ign('logs/867488061317839_decoded.csv')
