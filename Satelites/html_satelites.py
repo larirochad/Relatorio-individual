@@ -131,7 +131,7 @@ def gerar_bloco_satelites(
         <div class="resumo-satelites">
             <div class="resumo-item">Total de registros<br><span>{total}</span></div>
             <div class="resumo-item">Registros válidos<br><span>{validos}</span></div>
-            <div class="resumo-item percent">% Inválidos<br><span>{perc_invalidos}</span></div>
+            <div class="resumo-item percent">Porcentagem de Inválidos<br><span>{perc_invalidos}</span></div>
         </div>
         '''
 

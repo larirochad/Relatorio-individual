@@ -84,4 +84,4 @@ def time_ign_por_viagem(caminho_csv, caminho_saida='Tempo ignicao/tempo_ignicao_
         print(f"❌ Erro inesperado: {e}")
 
 if __name__ == "__main__":
-    time_ign_por_viagem('logs/analise_par09.csv')
+    time_ign_por_viagem('logs/867488061317839_decoded.csv')

@@ -136,7 +136,7 @@ def gerar_bloco_reboot(
             <table class="tabela-reboot">
                 <thead>
                     <tr>
-                        <th>Contagem</th>
+                        <th>Linha</th>
                         <th>Data</th>
                         <th>Hora</th>
                         <th>Motivo</th>
@@ -146,9 +146,10 @@ def gerar_bloco_reboot(
     """
 
     for _, row in df.iterrows():
+        linha_idx = row['linha']
         html += f"""
         <tr>
-            <td>{row['Reboot Nº']}</td>
+            <td><a href=\"#\" class=\"Linha-link\" onclick=\"mostrarModal({linha_idx}); return false;\">{row['linha']}</a></td>
             <td>{row['Data']}</td>
             <td>{row['Hora']}</td>
             <td>{row['Descrição Motivo Power On']}</td>

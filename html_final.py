@@ -588,7 +588,8 @@ def unir_blocos(df_raw):
     final_html += global_scripts             # Consolidated scripts
     final_html += "\n"
     # Embutir o DataFrame principal como JSON
-    df = df_raw.reset_index()  # Garante que o índice vira coluna 'index'
+    df = df_raw.reset_index()  # 'index' vira coluna
+    df['linha'] = df['index'] + 2  # Agora bate com a linha do CSV original
     data_json = json.dumps(df.to_dict(orient='records'), ensure_ascii=False)
     # Botão de teste para abrir o modal do primeiro registro
     botao_teste = '''<div style="text-align:center; margin-bottom:20px;">
@@ -607,12 +608,13 @@ def unir_blocos(df_raw):
     <script>
     const eventosData = {data_json};
     function mostrarModal(idx) {{
-        const registro = eventosData[idx];
+        // Busca o registro pelo valor da coluna 'linha'
+        const registro = eventosData.find(r => r.linha == idx);
         let html = '';
-        const cols = ['index', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
+        const cols = ['linha', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
         const labels = ['Linha do CSV', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
-        for (let i = 0; i < cols.length; i++) {{
-            html += `<tr><th>` + labels[i] + `</th><td>` + (registro[cols[i]] ?? '') + `</td></tr>`;
+        for (let i = 0; i < cols.length; i++) {{           
+            html += `<tr><th>` + labels[i] + `</th><td>` + (registro && registro[cols[i]] !== undefined ? registro[cols[i]] : '') + `</td></tr>`;
         }}
         document.getElementById('modalTable').innerHTML = html;
         document.getElementById('modalBg').classList.add('active');

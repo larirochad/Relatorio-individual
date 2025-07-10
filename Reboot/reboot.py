@@ -13,6 +13,9 @@ def reboot(df_path, caminho_saida='Reboot/reboot_eventos.csv'):
             print("❌ Erro: Não foi possível abrir o arquivo.")
             return
 
+        # Adiciona coluna 'linha' como index global
+        df['linha'] = df.index + 2
+
         if 'Data/Hora Evento' not in df.columns:
             print("❌ A coluna 'Data/Hora Evento' não foi encontrada.")
             return
@@ -41,8 +44,8 @@ def reboot(df_path, caminho_saida='Reboot/reboot_eventos.csv'):
         # Adicionar coluna de descrição do motivo
         df_reboot['Descrição Motivo Power On'] = df_reboot['Motivo Power On'].apply(lambda x: motivo_map.get(x, 'Motivo desconhecido'))
 
-        # Selecionar apenas as colunas relevantes
-        resultado = df_reboot[['Reboot Nº', 'Data/Hora Evento', 'Tipo Mensagem', 'Motivo Power On', 'Descrição Motivo Power On']]
+        # Selecionar apenas as colunas relevantes, incluindo 'linha'
+        resultado = df_reboot[['linha', 'Reboot Nº', 'Data/Hora Evento', 'Tipo Mensagem', 'Motivo Power On', 'Descrição Motivo Power On']]
 
         # Salvar CSV
         resultado.to_csv(caminho_saida, index=False, encoding='iso-8859-1')
@@ -53,4 +56,4 @@ def reboot(df_path, caminho_saida='Reboot/reboot_eventos.csv'):
         print(f"❌ Erro inesperado: {e}")
 
 if __name__ == "__main__":
-    reboot('logs/analise_par09.csv')
+    reboot('logs/867488061317839_decoded.csv')
