@@ -217,10 +217,14 @@ def gerar_bloco_temporizadas(
     total_off = len(df_off)
     total_anomalias_off = len(anomalias_off)
 
+    # Cálculo das médias das anomalias
+    media_anomalias_on = anomalias_on['tempo'].mean()
+    media_anomalias_off = anomalias_off['tempo'].mean()
+
     resumo_html = f'''
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
-            <div class="resumo-anomalia-titulo">Analomalias por tempo em movimento</div>
+            <div class="resumo-anomalia-titulo">Anomalias por tempo em movimento</div>
             <div class="resumo-anomalia-numero">{total_anomalias_on}</div>
             <div class="resumo-anomalia-legenda">de {total_on} eventos de temporização</div>
         </div>
@@ -230,24 +234,22 @@ def gerar_bloco_temporizadas(
             <div class="resumo-anomalia-legenda">de {total_off} eventos de temporização</div>
         </div>
     </div>
+    <div class="resumo-anomalias-container">
+        <div class="resumo-anomalia-card">
+            <div class="resumo-anomalia-titulo">Média dos tempos das anomalias em movimento</div>
+            <div class="resumo-anomalia-numero">{media_anomalias_on:.2f} s</div>
+            <div class="resumo-anomalia-legenda">(valores fora de 180s)</div>
+        </div>
+        <div class="resumo-anomalia-card">
+            <div class="resumo-anomalia-titulo">Média dos tempos das anomalias modo econômico</div>
+            <div class="resumo-anomalia-numero">{media_anomalias_off:.2f} s</div>
+            <div class="resumo-anomalia-legenda">(valores fora de 3600s)</div>
+        </div>
+    </div>
     '''
 
-    # JavaScript para expandir/recolher as tabelas
-    js = '''
-    <script>
-    function toggleExpand(tableId) {
-        var table = document.getElementById(tableId);
-        var btn = document.getElementById('btn-' + tableId);
-        if (table.classList.contains('expanded')) {
-            table.classList.remove('expanded');
-            btn.textContent = 'Ver todos os dados';
-        } else {
-            table.classList.add('expanded');
-            btn.textContent = 'Ver menos';
-        }
-    }
-    </script>
-    '''
+    # JavaScript para expandir/recolher as tabelas (removido, pois não há mais tabelas)
+    # js = ...
 
     html = f"""
     <style>
@@ -257,10 +259,7 @@ def gerar_bloco_temporizadas(
     <div class="bloco-temporizadas">
         <span class="dashboard-title-temporizadas">Anomalias de Intervalo entre mensagens temporizadas</span>
         {resumo_html}
-        {tabela_html(anomalias_on, 'Anomalias por tempo em movimento', 'tabela-on')}
-        {tabela_html(anomalias_off, 'Anomalias por modo econômico', 'tabela-off')}
     </div>
-    {js}
     """
 
     with open(output_path, 'w', encoding='utf-8') as f:

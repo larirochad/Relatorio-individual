@@ -37,7 +37,7 @@ def calcular_time_fix(caminho_csv, caminho_saida='Time fix/time_fix_resultado.cs
         df_filtrado['Média dos valores com delay'] = media_com_delay
 
         # Reorganiza as colunas para ficar mais clara
-        colunas_ordenadas = ['Linha', 'Data/Hora Evento', 'Time fix', 'Média Geral', 'Média dos valores com delay']
+        colunas_ordenadas = ['Linha', 'Data/Hora Evento', 'GNSS UTC Time', 'Time fix', 'Média Geral', 'Média dos valores com delay']
         colunas_restantes = [col for col in df_filtrado.columns if col not in colunas_ordenadas]
         df_final = df_filtrado[colunas_ordenadas]
 
@@ -52,4 +52,4 @@ def calcular_time_fix(caminho_csv, caminho_saida='Time fix/time_fix_resultado.cs
         print(f"\n❌ Erro inesperado: {e}")
 
 if __name__ == "__main__":
-    calcular_time_fix('logs/analise_par09.csv')
+    calcular_time_fix('logs/867488061317839_decoded.csv')

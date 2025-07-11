@@ -92,5 +92,5 @@ def velocidade(df_path, caminho_saida='Velocidade/velocidade_analisada.csv'):
         print(f"❌ Erro inesperado: {e}")
 
 if __name__ == "__main__":
-    velocidade('Velocidade/logs/analise_par09.csv')
+    velocidade('logs/867488061317839_decoded.csv')
 

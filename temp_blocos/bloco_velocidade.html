@@ -1,0 +1,1406 @@
+
+    
+    <style>
+    .bloco-velocidade {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
+        padding: 50px 100px 60px 100px;
+        max-width: 2000px;
+        margin: 0 auto 40px auto;
+    }
+    .bloco-velocidade .dashboard-title-velocidade {
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.1em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .resumo-velocidade-container {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin: 0 0 24px 0;
+    }
+    .resumo-velocidade-card {
+        background: #f8f9fa;
+        border-radius: 18px;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        padding: 18px 36px 14px 36px;
+        text-align: center;
+        min-width: 160px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .resumo-velocidade-titulo {
+        font-size: 1.1em;
+        color: #222;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .resumo-velocidade-numero {
+        font-size: 2em;
+        font-weight: bold;
+        color: #764ba2;
+        margin-bottom: 2px;
+    }
+    .resumo-velocidade-numero.red {
+        color: #dc3545;
+    }
+    .resumo-velocidade-legenda {
+        font-size: 0.95em;
+        color: #888;
+    }
+    .bloco-velocidade .tabela-velocidade-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        overflow-x: auto;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bloco-velocidade .tabela-velocidade-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    .bloco-velocidade .tabela-velocidade {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+        margin: 0 auto;
+    }
+    .bloco-velocidade .tabela-velocidade th, .bloco-velocidade .tabela-velocidade td {
+        border: 1px solid #e9ecef;
+        padding: 12px 18px;
+        text-align: center;
+    }
+    .bloco-velocidade .tabela-velocidade th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: bold;
+    }
+    .bloco-velocidade .grafico-titulo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .bloco-velocidade .grafico-titulo {
+        text-align: center;
+        color: #495057;
+        margin: 0;
+        font-size: 1.5em;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        display: inline-block;  
+    }
+    .Linha-link {
+        color: #764ba2;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .Linha-link:hover {
+        color: #667eea;
+    }
+    .btn-mostrar-todos {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 22px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        font-family: 'Saira', sans-serif;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+    }
+    .btn-mostrar-todos:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+    .linha-oculta {
+        display: none;
+    }
+    </style>
+    
+    <div class="bloco-velocidade">
+        <span class="dashboard-title-velocidade">Análise de Velocidade</span>
+        
+        <div class="resumo-velocidade-container">
+            <div class="resumo-velocidade-card">
+                <div class="resumo-velocidade-titulo">Velocidades Absurdas</div>
+                <div class="resumo-velocidade-numero red">0</div>
+                <div class="resumo-velocidade-legenda">> 150 km/h</div>
+            </div>
+            <div class="resumo-velocidade-card">
+                <div class="resumo-velocidade-titulo">Velocidades com Ignição OFF</div>
+                <div class="resumo-velocidade-numero">150</div>
+                <div class="resumo-velocidade-legenda">Velocidade > 0 com ignição desligada</div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="tabela-velocidade-container">
+            <div class="grafico-titulo-container">
+                <h3 class="grafico-titulo">Velocidades com Ignição OFF</h3>
+            </div>
+            <table class="tabela-velocidade" id="tabela_ignicao_off">
+                <thead>
+                    <tr>
+                        <th>Linha</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Tipo de Mensagem</th>
+                        <th>Velocidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+            <tr>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(4); return false;">4</a></td>
+                <td>06/11</td>
+                <td>16:22:47</td>
+                <td>GTRTL</td>
+                <td>8.7 km/h</td>
+            </tr>
+            
+            <tr>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(9); return false;">9</a></td>
+                <td>06/11</td>
+                <td>16:27:37</td>
+                <td>GTPFR</td>
+                <td>8.7 km/h</td>
+            </tr>
+            
+            <tr>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(152); return false;">152</a></td>
+                <td>06/12</td>
+                <td>07:59:15</td>
+                <td>GTIGF</td>
+                <td>12.4 km/h</td>
+            </tr>
+            
+            <tr>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(153); return false;">153</a></td>
+                <td>06/12</td>
+                <td>07:59:15</td>
+                <td>GTSTT</td>
+                <td>12.4 km/h</td>
+            </tr>
+            
+            <tr>
+                <td><a href="#" class="Linha-link" onclick="mostrarModal(156); return false;">156</a></td>
+                <td>06/12</td>
+                <td>08:01:23</td>
+                <td>GTERI</td>
+                <td>31.0 km/h</td>
+            </tr>
+            
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(157); return false;">157</a></td>
+                    <td>06/12</td>
+                    <td>08:04:15</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(159); return false;">159</a></td>
+                    <td>06/12</td>
+                    <td>09:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(161); return false;">161</a></td>
+                    <td>06/12</td>
+                    <td>10:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(163); return false;">163</a></td>
+                    <td>06/12</td>
+                    <td>11:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(165); return false;">165</a></td>
+                    <td>06/12</td>
+                    <td>12:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(167); return false;">167</a></td>
+                    <td>06/12</td>
+                    <td>13:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(169); return false;">169</a></td>
+                    <td>06/12</td>
+                    <td>14:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(171); return false;">171</a></td>
+                    <td>06/12</td>
+                    <td>15:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(173); return false;">173</a></td>
+                    <td>06/12</td>
+                    <td>16:04:10</td>
+                    <td>GTERI</td>
+                    <td>31.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(175); return false;">175</a></td>
+                    <td>06/12</td>
+                    <td>17:04:10</td>
+                    <td>GTERI</td>
+                    <td>12.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(259); return false;">259</a></td>
+                    <td>06/13</td>
+                    <td>07:57:37</td>
+                    <td>GTIGF</td>
+                    <td>1.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(260); return false;">260</a></td>
+                    <td>06/13</td>
+                    <td>07:57:37</td>
+                    <td>GTSTT</td>
+                    <td>1.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(265); return false;">265</a></td>
+                    <td>06/13</td>
+                    <td>07:59:53</td>
+                    <td>GTERI</td>
+                    <td>37.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(267); return false;">267</a></td>
+                    <td>06/13</td>
+                    <td>08:02:41</td>
+                    <td>GTERI</td>
+                    <td>37.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(269); return false;">269</a></td>
+                    <td>06/13</td>
+                    <td>09:02:32</td>
+                    <td>GTERI</td>
+                    <td>37.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(271); return false;">271</a></td>
+                    <td>06/13</td>
+                    <td>10:02:32</td>
+                    <td>GTERI</td>
+                    <td>37.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(273); return false;">273</a></td>
+                    <td>06/13</td>
+                    <td>11:02:32</td>
+                    <td>GTERI</td>
+                    <td>37.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(293); return false;">293</a></td>
+                    <td>06/13</td>
+                    <td>12:46:13</td>
+                    <td>GTERI</td>
+                    <td>18.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(296); return false;">296</a></td>
+                    <td>06/13</td>
+                    <td>12:49:13</td>
+                    <td>GTERI</td>
+                    <td>18.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(297); return false;">297</a></td>
+                    <td>06/13</td>
+                    <td>12:49:37</td>
+                    <td>GTERI</td>
+                    <td>18.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(299); return false;">299</a></td>
+                    <td>06/13</td>
+                    <td>13:49:30</td>
+                    <td>GTERI</td>
+                    <td>18.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(301); return false;">301</a></td>
+                    <td>06/13</td>
+                    <td>14:49:30</td>
+                    <td>GTERI</td>
+                    <td>18.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(303); return false;">303</a></td>
+                    <td>06/13</td>
+                    <td>15:49:30</td>
+                    <td>GTERI</td>
+                    <td>18.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(545); return false;">545</a></td>
+                    <td>06/16</td>
+                    <td>07:49:54</td>
+                    <td>GTIGF</td>
+                    <td>1.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(546); return false;">546</a></td>
+                    <td>06/16</td>
+                    <td>07:49:54</td>
+                    <td>GTSTT</td>
+                    <td>1.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(571); return false;">571</a></td>
+                    <td>06/16</td>
+                    <td>16:54:49</td>
+                    <td>GTERI</td>
+                    <td>1.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(701); return false;">701</a></td>
+                    <td>06/17</td>
+                    <td>07:46:20</td>
+                    <td>GTIGF</td>
+                    <td>9.9 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(702); return false;">702</a></td>
+                    <td>06/17</td>
+                    <td>07:46:20</td>
+                    <td>GTSTT</td>
+                    <td>9.9 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(706); return false;">706</a></td>
+                    <td>06/17</td>
+                    <td>07:47:54</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(709); return false;">709</a></td>
+                    <td>06/17</td>
+                    <td>07:50:54</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(710); return false;">710</a></td>
+                    <td>06/17</td>
+                    <td>07:51:21</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(712); return false;">712</a></td>
+                    <td>06/17</td>
+                    <td>08:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(714); return false;">714</a></td>
+                    <td>06/17</td>
+                    <td>09:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(716); return false;">716</a></td>
+                    <td>06/17</td>
+                    <td>10:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(718); return false;">718</a></td>
+                    <td>06/17</td>
+                    <td>11:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(720); return false;">720</a></td>
+                    <td>06/17</td>
+                    <td>12:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(722); return false;">722</a></td>
+                    <td>06/17</td>
+                    <td>13:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(724); return false;">724</a></td>
+                    <td>06/17</td>
+                    <td>14:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(726); return false;">726</a></td>
+                    <td>06/17</td>
+                    <td>15:51:15</td>
+                    <td>GTERI</td>
+                    <td>26.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(728); return false;">728</a></td>
+                    <td>06/17</td>
+                    <td>16:51:15</td>
+                    <td>GTERI</td>
+                    <td>9.9 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(837); return false;">837</a></td>
+                    <td>06/18</td>
+                    <td>07:50:13</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(840); return false;">840</a></td>
+                    <td>06/18</td>
+                    <td>07:53:11</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(842); return false;">842</a></td>
+                    <td>06/18</td>
+                    <td>08:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(844); return false;">844</a></td>
+                    <td>06/18</td>
+                    <td>09:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(846); return false;">846</a></td>
+                    <td>06/18</td>
+                    <td>10:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(848); return false;">848</a></td>
+                    <td>06/18</td>
+                    <td>11:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(850); return false;">850</a></td>
+                    <td>06/18</td>
+                    <td>12:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(852); return false;">852</a></td>
+                    <td>06/18</td>
+                    <td>13:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(854); return false;">854</a></td>
+                    <td>06/18</td>
+                    <td>14:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(856); return false;">856</a></td>
+                    <td>06/18</td>
+                    <td>15:53:06</td>
+                    <td>GTERI</td>
+                    <td>24.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(1482); return false;">1482</a></td>
+                    <td>06/21</td>
+                    <td>08:26:18</td>
+                    <td>GTERI</td>
+                    <td>4.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(1961); return false;">1961</a></td>
+                    <td>06/22</td>
+                    <td>11:15:36</td>
+                    <td>GTERI</td>
+                    <td>38.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2001); return false;">2001</a></td>
+                    <td>06/22</td>
+                    <td>16:34:15</td>
+                    <td>GTIGF</td>
+                    <td>8.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2002); return false;">2002</a></td>
+                    <td>06/22</td>
+                    <td>16:34:15</td>
+                    <td>GTSTT</td>
+                    <td>8.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2006); return false;">2006</a></td>
+                    <td>06/22</td>
+                    <td>16:35:19</td>
+                    <td>GTERI</td>
+                    <td>47.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2008); return false;">2008</a></td>
+                    <td>06/22</td>
+                    <td>16:38:19</td>
+                    <td>GTERI</td>
+                    <td>47.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2010); return false;">2010</a></td>
+                    <td>06/22</td>
+                    <td>16:39:16</td>
+                    <td>GTERI</td>
+                    <td>47.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2066); return false;">2066</a></td>
+                    <td>06/23</td>
+                    <td>07:56:09</td>
+                    <td>GTIGF</td>
+                    <td>41.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2067); return false;">2067</a></td>
+                    <td>06/23</td>
+                    <td>07:56:09</td>
+                    <td>GTSTT</td>
+                    <td>41.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2071); return false;">2071</a></td>
+                    <td>06/23</td>
+                    <td>07:58:16</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2074); return false;">2074</a></td>
+                    <td>06/23</td>
+                    <td>08:01:09</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2076); return false;">2076</a></td>
+                    <td>06/23</td>
+                    <td>09:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2078); return false;">2078</a></td>
+                    <td>06/23</td>
+                    <td>10:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2080); return false;">2080</a></td>
+                    <td>06/23</td>
+                    <td>11:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2085); return false;">2085</a></td>
+                    <td>06/23</td>
+                    <td>11:12:53</td>
+                    <td>GTRTL</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2087); return false;">2087</a></td>
+                    <td>06/23</td>
+                    <td>12:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2089); return false;">2089</a></td>
+                    <td>06/23</td>
+                    <td>13:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2091); return false;">2091</a></td>
+                    <td>06/23</td>
+                    <td>14:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2093); return false;">2093</a></td>
+                    <td>06/23</td>
+                    <td>15:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2095); return false;">2095</a></td>
+                    <td>06/23</td>
+                    <td>16:01:04</td>
+                    <td>GTERI</td>
+                    <td>36.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2097); return false;">2097</a></td>
+                    <td>06/23</td>
+                    <td>17:01:04</td>
+                    <td>GTERI</td>
+                    <td>41.0 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2260); return false;">2260</a></td>
+                    <td>06/25</td>
+                    <td>07:52:34</td>
+                    <td>GTIGF</td>
+                    <td>28.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2261); return false;">2261</a></td>
+                    <td>06/25</td>
+                    <td>07:52:34</td>
+                    <td>GTSTT</td>
+                    <td>28.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2265); return false;">2265</a></td>
+                    <td>06/25</td>
+                    <td>07:53:47</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2267); return false;">2267</a></td>
+                    <td>06/25</td>
+                    <td>07:56:47</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2269); return false;">2269</a></td>
+                    <td>06/25</td>
+                    <td>07:57:35</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2271); return false;">2271</a></td>
+                    <td>06/25</td>
+                    <td>08:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2273); return false;">2273</a></td>
+                    <td>06/25</td>
+                    <td>09:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2275); return false;">2275</a></td>
+                    <td>06/25</td>
+                    <td>10:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2277); return false;">2277</a></td>
+                    <td>06/25</td>
+                    <td>11:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2279); return false;">2279</a></td>
+                    <td>06/25</td>
+                    <td>12:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2281); return false;">2281</a></td>
+                    <td>06/25</td>
+                    <td>13:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2283); return false;">2283</a></td>
+                    <td>06/25</td>
+                    <td>14:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2285); return false;">2285</a></td>
+                    <td>06/25</td>
+                    <td>15:57:29</td>
+                    <td>GTERI</td>
+                    <td>15.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2287); return false;">2287</a></td>
+                    <td>06/25</td>
+                    <td>16:57:29</td>
+                    <td>GTERI</td>
+                    <td>28.7 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2432); return false;">2432</a></td>
+                    <td>06/26</td>
+                    <td>12:56:16</td>
+                    <td>GTIGF</td>
+                    <td>10.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2433); return false;">2433</a></td>
+                    <td>06/26</td>
+                    <td>12:56:16</td>
+                    <td>GTSTT</td>
+                    <td>10.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2437); return false;">2437</a></td>
+                    <td>06/26</td>
+                    <td>12:56:58</td>
+                    <td>GTERI</td>
+                    <td>47.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2439); return false;">2439</a></td>
+                    <td>06/26</td>
+                    <td>12:59:58</td>
+                    <td>GTERI</td>
+                    <td>47.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2441); return false;">2441</a></td>
+                    <td>06/26</td>
+                    <td>13:01:17</td>
+                    <td>GTERI</td>
+                    <td>47.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2443); return false;">2443</a></td>
+                    <td>06/26</td>
+                    <td>14:01:11</td>
+                    <td>GTERI</td>
+                    <td>47.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2445); return false;">2445</a></td>
+                    <td>06/26</td>
+                    <td>15:01:11</td>
+                    <td>GTERI</td>
+                    <td>47.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2447); return false;">2447</a></td>
+                    <td>06/26</td>
+                    <td>16:01:11</td>
+                    <td>GTERI</td>
+                    <td>47.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2449); return false;">2449</a></td>
+                    <td>06/26</td>
+                    <td>17:01:11</td>
+                    <td>GTERI</td>
+                    <td>10.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2499); return false;">2499</a></td>
+                    <td>06/26</td>
+                    <td>18:28:32</td>
+                    <td>GTERI</td>
+                    <td>8.4 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2878); return false;">2878</a></td>
+                    <td>07/02</td>
+                    <td>07:50:20</td>
+                    <td>GTIGF</td>
+                    <td>8.9 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2879); return false;">2879</a></td>
+                    <td>07/02</td>
+                    <td>07:50:20</td>
+                    <td>GTSTT</td>
+                    <td>8.9 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2884); return false;">2884</a></td>
+                    <td>07/02</td>
+                    <td>07:52:53</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2886); return false;">2886</a></td>
+                    <td>07/02</td>
+                    <td>07:55:21</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2888); return false;">2888</a></td>
+                    <td>07/02</td>
+                    <td>08:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2890); return false;">2890</a></td>
+                    <td>07/02</td>
+                    <td>09:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2892); return false;">2892</a></td>
+                    <td>07/02</td>
+                    <td>10:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2894); return false;">2894</a></td>
+                    <td>07/02</td>
+                    <td>12:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2896); return false;">2896</a></td>
+                    <td>07/02</td>
+                    <td>13:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2898); return false;">2898</a></td>
+                    <td>07/02</td>
+                    <td>14:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2900); return false;">2900</a></td>
+                    <td>07/02</td>
+                    <td>15:55:15</td>
+                    <td>GTERI</td>
+                    <td>37.2 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(2902); return false;">2902</a></td>
+                    <td>07/02</td>
+                    <td>16:55:15</td>
+                    <td>GTERI</td>
+                    <td>8.9 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3009); return false;">3009</a></td>
+                    <td>07/03</td>
+                    <td>07:44:18</td>
+                    <td>GTIGF</td>
+                    <td>1.5 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3010); return false;">3010</a></td>
+                    <td>07/03</td>
+                    <td>07:44:18</td>
+                    <td>GTSTT</td>
+                    <td>1.5 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3014); return false;">3014</a></td>
+                    <td>07/03</td>
+                    <td>07:46:35</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3016); return false;">3016</a></td>
+                    <td>07/03</td>
+                    <td>07:49:21</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3018); return false;">3018</a></td>
+                    <td>07/03</td>
+                    <td>08:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3020); return false;">3020</a></td>
+                    <td>07/03</td>
+                    <td>09:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3022); return false;">3022</a></td>
+                    <td>07/03</td>
+                    <td>10:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3024); return false;">3024</a></td>
+                    <td>07/03</td>
+                    <td>11:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3026); return false;">3026</a></td>
+                    <td>07/03</td>
+                    <td>12:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3028); return false;">3028</a></td>
+                    <td>07/03</td>
+                    <td>13:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3030); return false;">3030</a></td>
+                    <td>07/03</td>
+                    <td>14:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3032); return false;">3032</a></td>
+                    <td>07/03</td>
+                    <td>15:49:14</td>
+                    <td>GTERI</td>
+                    <td>35.6 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3034); return false;">3034</a></td>
+                    <td>07/03</td>
+                    <td>16:49:14</td>
+                    <td>GTERI</td>
+                    <td>1.5 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3182); return false;">3182</a></td>
+                    <td>07/04</td>
+                    <td>07:54:18</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3185); return false;">3185</a></td>
+                    <td>07/04</td>
+                    <td>07:57:18</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3186); return false;">3186</a></td>
+                    <td>07/04</td>
+                    <td>07:57:50</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3188); return false;">3188</a></td>
+                    <td>07/04</td>
+                    <td>08:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3190); return false;">3190</a></td>
+                    <td>07/04</td>
+                    <td>09:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3192); return false;">3192</a></td>
+                    <td>07/04</td>
+                    <td>10:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3194); return false;">3194</a></td>
+                    <td>07/04</td>
+                    <td>11:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3196); return false;">3196</a></td>
+                    <td>07/04</td>
+                    <td>12:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3198); return false;">3198</a></td>
+                    <td>07/04</td>
+                    <td>13:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3200); return false;">3200</a></td>
+                    <td>07/04</td>
+                    <td>14:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3202); return false;">3202</a></td>
+                    <td>07/04</td>
+                    <td>15:57:42</td>
+                    <td>GTERI</td>
+                    <td>27.3 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3535); return false;">3535</a></td>
+                    <td>07/07</td>
+                    <td>07:50:53</td>
+                    <td>GTIGF</td>
+                    <td>8.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3536); return false;">3536</a></td>
+                    <td>07/07</td>
+                    <td>07:50:53</td>
+                    <td>GTSTT</td>
+                    <td>8.8 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3540); return false;">3540</a></td>
+                    <td>07/07</td>
+                    <td>07:52:28</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3543); return false;">3543</a></td>
+                    <td>07/07</td>
+                    <td>07:55:28</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3544); return false;">3544</a></td>
+                    <td>07/07</td>
+                    <td>07:55:54</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3546); return false;">3546</a></td>
+                    <td>07/07</td>
+                    <td>08:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3548); return false;">3548</a></td>
+                    <td>07/07</td>
+                    <td>09:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3550); return false;">3550</a></td>
+                    <td>07/07</td>
+                    <td>10:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3552); return false;">3552</a></td>
+                    <td>07/07</td>
+                    <td>11:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3554); return false;">3554</a></td>
+                    <td>07/07</td>
+                    <td>12:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3556); return false;">3556</a></td>
+                    <td>07/07</td>
+                    <td>13:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3558); return false;">3558</a></td>
+                    <td>07/07</td>
+                    <td>14:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3560); return false;">3560</a></td>
+                    <td>07/07</td>
+                    <td>15:55:48</td>
+                    <td>GTERI</td>
+                    <td>34.1 km/h</td>
+                </tr>
+                
+                <tr class="linha-oculta linha-ignicao_off">
+                    <td><a href="#" class="Linha-link" onclick="mostrarModal(3562); return false;">3562</a></td>
+                    <td>07/07</td>
+                    <td>16:55:48</td>
+                    <td>GTERI</td>
+                    <td>8.8 km/h</td>
+                </tr>
+                
+                </tbody>
+            </table>
+        
+            <div style="text-align: center;">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('ignicao_off', 150)" id="btn_ignicao_off">
+                    Ver todos os dados
+                </button>
+            </div>
+            </div>
+    </div>
+    
+    <script>
+    function toggleLinhas(tipo, total) {
+        const linhas = document.querySelectorAll('.linha-' + tipo);
+        const btn = document.getElementById('btn_' + tipo);
+        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        
+        linhas.forEach(linha => {
+            if (todasOcultas) {
+                linha.classList.remove('linha-oculta');
+            } else {
+                linha.classList.add('linha-oculta');
+            }
+        });
+        
+        if (todasOcultas) {
+            btn.textContent = 'Mostrar apenas 5 registros';
+        } else {
+            btn.textContent = 'Ver todos os dados';
+        }
+    }
+    </script>
+    
