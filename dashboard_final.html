@@ -696,6 +696,33 @@
     
     
 
+    .btn-mostrar-todos {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 22px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        font-family: 'Saira', sans-serif;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+    }
+    .btn-mostrar-todos:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+    .linha-oculta {
+        display: none;
+    }
+    .resumo-anomalia-numero.red {
+        color: #dc3545;
+    }
+    
+
     .bloco-velocidade {
         background: #fff;
         border-radius: 30px;
@@ -1177,6 +1204,1225 @@
     </div>
     
     </div>
+
+<!-- Block: bloco_timefix.html -->
+
+    
+    <div class="bloco-temporizadas">
+        <span class="dashboard-title-temporizadas">Anomalias com Time fix negativo </span>
+        
+    <div class="resumo-anomalias-container">
+        <div class="resumo-anomalia-card">
+            <div class="resumo-anomalia-titulo">Total de anomalias de Time fix negativo</div>
+            <div class="resumo-anomalia-numero red">168</div>
+            <div class="resumo-anomalia-legenda">Fix "futuro" em relação ao evento</div>
+        </div>
+    </div>
+    
+        
+    <div class="tabela-temporizadas-container">
+        <div class="grafico-titulo-container"><span class="grafico-titulo">Fix "futuro" em relação ao evento</span></div>
+        <table class="tabela-temporizadas" id="tabela_timefix">
+            <thead>
+                <tr>
+                    <th>Linha</th>
+                    <th>Data/Hora Evento</th>
+                    <th>Data/Hora fix</th>
+                    <th>Delay (s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr class=''>
+            <td>428</td>
+            <td>15/06/2025 - 17:04:12</td>
+            <td>15/06/2025 - 17:04:13</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class=''>
+            <td>442</td>
+            <td>15/06/2025 - 17:17:39</td>
+            <td>15/06/2025 - 17:17:40</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class=''>
+            <td>444</td>
+            <td>15/06/2025 - 17:18:16</td>
+            <td>15/06/2025 - 17:18:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class=''>
+            <td>457</td>
+            <td>15/06/2025 - 17:33:31</td>
+            <td>15/06/2025 - 17:33:32</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class=''>
+            <td>460</td>
+            <td>15/06/2025 - 17:33:56</td>
+            <td>15/06/2025 - 17:33:57</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>474</td>
+            <td>15/06/2025 - 17:49:06</td>
+            <td>15/06/2025 - 17:49:07</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>475</td>
+            <td>15/06/2025 - 17:49:16</td>
+            <td>15/06/2025 - 17:49:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>484</td>
+            <td>15/06/2025 - 17:59:16</td>
+            <td>15/06/2025 - 17:59:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>495</td>
+            <td>15/06/2025 - 18:06:17</td>
+            <td>15/06/2025 - 18:06:18</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>526</td>
+            <td>16/06/2025 - 07:34:36</td>
+            <td>16/06/2025 - 07:34:37</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>536</td>
+            <td>16/06/2025 - 07:42:16</td>
+            <td>16/06/2025 - 07:42:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>577</td>
+            <td>16/06/2025 - 17:58:19</td>
+            <td>16/06/2025 - 17:58:20</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>594</td>
+            <td>16/06/2025 - 18:15:26</td>
+            <td>16/06/2025 - 18:15:27</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>597</td>
+            <td>16/06/2025 - 18:17:26</td>
+            <td>16/06/2025 - 18:17:27</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>598</td>
+            <td>16/06/2025 - 18:17:26</td>
+            <td>16/06/2025 - 18:17:27</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>607</td>
+            <td>16/06/2025 - 18:22:15</td>
+            <td>16/06/2025 - 18:22:16</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>621</td>
+            <td>16/06/2025 - 18:29:16</td>
+            <td>16/06/2025 - 18:29:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>649</td>
+            <td>17/06/2025 - 07:02:57</td>
+            <td>17/06/2025 - 07:02:58</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>650</td>
+            <td>17/06/2025 - 07:03:21</td>
+            <td>17/06/2025 - 07:03:22</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1189</td>
+            <td>19/06/2025 - 20:08:10</td>
+            <td>19/06/2025 - 20:08:11</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1210</td>
+            <td>19/06/2025 - 23:13:06</td>
+            <td>19/06/2025 - 23:13:07</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1214</td>
+            <td>20/06/2025 - 01:13:02</td>
+            <td>20/06/2025 - 01:13:03</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1216</td>
+            <td>20/06/2025 - 02:13:04</td>
+            <td>20/06/2025 - 02:13:05</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1220</td>
+            <td>20/06/2025 - 04:13:08</td>
+            <td>20/06/2025 - 04:13:09</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1224</td>
+            <td>20/06/2025 - 06:13:29</td>
+            <td>20/06/2025 - 06:13:30</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1244</td>
+            <td>20/06/2025 - 09:16:20</td>
+            <td>20/06/2025 - 09:16:21</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1245</td>
+            <td>20/06/2025 - 09:16:20</td>
+            <td>20/06/2025 - 09:16:21</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1250</td>
+            <td>20/06/2025 - 09:20:05</td>
+            <td>20/06/2025 - 09:20:06</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1251</td>
+            <td>20/06/2025 - 09:20:05</td>
+            <td>20/06/2025 - 09:20:06</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1253</td>
+            <td>20/06/2025 - 09:25:06</td>
+            <td>20/06/2025 - 09:25:07</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1254</td>
+            <td>20/06/2025 - 10:12:54</td>
+            <td>20/06/2025 - 10:12:55</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1258</td>
+            <td>20/06/2025 - 10:34:31</td>
+            <td>20/06/2025 - 10:34:32</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1269</td>
+            <td>20/06/2025 - 10:49:36</td>
+            <td>20/06/2025 - 10:49:37</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1276</td>
+            <td>20/06/2025 - 11:05:40</td>
+            <td>20/06/2025 - 11:05:41</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1281</td>
+            <td>20/06/2025 - 11:12:41</td>
+            <td>20/06/2025 - 11:12:42</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1312</td>
+            <td>20/06/2025 - 12:24:51</td>
+            <td>20/06/2025 - 12:24:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1313</td>
+            <td>20/06/2025 - 12:24:51</td>
+            <td>20/06/2025 - 12:24:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1319</td>
+            <td>20/06/2025 - 13:20:57</td>
+            <td>20/06/2025 - 13:20:58</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1329</td>
+            <td>20/06/2025 - 13:38:07</td>
+            <td>20/06/2025 - 13:38:08</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1332</td>
+            <td>20/06/2025 - 13:41:07</td>
+            <td>20/06/2025 - 13:41:08</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1333</td>
+            <td>20/06/2025 - 13:41:51</td>
+            <td>20/06/2025 - 13:41:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1340</td>
+            <td>20/06/2025 - 13:49:53</td>
+            <td>20/06/2025 - 13:49:54</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1341</td>
+            <td>20/06/2025 - 14:38:08</td>
+            <td>20/06/2025 - 14:38:09</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1347</td>
+            <td>20/06/2025 - 16:32:17</td>
+            <td>20/06/2025 - 16:32:18</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1358</td>
+            <td>20/06/2025 - 16:51:05</td>
+            <td>20/06/2025 - 16:51:06</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1359</td>
+            <td>20/06/2025 - 17:37:01</td>
+            <td>20/06/2025 - 17:37:02</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1362</td>
+            <td>20/06/2025 - 17:40:53</td>
+            <td>20/06/2025 - 17:40:54</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1364</td>
+            <td>20/06/2025 - 17:46:39</td>
+            <td>20/06/2025 - 17:46:40</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1373</td>
+            <td>20/06/2025 - 17:58:02</td>
+            <td>20/06/2025 - 17:58:03</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1378</td>
+            <td>20/06/2025 - 19:50:42</td>
+            <td>20/06/2025 - 19:50:43</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1379</td>
+            <td>20/06/2025 - 19:52:57</td>
+            <td>20/06/2025 - 19:52:58</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1392</td>
+            <td>20/06/2025 - 20:04:42</td>
+            <td>20/06/2025 - 20:04:43</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1393</td>
+            <td>20/06/2025 - 20:05:00</td>
+            <td>20/06/2025 - 20:05:01</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1396</td>
+            <td>20/06/2025 - 20:08:15</td>
+            <td>20/06/2025 - 20:08:16</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1397</td>
+            <td>20/06/2025 - 20:08:15</td>
+            <td>20/06/2025 - 20:08:16</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1402</td>
+            <td>20/06/2025 - 20:13:16</td>
+            <td>20/06/2025 - 20:13:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1405</td>
+            <td>20/06/2025 - 22:04:32</td>
+            <td>20/06/2025 - 22:04:33</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1409</td>
+            <td>21/06/2025 - 00:04:29</td>
+            <td>21/06/2025 - 00:04:30</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1411</td>
+            <td>21/06/2025 - 01:04:26</td>
+            <td>21/06/2025 - 01:04:27</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1413</td>
+            <td>21/06/2025 - 02:04:29</td>
+            <td>21/06/2025 - 02:04:30</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1415</td>
+            <td>21/06/2025 - 03:04:45</td>
+            <td>21/06/2025 - 03:04:46</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1417</td>
+            <td>21/06/2025 - 04:04:30</td>
+            <td>21/06/2025 - 04:04:31</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1419</td>
+            <td>21/06/2025 - 05:04:48</td>
+            <td>21/06/2025 - 05:04:49</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1421</td>
+            <td>21/06/2025 - 06:04:18</td>
+            <td>21/06/2025 - 06:04:19</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1425</td>
+            <td>21/06/2025 - 06:50:58</td>
+            <td>21/06/2025 - 06:50:59</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1440</td>
+            <td>21/06/2025 - 07:05:32</td>
+            <td>21/06/2025 - 07:05:33</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1445</td>
+            <td>21/06/2025 - 07:41:25</td>
+            <td>21/06/2025 - 07:41:26</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1447</td>
+            <td>21/06/2025 - 07:46:51</td>
+            <td>21/06/2025 - 07:46:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1449</td>
+            <td>21/06/2025 - 07:48:51</td>
+            <td>21/06/2025 - 07:48:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1450</td>
+            <td>21/06/2025 - 07:48:51</td>
+            <td>21/06/2025 - 07:48:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1452</td>
+            <td>21/06/2025 - 07:51:49</td>
+            <td>21/06/2025 - 07:51:50</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1453</td>
+            <td>21/06/2025 - 07:51:49</td>
+            <td>21/06/2025 - 07:51:50</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1457</td>
+            <td>21/06/2025 - 07:53:26</td>
+            <td>21/06/2025 - 07:53:27</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1467</td>
+            <td>21/06/2025 - 08:00:15</td>
+            <td>21/06/2025 - 08:00:16</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1468</td>
+            <td>21/06/2025 - 08:00:35</td>
+            <td>21/06/2025 - 08:00:36</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1473</td>
+            <td>21/06/2025 - 08:07:36</td>
+            <td>21/06/2025 - 08:07:37</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1476</td>
+            <td>21/06/2025 - 08:20:16</td>
+            <td>21/06/2025 - 08:20:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1499</td>
+            <td>21/06/2025 - 08:36:56</td>
+            <td>21/06/2025 - 08:36:57</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1501</td>
+            <td>21/06/2025 - 08:38:56</td>
+            <td>21/06/2025 - 08:38:57</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1502</td>
+            <td>21/06/2025 - 08:38:56</td>
+            <td>21/06/2025 - 08:38:57</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1503</td>
+            <td>21/06/2025 - 08:39:12</td>
+            <td>21/06/2025 - 08:39:13</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1504</td>
+            <td>21/06/2025 - 08:39:12</td>
+            <td>21/06/2025 - 08:39:13</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1505</td>
+            <td>21/06/2025 - 08:39:50</td>
+            <td>21/06/2025 - 08:39:51</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1509</td>
+            <td>21/06/2025 - 08:42:05</td>
+            <td>21/06/2025 - 08:42:06</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1511</td>
+            <td>21/06/2025 - 08:46:51</td>
+            <td>21/06/2025 - 08:46:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1514</td>
+            <td>21/06/2025 - 08:47:15</td>
+            <td>21/06/2025 - 08:47:16</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1525</td>
+            <td>21/06/2025 - 08:55:25</td>
+            <td>21/06/2025 - 08:55:26</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1528</td>
+            <td>21/06/2025 - 08:57:52</td>
+            <td>21/06/2025 - 08:57:53</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1529</td>
+            <td>21/06/2025 - 08:57:52</td>
+            <td>21/06/2025 - 08:57:53</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1532</td>
+            <td>21/06/2025 - 08:58:58</td>
+            <td>21/06/2025 - 08:58:59</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1540</td>
+            <td>21/06/2025 - 09:04:22</td>
+            <td>21/06/2025 - 09:04:23</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1541</td>
+            <td>21/06/2025 - 09:04:22</td>
+            <td>21/06/2025 - 09:04:23</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1547</td>
+            <td>21/06/2025 - 09:11:06</td>
+            <td>21/06/2025 - 09:11:07</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1548</td>
+            <td>21/06/2025 - 09:11:06</td>
+            <td>21/06/2025 - 09:11:07</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1554</td>
+            <td>21/06/2025 - 09:14:55</td>
+            <td>21/06/2025 - 09:14:56</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1555</td>
+            <td>21/06/2025 - 09:15:16</td>
+            <td>21/06/2025 - 09:15:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1562</td>
+            <td>21/06/2025 - 09:22:17</td>
+            <td>21/06/2025 - 09:22:18</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1565</td>
+            <td>21/06/2025 - 09:58:16</td>
+            <td>21/06/2025 - 09:58:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1578</td>
+            <td>21/06/2025 - 10:11:11</td>
+            <td>21/06/2025 - 10:11:12</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1579</td>
+            <td>21/06/2025 - 10:11:51</td>
+            <td>21/06/2025 - 10:11:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1585</td>
+            <td>21/06/2025 - 10:16:51</td>
+            <td>21/06/2025 - 10:16:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1590</td>
+            <td>21/06/2025 - 10:20:41</td>
+            <td>21/06/2025 - 10:20:42</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1591</td>
+            <td>21/06/2025 - 10:20:44</td>
+            <td>21/06/2025 - 10:20:45</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1609</td>
+            <td>21/06/2025 - 10:34:25</td>
+            <td>21/06/2025 - 10:34:26</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1623</td>
+            <td>21/06/2025 - 16:24:33</td>
+            <td>21/06/2025 - 16:24:34</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1797</td>
+            <td>21/06/2025 - 19:49:46</td>
+            <td>21/06/2025 - 19:49:47</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1846</td>
+            <td>21/06/2025 - 20:47:36</td>
+            <td>21/06/2025 - 20:47:37</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1850</td>
+            <td>21/06/2025 - 20:50:06</td>
+            <td>21/06/2025 - 20:50:07</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1851</td>
+            <td>21/06/2025 - 20:50:10</td>
+            <td>21/06/2025 - 20:50:11</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1857</td>
+            <td>21/06/2025 - 20:55:53</td>
+            <td>21/06/2025 - 20:55:54</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1860</td>
+            <td>21/06/2025 - 20:57:53</td>
+            <td>21/06/2025 - 20:57:54</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1861</td>
+            <td>21/06/2025 - 20:57:53</td>
+            <td>21/06/2025 - 20:57:54</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>1868</td>
+            <td>21/06/2025 - 21:02:54</td>
+            <td>21/06/2025 - 21:02:55</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2486</td>
+            <td>26/06/2025 - 18:21:20</td>
+            <td>26/06/2025 - 18:21:21</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2504</td>
+            <td>26/06/2025 - 18:30:23</td>
+            <td>26/06/2025 - 18:30:24</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2521</td>
+            <td>26/06/2025 - 18:40:02</td>
+            <td>26/06/2025 - 18:40:03</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2571</td>
+            <td>27/06/2025 - 17:58:31</td>
+            <td>27/06/2025 - 17:58:32</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2578</td>
+            <td>27/06/2025 - 18:03:51</td>
+            <td>27/06/2025 - 18:03:52</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2579</td>
+            <td>27/06/2025 - 18:04:11</td>
+            <td>27/06/2025 - 18:04:12</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2600</td>
+            <td>27/06/2025 - 18:22:19</td>
+            <td>27/06/2025 - 18:22:20</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2854</td>
+            <td>02/07/2025 - 07:28:52</td>
+            <td>02/07/2025 - 07:28:53</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2908</td>
+            <td>02/07/2025 - 17:58:17</td>
+            <td>02/07/2025 - 17:58:18</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2940</td>
+            <td>02/07/2025 - 18:20:28</td>
+            <td>02/07/2025 - 18:20:29</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>2984</td>
+            <td>03/07/2025 - 07:19:44</td>
+            <td>03/07/2025 - 07:19:45</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3038</td>
+            <td>03/07/2025 - 17:35:28</td>
+            <td>03/07/2025 - 17:35:29</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3048</td>
+            <td>03/07/2025 - 17:41:30</td>
+            <td>03/07/2025 - 17:41:31</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3049</td>
+            <td>03/07/2025 - 17:42:10</td>
+            <td>03/07/2025 - 17:42:11</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3078</td>
+            <td>03/07/2025 - 18:13:40</td>
+            <td>03/07/2025 - 18:13:41</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3080</td>
+            <td>03/07/2025 - 18:15:30</td>
+            <td>03/07/2025 - 18:15:31</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3084</td>
+            <td>03/07/2025 - 18:17:33</td>
+            <td>03/07/2025 - 18:17:34</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3090</td>
+            <td>03/07/2025 - 18:20:00</td>
+            <td>03/07/2025 - 18:20:01</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3091</td>
+            <td>03/07/2025 - 18:20:00</td>
+            <td>03/07/2025 - 18:20:01</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3094</td>
+            <td>03/07/2025 - 18:22:21</td>
+            <td>03/07/2025 - 18:22:22</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3108</td>
+            <td>03/07/2025 - 18:29:22</td>
+            <td>03/07/2025 - 18:29:23</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3136</td>
+            <td>04/07/2025 - 07:12:22</td>
+            <td>04/07/2025 - 07:12:23</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3148</td>
+            <td>04/07/2025 - 07:21:46</td>
+            <td>04/07/2025 - 07:21:47</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3167</td>
+            <td>04/07/2025 - 07:43:33</td>
+            <td>04/07/2025 - 07:43:34</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3168</td>
+            <td>04/07/2025 - 07:43:36</td>
+            <td>04/07/2025 - 07:43:37</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3208</td>
+            <td>04/07/2025 - 17:47:47</td>
+            <td>04/07/2025 - 17:47:48</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3215</td>
+            <td>04/07/2025 - 17:53:15</td>
+            <td>04/07/2025 - 17:53:16</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3217</td>
+            <td>04/07/2025 - 17:53:25</td>
+            <td>04/07/2025 - 17:53:26</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3220</td>
+            <td>04/07/2025 - 17:55:49</td>
+            <td>04/07/2025 - 17:55:50</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3241</td>
+            <td>04/07/2025 - 18:07:44</td>
+            <td>04/07/2025 - 18:07:45</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3244</td>
+            <td>04/07/2025 - 18:09:13</td>
+            <td>04/07/2025 - 18:09:14</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3265</td>
+            <td>04/07/2025 - 18:22:12</td>
+            <td>04/07/2025 - 18:22:13</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3275</td>
+            <td>04/07/2025 - 18:29:13</td>
+            <td>04/07/2025 - 18:29:14</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3279</td>
+            <td>04/07/2025 - 18:53:34</td>
+            <td>04/07/2025 - 18:53:35</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3286</td>
+            <td>04/07/2025 - 18:58:41</td>
+            <td>04/07/2025 - 18:58:42</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3289</td>
+            <td>04/07/2025 - 19:00:41</td>
+            <td>04/07/2025 - 19:00:42</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3290</td>
+            <td>04/07/2025 - 19:00:41</td>
+            <td>04/07/2025 - 19:00:42</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3298</td>
+            <td>04/07/2025 - 19:05:42</td>
+            <td>04/07/2025 - 19:05:43</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3332</td>
+            <td>05/07/2025 - 11:03:23</td>
+            <td>05/07/2025 - 11:03:24</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3334</td>
+            <td>05/07/2025 - 11:06:01</td>
+            <td>05/07/2025 - 11:06:02</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3335</td>
+            <td>05/07/2025 - 11:06:24</td>
+            <td>05/07/2025 - 11:06:25</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3347</td>
+            <td>05/07/2025 - 11:14:16</td>
+            <td>05/07/2025 - 11:14:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3348</td>
+            <td>05/07/2025 - 11:14:16</td>
+            <td>05/07/2025 - 11:14:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3355</td>
+            <td>05/07/2025 - 11:19:16</td>
+            <td>05/07/2025 - 11:19:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3367</td>
+            <td>05/07/2025 - 15:18:10</td>
+            <td>05/07/2025 - 15:18:11</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3368</td>
+            <td>05/07/2025 - 15:18:29</td>
+            <td>05/07/2025 - 15:18:30</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3383</td>
+            <td>05/07/2025 - 15:32:44</td>
+            <td>05/07/2025 - 15:32:45</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3386</td>
+            <td>05/07/2025 - 15:34:45</td>
+            <td>05/07/2025 - 15:34:46</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3387</td>
+            <td>05/07/2025 - 15:34:45</td>
+            <td>05/07/2025 - 15:34:46</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3395</td>
+            <td>05/07/2025 - 15:39:45</td>
+            <td>05/07/2025 - 15:39:46</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3399</td>
+            <td>05/07/2025 - 16:31:03</td>
+            <td>05/07/2025 - 16:31:04</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3406</td>
+            <td>05/07/2025 - 16:36:03</td>
+            <td>05/07/2025 - 16:36:04</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3407</td>
+            <td>05/07/2025 - 16:36:16</td>
+            <td>05/07/2025 - 16:36:17</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3418</td>
+            <td>05/07/2025 - 16:47:39</td>
+            <td>05/07/2025 - 16:47:40</td>
+            <td>-1.0</td>
+        </tr>
+        
+        <tr class='linha-oculta linha-extra-timefix'>
+            <td>3428</td>
+            <td>05/07/2025 - 16:54:40</td>
+            <td>05/07/2025 - 16:54:41</td>
+            <td>-1.0</td>
+        </tr>
+        
+            </tbody>
+        </table>
+        
+        <div style="text-align: center;">
+            <button class="btn-mostrar-todos" onclick="toggleLinhasTimefix()" id="btn_timefix">
+                Ver todos os dados
+            </button>
+        </div>
+        
+    </div>
+    
+    </div>
+    
+    
 
 <!-- Block: bloco_velocidade.html -->
 
@@ -2586,6 +3832,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 })();
+
+function toggleLinhasTimefix() {
+        const linhas = document.querySelectorAll('#tabela_timefix .linha-extra-timefix');
+        const btn = document.getElementById('btn_timefix');
+        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        linhas.forEach(linha => {
+            if (todasOcultas) {
+                linha.classList.remove('linha-oculta');
+            } else {
+                linha.classList.add('linha-oculta');
+            }
+        });
+        if (todasOcultas) {
+            btn.textContent = 'Mostrar apenas 5 registros';
+        } else {
+            btn.textContent = 'Ver todos os dados';
+        }
+    }
 
 function toggleLinhas(tipo, total) {
         const linhas = document.querySelectorAll('.linha-' + tipo);
