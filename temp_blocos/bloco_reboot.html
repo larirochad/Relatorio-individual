@@ -63,10 +63,7 @@
         overflow-x: auto;
         transition: box-shadow 0.3s, transform 0.3s;
     }
-    .bloco-reboot .tabela-reboot-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    }
+    .bloco-reboot .tabela-reboot-container:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); transition: box-shadow 0.3s, transform 0.3s;}
     .bloco-reboot .tabela-reboot {
         width: 100%;
         border-collapse: collapse;
@@ -98,13 +95,30 @@
         border-radius: 20px;
         display: inline-block;  
     }
+    .ver-todos-btn {
+        display: block;
+        margin: 18px auto 0 auto;
+        padding: 10px 28px;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(102, 51, 153, 0.07);
+    }
+    .ver-todos-btn:hover {
+        background: linear-gradient(to right, #667eea, #764ba2);
+    }
     </style>
     
     <div class="bloco-reboot">
         <span class="dashboard-title-reboot">Reboots do Equipamento</span>
         <div class="tabela-reboot-container">
             <div class="resumo-reboot">
-                Total de reboots encontrados: <b>1</b>
+                Total de reboots encontrados: <b>4</b>
             </div>
             <div class="grafico-titulo-container">
                 <h3 class="grafico-titulo">Histórico de Reboots</h3>
@@ -120,15 +134,37 @@
                 </thead>
                 <tbody>
     
-        <tr>
-            <td><a href="#" class="Linha-link" onclick="mostrarModal(12); return false;">12</a></td>
-            <td>11/06</td>
-            <td>16:28:02</td>
-            <td>RTO reboot</td>
+        <tr class='' style=''>
+            <td>33644</td>
+            <td>31/12</td>
+            <td>21:00:07</td>
+            <td>Normal power on: Acionamento normal do dispositivo.</td>
+        </tr>
+        
+        <tr class='' style=''>
+            <td>34127</td>
+            <td>31/12</td>
+            <td>21:00:07</td>
+            <td>Normal power on: Acionamento normal do dispositivo.</td>
+        </tr>
+        
+        <tr class='' style=''>
+            <td>13192</td>
+            <td>24/06</td>
+            <td>05:18:29</td>
+            <td>Normal power on: Acionamento normal do dispositivo.</td>
+        </tr>
+        
+        <tr class='' style=''>
+            <td>35503</td>
+            <td>14/07</td>
+            <td>04:42:19</td>
+            <td>Normal power on: Acionamento normal do dispositivo.</td>
         </tr>
         
                 </tbody>
             </table>
+    
         </div>
     </div>
     

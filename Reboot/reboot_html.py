@@ -1,16 +1,12 @@
 import pandas as pd
 from pathlib import Path
+from typing import Union
 
-def gerar_bloco_reboot(
-    csv_path='Reboot/reboot_eventos.csv',
-    filename='bloco_reboot.html'
-):
+def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_todos=False):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
 
-    # Lê o CSV de reboots
-    df = pd.read_csv(csv_path, encoding='iso-8859-1')
     total_reboots = len(df)
 
     # Formata data e hora
@@ -83,10 +79,7 @@ def gerar_bloco_reboot(
         overflow-x: auto;
         transition: box-shadow 0.3s, transform 0.3s;
     }
-    .bloco-reboot .tabela-reboot-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    }
+    .bloco-reboot .tabela-reboot-container:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); transition: box-shadow 0.3s, transform 0.3s;}
     .bloco-reboot .tabela-reboot {
         width: 100%;
         border-collapse: collapse;
@@ -118,6 +111,23 @@ def gerar_bloco_reboot(
         border-radius: 20px;
         display: inline-block;  
     }
+    .ver-todos-btn {
+        display: block;
+        margin: 18px auto 0 auto;
+        padding: 10px 28px;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(102, 51, 153, 0.07);
+    }
+    .ver-todos-btn:hover {
+        background: linear-gradient(to right, #667eea, #764ba2);
+    }
     </style>
     """
 
@@ -145,11 +155,15 @@ def gerar_bloco_reboot(
                 <tbody>
     """
 
-    for _, row in df.iterrows():
-        linha_idx = row['linha']
+    mostrar_todas = False  # sempre inicia mostrando só as 5 primeiras
+    for idx, row in enumerate(df.iterrows()):
+        row = row[1]  # row[1] é a Series
+        is_extra = idx >= 5
+        extra_class = 'linha-extra-reboot' if is_extra else ''
+        display_style = 'display:none;' if is_extra and not mostrar_todas else ''
         html += f"""
-        <tr>
-            <td><a href=\"#\" class=\"Linha-link\" onclick=\"mostrarModal({linha_idx}); return false;\">{row['linha']}</a></td>
+        <tr class='{extra_class}' style='{display_style}'>
+            <td>{row['linha']}</td>
             <td>{row['Data']}</td>
             <td>{row['Hora']}</td>
             <td>{row['Descrição Motivo Power On']}</td>
@@ -159,6 +173,25 @@ def gerar_bloco_reboot(
     html += """
                 </tbody>
             </table>
+    """
+    # Adiciona botão se houver mais de 5 linhas
+    if len(df) > 5:
+        html += """
+            <button class='ver-todos-btn' id='btn-ver-todos-reboot' onclick="toggleLinhasReboot()">Ver todos os dados</button>
+            <script>
+            function toggleLinhasReboot() {
+                var extras = document.querySelectorAll('.linha-extra-reboot');
+                var btn = document.getElementById('btn-ver-todos-reboot');
+                var mostrando = btn.getAttribute('data-mostrando') === 'true';
+                for (var i = 0; i < extras.length; i++) {
+                    extras[i].style.display = mostrando ? 'none' : '';
+                }
+                btn.innerText = mostrando ? 'Ver todos os dados' : 'Ocultar dados';
+                btn.setAttribute('data-mostrando', mostrando ? 'false' : 'true');
+            }
+            </script>
+        """
+    html += """
         </div>
     </div>
     """
@@ -166,7 +199,16 @@ def gerar_bloco_reboot(
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    print(f"✅ Bloco de reboot salvo em: {output_path.resolve()}")
+    # print(f"✅ Bloco de reboot salvo em: {output_path.resolve()}")
+
+# Gera também o arquivo completo se houver mais de 5 linhas
+def gerar_blocos_reboot_duplo(df: pd.DataFrame):
+    gerar_bloco_reboot(df, 'bloco_reboot.html', mostrar_todos=False)
+    if len(df) > 5:
+        gerar_bloco_reboot(df, 'bloco_reboot_completo.html', mostrar_todos=True)
 
 if __name__ == "__main__":
-    gerar_bloco_reboot()
+    # Exemplo de uso:
+    # df = pd.read_csv('Reboot/reboot_eventos.csv', encoding='iso-8859-1')
+    # gerar_blocos_reboot_duplo(df)
+    print("This script requires a pandas DataFrame as input. Please ensure you pass a DataFrame object.")

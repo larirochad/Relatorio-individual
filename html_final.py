@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 import pandas as pd
 import json
+import traceback
 
 
 def extract_css_from_blocks(blocks):
@@ -114,8 +115,9 @@ def get_device_info(df):
 
 def create_device_summary_html(df_raw):
     device = get_device_info(df_raw)
+    num_registros = len(df_raw) if df_raw is not None else 0
     html = f"""
-    <div class="tabela-container">
+    <div class="tabela-resumo-tecnico">
     <div class="grafico-container">
         <div class='grafico-titulo-container'>
             <h2 class='grafico-titulo'>Resumo Técnico do Equipamento</h2>
@@ -126,6 +128,7 @@ def create_device_summary_html(df_raw):
                     <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>Nome Comercial</th>
                     <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>IMEI</th>
                     <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>Versão Firmware</th>
+                    <th style='padding: 22px;  border: 1px solid #dee2e6; font-weight: bold; color: #495057;'>Quantidade de dados analisados</th>
                 </tr>
             </thead>
             <tbody>
@@ -133,6 +136,7 @@ def create_device_summary_html(df_raw):
                     <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px;'>{device['tipo_dispositivo']}</td>
                     <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px; font-family: monospace;'>{device['imei']}</td>
                     <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px; font-family: monospace;'>{device['versao_firmware']}</td>
+                    <td style='padding: 22px; border: 1px solid #dee2e6; font-weight: bold; font-size: 16px; font-family: monospace;'>{num_registros}</td>
                 </tr>
             </tbody>
         </table>
@@ -148,7 +152,7 @@ def unir_blocos(df_raw):
     output_file = Path(__file__).parent / "dashboard_final.html"
     
     if not os.path.exists(blocks_dir):
-        print(f"Error: Directory '{blocks_dir}' not found!")
+        # print(f"Error: Directory '{blocks_dir}' not found!")
         return
     
     # Define manual order of files
@@ -163,7 +167,7 @@ def unir_blocos(df_raw):
     html_files = sorted([str(f) for f in blocks_dir.glob('*.html')])
 
     if not html_files:
-        print(f"Error: No HTML files found in '{blocks_dir}'!")
+        # print(f"Error: No HTML files found in '{blocks_dir}'!")
         return
 
     # Global CSS - Adicionei os novos estilos para a logo e título
@@ -236,10 +240,13 @@ def unir_blocos(df_raw):
     }
     
     .grafico-container:hover {
-        transform: translateY(-5px);
+        transform: translateY(-2px);
         box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        transition: box-shadow 0.3s, transform 0.3s;
     }
-    
+
+
+
     .grafico-titulo-container {
         display: flex;
         justify-content: center;
@@ -290,7 +297,7 @@ def unir_blocos(df_raw):
     }
     
     .zoom-controls button:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
         opacity: 0.9;
     }
     
@@ -373,14 +380,26 @@ def unir_blocos(df_raw):
     .grafico-container div {
         margin-top: 4px;
     }
-    .tabela-container {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    overflow-x: auto;
+
+    .tabela-resumo-tecnico {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        overflow-x: auto;
     }
+    .tabela-resumo-tecnico:hover {
+        will-change: box-shadow;
+        transform: none !important;
+    }
+
+    .grafico-hodometro:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+
 
     """
 
@@ -533,7 +552,8 @@ def unir_blocos(df_raw):
                 if content:
                     blocks.append(f"<!-- Block: {os.path.basename(file)} -->\n{content}\n")
         except FileNotFoundError:
-            print(f"Warning: File '{file}' not found. Skipping...")
+            # print(f"Warning: File '{file}' not found. Skipping...")
+            pass
 
     # Process blocks
     inline_css, css_links, blocks_without_css = extract_css_from_blocks(blocks)
@@ -590,131 +610,134 @@ def unir_blocos(df_raw):
     # Embutir o DataFrame principal como JSON
     df = df_raw.reset_index()  # 'index' vira coluna
     df['linha'] = df['index'] + 2  # Agora bate com a linha do CSV original
-    data_json = json.dumps(df.to_dict(orient='records'), ensure_ascii=False)
-    # Botão de teste para abrir o modal do primeiro registro
-    botao_teste = '''<div style="text-align:center; margin-bottom:20px;">
-        <button onclick="mostrarModal(0)" style="padding:10px 22px; font-size:1em; border-radius:12px; background:linear-gradient(90deg,#764ba2,#667eea); color:#fff; border:none; font-family:'Saira',sans-serif; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(102,51,153,0.07);">Ver detalhes do primeiro registro do CSV</button>
-    </div>'''
-    final_html += botao_teste
+
+    # CONVERSÃO PARA STRING PARA JSON SERIALIZABLE
+    for col in df.columns:
+        if pd.api.types.is_datetime64_any_dtype(df[col]):
+            df[col] = df[col].dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    # --- BLOCO JSON COMENTADO TEMPORARIAMENTE ---
+    # data_json = json.dumps(df.to_dict(orient='records'), ensure_ascii=False)
     # Modal global + script
-    modal_html = f'''
-    <div class="modal-bg" id="modalBg">
-        <div class="modal-content" id="modalContent">
-            <button class="close-modal" onclick="fecharModal()">&times;</button>
-            <h3>Detalhes do Registro</h3>
-            <table id="modalTable"></table>
-        </div>
-    </div>
-    <script>
-    const eventosData = {data_json};
-    function mostrarModal(idx) {{
-        // Busca o registro pelo valor da coluna 'linha'
-        const registro = eventosData.find(r => r.linha == idx);
-        let html = '';
-        const cols = ['linha', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
-        const labels = ['Linha do CSV', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
-        for (let i = 0; i < cols.length; i++) {{           
-            html += `<tr><th>` + labels[i] + `</th><td>` + (registro && registro[cols[i]] !== undefined ? registro[cols[i]] : '') + `</td></tr>`;
-        }}
-        document.getElementById('modalTable').innerHTML = html;
-        document.getElementById('modalBg').classList.add('active');
-    }}
-    function fecharModal() {{
-        document.getElementById('modalBg').classList.remove('active');
-    }}
-    document.getElementById('modalBg').addEventListener('click', function(e) {{
-        if (e.target === this) fecharModal();
-    }});
-    document.addEventListener('keydown', function(e) {{
-        if (e.key === 'Escape') fecharModal();
-    }});
-    </script>
-    <style>
-    .modal-bg {{
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0; top: 0; width: 100vw; height: 100vh;
-        background: rgba(0,0,0,0.4);
-        align-items: center;
-        justify-content: center;
-    }}
-    .modal-bg.active {{
-        display: flex;
-    }}
-    .modal-content {{
-        background: #fff;
-        border-radius: 18px;
-        padding: 32px 32px 24px 32px;
-        min-width: 320px;
-        max-width: 90vw;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-        position: relative;
-        animation: fadeIn 0.2s;
-    }}
-    @keyframes fadeIn {{
-        from {{ opacity: 0; transform: scale(0.95); }}
-        to {{ opacity: 1; transform: scale(1); }}
-    }}
-    .modal-content h3 {{
-        margin-top: 0;
-        font-size: 1.3em;
-        color: #764ba2;
-        font-family: 'Saira', sans-serif;
-    }}
-    .modal-content table {{
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }}
-    .modal-content th, .modal-content td {{
-        text-align: left;
-        padding: 8px 12px;
-    }}
-    .modal-content th {{
-        color: #495057;
-        font-weight: bold;
-        background: #f8f9fa;
-    }}
-    .close-modal {{
-        position: absolute;
-        top: 12px; right: 18px;
-        font-size: 1.5em;
-        color: #888;
-        cursor: pointer;
-        font-weight: bold;
-        background: none;
-        border: none;
-    }}
-    @media (max-width: 600px) {{
-        .modal-content {{ padding: 18px 6px 12px 6px; }}
-    }}
-    </style>
-    '''
-    final_html += modal_html
+    # modal_html = f'''
+    # <div class="modal-bg" id="modalBg">
+    #     <div class="modal-content" id="modalContent">
+    #         <button class="close-modal" onclick="fecharModal()">&times;</button>
+    #         <h3>Detalhes do Registro</h3>
+    #         <table id="modalTable"></table>
+    #     </div>
+    # </div>
+    # <script>
+    # const eventosData = {data_json};
+    # function mostrarModal(idx) {{
+    #     // Busca o registro pelo valor da coluna 'linha'
+    #     const registro = eventosData.find(r => r.linha == idx);
+    #     let html = '';
+    #     const cols = ['linha', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
+    #     const labels = ['Linha do CSV', 'Tipo Mensagem', 'Data/Hora Evento', 'Latitude', 'Longitude'];
+    #     for (let i = 0; i < cols.length; i++) {{           
+    #         html += `<tr><th>` + labels[i] + `</th><td>` + (registro && registro[cols[i]] !== undefined ? registro[cols[i]] : '') + `</td></tr>`;
+    #     }}
+    #     document.getElementById('modalTable').innerHTML = html;
+    #     document.getElementById('modalBg').classList.add('active');
+    # }}
+    # function fecharModal() {{
+    #     document.getElementById('modalBg').classList.remove('active');
+    # }}
+    # document.getElementById('modalBg').addEventListener('click', function(e) {{
+    #     if (e.target === this) fecharModal();
+    # }});
+    # document.addEventListener('keydown', function(e) {{
+    #     if (e.key === 'Escape') fecharModal();
+    # }});
+    # </script>
+    # <style>
+    # .modal-bg {{
+    #     display: none;
+    #     position: fixed;
+    #     z-index: 1000;
+    #     left: 0; top: 0; width: 100vw; height: 100vh;
+    #     background: rgba(0,0,0,0.4);
+    #     align-items: center;
+    #     justify-content: center;
+    # }}
+    # .modal-bg.active {{
+    #     display: flex;
+    # }}
+    # .modal-content {{
+    #     background: #fff;
+    #     border-radius: 18px;
+    #     padding: 32px 32px 24px 32px;
+    #     min-width: 320px;
+    #     max-width: 90vw;
+    #     box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    #     position: relative;
+    #     animation: fadeIn 0.2s;
+    # }}
+    # @keyframes fadeIn {{
+    #     from {{ opacity: 0; transform: scale(0.95); }}
+    #     to {{ opacity: 1; transform: scale(1); }}
+    # }}
+    # .modal-content h3 {{
+    #     margin-top: 0;
+    #     font-size: 1.3em;
+    #     color: #764ba2;
+    #     font-family: 'Saira', sans-serif;
+    # }}
+    # .modal-content table {{
+    #     width: 100%;
+    #     border-collapse: collapse;
+    #     margin-top: 10px;
+    # }}
+    # .modal-content th, .modal-content td {{
+    #     text-align: left;
+    #     padding: 8px 12px;
+    # }}
+    # .modal-content th {{
+    #     color: #495057;
+    #     font-weight: bold;
+    #     background: #f8f9fa;
+    # }}
+    # .close-modal {{
+    #     position: absolute;
+    #     top: 12px; right: 18px;
+    #     font-size: 1.5em;
+    #     color: #888;
+    #     cursor: pointer;
+    #     font-weight: bold;
+    #     background: none;
+    #     border: none;
+    # }}
+    # @media (max-width: 600px) {{
+    #     .modal-content {{ padding: 18px 6px 12px 6px; }}
+    # }}
+    # </style>
+    # '''
+    # final_html += modal_html
+
     final_html += html_footer                # Close HTML with global JS + modal
 
     # Write final file
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(final_html)
 
-    print(f"Success: Dashboard '{output_file}' generated successfully!")
+    # print(f"Success: Dashboard '{output_file}' generated successfully!")
 
-if __name__ == "__main__":
-    # Exemplo de uso: você deve carregar o DataFrame df_raw antes de chamar unir_blocos
-    try:
-        df = None
-        # Tenta ler o arquivo com diferentes codificações
-        for enc in ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']:
-            try:
-                df = pd.read_csv('logs/867488061317839_decoded.csv', encoding=enc, low_memory=False)
-                break
-            except Exception:
-                continue
-        if df is None:
-            print("❌ Não foi possível ler o arquivo.")
-            pass
-        unir_blocos(df)
-    except Exception as e:
-        print(f"Erro ao processar o arquivo: {e}")
-        pass    
+# if __name__ == "__main__":
+#     # Exemplo de uso: você deve carregar o DataFrame df_raw antes de chamar unir_blocos
+#     try:
+#         df = None
+#         # Tenta ler o arquivo com diferentes codificações
+#         for enc in ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']:
+#             try:
+#                 df = pd.read_csv('logs/867488061317839_decoded.csv', encoding=enc, low_memory=False)
+#                 break
+#             except Exception:
+#                 continue
+#         if df is None:
+#             print("❌ Não foi possível ler o arquivo.")
+#             pass
+#         unir_blocos(df)
+#     except Exception as e:
+#         print(f"Erro ao processar o arquivo: {e}")
+#         pass    

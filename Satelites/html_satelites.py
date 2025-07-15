@@ -1,20 +1,11 @@
 import pandas as pd
 from pathlib import Path
+from typing import Union
 
-def gerar_bloco_satelites(
-    csv_todos='Satelites/estatisticas_gps_todos.csv',
-    csv_validos='Satelites/estatisticas_gps_validos.csv',
-    csv_resumo='Satelites/estatisticas_gps_resumo.csv',
-    filename='bloco_satelites.html'):
+def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_resumo: pd.DataFrame, filename='bloco_satelites.html'):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
-
-    # Lê os CSVs
-    df_todos = pd.read_csv(csv_todos)
-    df_validos = pd.read_csv(csv_validos)
-    df_resumo = pd.read_csv(csv_resumo)
-
 
     # CSS isolado
     css = """
@@ -86,10 +77,7 @@ def gerar_bloco_satelites(
         overflow-x: auto;
         transition: box-shadow 0.3s, transform 0.3s;
     }
-    .bloco-satelites .tabela-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    }
+    .bloco-satelites .tabela-container:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); transition: box-shadow 0.3s, transform 0.3s;}
     .bloco-satelites .tabela-estatisticas {
         width: 100%;
         border-collapse: collapse;
@@ -214,7 +202,13 @@ def gerar_bloco_satelites(
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    print(f"✅ Bloco de satélites salvo em: {output_path.resolve()}")
+    # print(f"✅ Bloco de satélites salvo em: {output_path.resolve()}")
 
 if __name__ == "__main__":
-    gerar_bloco_satelites()
+    # Exemplo de uso (substitua com seus DataFrames)
+    # df_todos = pd.read_csv('Satelites/estatisticas_gps_todos.csv')
+    # df_validos = pd.read_csv('Satelites/estatisticas_gps_validos.csv')
+    # df_resumo = pd.read_csv('Satelites/estatisticas_gps_resumo.csv')
+
+    # gerar_bloco_satelites(df_todos, df_validos, df_resumo)
+    pass # Removido o exemplo de uso para evitar leitura de arquivos

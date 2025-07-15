@@ -4,17 +4,9 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def analise_medias(caminho_arquivo):
-    codificacoes = ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']
-    for encoding in codificacoes:
-        try:
-            df = pd.read_csv(caminho_arquivo, encoding=encoding, low_memory=False)
-            break
-        except UnicodeDecodeError:
-            continue
-    else:
-        print("Erro: Não foi possível ler o arquivo com as codificações testadas.")
-        return None
+def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    df = df.copy()
+    salvar_csv = False
 
     df['Data/Hora Evento'] = pd.to_datetime(df['Data/Hora Evento'], errors='coerce')
     df['Satélites'] = pd.to_numeric(df['Satélites'], errors='coerce')
@@ -48,7 +40,8 @@ def analise_medias(caminho_arquivo):
         {'Dado': 'Satélites', **stats_serie(satelites)},
         {'Dado': 'Hdop', **stats_serie(hdop)}
     ])
-    tabela_todos.to_csv('Satelites/estatisticas_gps_todos.csv', index=False, encoding='utf-8-sig')
+    if salvar_csv:
+        tabela_todos.to_csv('Satelites/estatisticas_gps_todos.csv', index=False, encoding='utf-8-sig')
 
     # === TABELA 2: APENAS VÁLIDOS ===
     satelites_validos = satelites[satelites > 0]
@@ -57,7 +50,8 @@ def analise_medias(caminho_arquivo):
         {'Dado': 'Satélites', **stats_serie(satelites_validos)},
         {'Dado': 'Hdop', **stats_serie(hdop_validos)}
     ])
-    tabela_validos.to_csv('Satelites/estatisticas_gps_validos.csv', index=False, encoding='utf-8-sig')
+    if salvar_csv:
+        tabela_validos.to_csv('Satelites/estatisticas_gps_validos.csv', index=False, encoding='utf-8-sig')
 
     # === RESUMO ===
     resumo = pd.DataFrame([
@@ -65,9 +59,14 @@ def analise_medias(caminho_arquivo):
         {'Métrica': 'Registros válidos', 'Valor': registros_validos},
         {'Métrica': '% Inválidos', 'Valor': f"{perc_invalidos:.1f}%"}
     ])
-    resumo.to_csv('Satelites/estatisticas_gps_resumo.csv', index=False, encoding='utf-8-sig')
+    if salvar_csv:
+        resumo.to_csv('Satelites/estatisticas_gps_resumo.csv', index=False, encoding='utf-8-sig')
 
-    print("✅ Arquivos de estatísticas gerados com sucesso.")
+    # print("✅ Arquivos de estatísticas gerados com sucesso.")
+    return tabela_todos, tabela_validos, resumo
 
 if __name__ == "__main__":
-    analise_medias('logs/analise_par09.csv')
+    # This part of the code will need to be updated to pass a DataFrame instead of a file path
+    # For example, if you have a DataFrame 'df_example'
+    # analise_medias(df_example)
+    pass # Placeholder for actual DataFrame usage

@@ -1,16 +1,11 @@
 import pandas as pd
 from pathlib import Path
+from typing import Union
 
-def gerar_bloco_velocidade(
-    csv_path='Velocidade/velocidade_analisada.csv',
-    filename='bloco_velocidade.html'
-):
+def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
-
-    # Lê o CSV de velocidades
-    df = pd.read_csv(csv_path, encoding='utf-8-sig')
 
     # Filtro correto: só linhas com valor numérico válido
     absurda_numeric = pd.Series(pd.to_numeric(df['Velocidade absurda'], errors='coerce'))
@@ -246,9 +241,19 @@ def gerar_bloco_velocidade(
                 velocidade_str = 'N/A'
             else:
                 velocidade_str = f"{velocidade} km/h"
+            # --- LINK COMENTADO ---
+            # html += f'''
+            # <tr>
+            #     <td><a href="#" class="Linha-link" onclick="mostrarModal({linha}); return false;">{linha}</a></td>
+            #     <td>{row['Data']}</td>
+            #     <td>{row['Hora']}</td>
+            #     <td>{row['Tipo Mensagem']}</td>
+            #     <td>{velocidade_str}</td>
+            # </tr>
+            # '''
             html += f'''
             <tr>
-                <td><a href="#" class="Linha-link" onclick="mostrarModal({linha}); return false;">{linha}</a></td>
+                <td>{linha}</td>
                 <td>{row['Data']}</td>
                 <td>{row['Hora']}</td>
                 <td>{row['Tipo Mensagem']}</td>
@@ -266,9 +271,19 @@ def gerar_bloco_velocidade(
                     velocidade_str = 'N/A'
                 else:
                     velocidade_str = f"{velocidade} km/h"
+                # --- LINK COMENTADO ---
+                # html += f'''
+                # <tr class="linha-oculta linha-{tipo_alerta}">
+                #     <td><a href="#" class="Linha-link" onclick="mostrarModal({linha}); return false;">{linha}</a></td>
+                #     <td>{row['Data']}</td>
+                #     <td>{row['Hora']}</td>
+                #     <td>{row['Tipo Mensagem']}</td>
+                #     <td>{velocidade_str}</td>
+                # </tr>
+                # '''
                 html += f'''
                 <tr class="linha-oculta linha-{tipo_alerta}">
-                    <td><a href="#" class="Linha-link" onclick="mostrarModal({linha}); return false;">{linha}</a></td>
+                    <td>{linha}</td>
                     <td>{row['Data']}</td>
                     <td>{row['Hora']}</td>
                     <td>{row['Tipo Mensagem']}</td>
@@ -329,7 +344,7 @@ def gerar_bloco_velocidade(
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    print(f"✅ Bloco de velocidade salvo em: {output_path.resolve()}")
+    # print(f"✅ Bloco de velocidade salvo em: {output_path.resolve()}")
 
-if __name__ == "__main__":
-    gerar_bloco_velocidade()
+# if __name__ == "__main__":
+#     gerar_bloco_velocidade(csv_path='Velocidade/velocidade_analisada.csv')

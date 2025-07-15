@@ -1,0 +1,15 @@
+﻿Tipo mensagem,Quantidade
+HBD,18231
+Posicionamento por tempo em movimento,8464
+GTSTT,1039
+Modo Econômico,754
+GTIGL,656
+GTIGF,328
+GTIGN,328
+GTPDP,141
+GTBTC,5
+GTSTC,5
+ACK,3
+GTRTL,1
++RESP:GTALM:FRI,1
+AT+GTCFG,1

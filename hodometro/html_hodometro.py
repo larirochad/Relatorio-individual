@@ -2,13 +2,18 @@ import pandas as pd
 import json
 from pathlib import Path
 
-def gerar_bloco_hodometro_from_csv(csv_path, meta_km=12000, filename='bloco_hodometro.html'):
+def gerar_bloco_hodometro_from_csv(df: pd.DataFrame, filename='bloco_hodometro.html'):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
 
+    # Lê o CSV ou usa o DataFrame
+    # if isinstance(df_ou_path, pd.DataFrame):
+    #     df = df_ou_path.copy()
+    # else:
+    #     df = pd.read_csv(df_ou_path)
+
     # Lê o CSV e soma todas as distâncias
-    df = pd.read_csv(csv_path)
     total_km = 0.0
     for col in ['Curta', 'Media', 'Longa']:
         if col in df.columns:
@@ -19,14 +24,21 @@ def gerar_bloco_hodometro_from_csv(csv_path, meta_km=12000, filename='bloco_hodo
     cor_fundo = '#f5f5f5'
 
     # Cálculo do percentual atingido
-    alcance = min((total_km / meta_km) * 100, 100)
+    alcance = min((total_km / 12000) * 100, 100) # Assuming meta_km is 12000 for now, as it's not passed as an argument
 
     # Formatação do valor
     valor_km_str = f"{total_km:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
     # HTML/CSS/JS
     html = f"""
-<div class="dashboard-bloco-analise" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 2000px; margin: 0 auto 40px auto;">
+<style>
+.grafico-container:hover {{
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    transition: box-shadow 0.3s, transform 0.3s;
+}}
+</style>
+<div class="dashboard-bloco-analise" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 2000px; margin: 0 auto 40px auto; transition: box-shadow 0.3s, transform 0.3s;">
     <span class="dashboard-title-analise" style="
         font-family: 'Saira', sans-serif;
         background: linear-gradient(to right, #764ba2, #667eea);
@@ -43,12 +55,12 @@ def gerar_bloco_hodometro_from_csv(csv_path, meta_km=12000, filename='bloco_hodo
         border-radius: 0;
         box-shadow: none;
     ">Hodômetro</span>
-    <div class="grafico-container" style="background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 0;">
+    <div class="grafico-container grafico-hodometro" style="background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); margin-bottom: 0; transition: box-shadow 0.3s, transform 0.3s;">
         <h4 style="text-align:center; font-family: Arial, Helvetica, sans-serif; font-weight: 700; margin-bottom: 10px; color: #111;">Teste</h4>
         <div class="canvas-wrapper" style="position: relative; width: 350px; height: 180px; margin: 0 auto;">
             <canvas id="hodometro_teste" width="350" height="180" style="display: block; box-sizing: border-box; border:0;"></canvas>
             <div style="position: absolute; left: 10px;  font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">0 km</div>
-            <div style="position: absolute; right: 0px; font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">{meta_km:,.0f} km</div>
+            <div style="position: absolute; right: 0px; font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">12000 km</div>
         </div>
         <div style="text-align:center; font-size: 1.3em; font-weight: bold; margin-top: 20px; color: #222; font-family: Arial, Helvetica, sans-serif;">
             {valor_km_str} km
@@ -82,7 +94,7 @@ def gerar_bloco_hodometro_from_csv(csv_path, meta_km=12000, filename='bloco_hodo
                             if(context.dataIndex === 0) {{
                                 return 'Concluído: {valor_km_str} km';
                             }} else {{
-                                return 'Restante: ' + ({meta_km} - {total_km}).toLocaleString('pt-BR', {{minimumFractionDigits: 2, maximumFractionDigits: 2}}) + ' km';
+                                return 'Restante: ' + (12000 - {total_km}).toLocaleString('pt-BR', {{minimumFractionDigits: 2, maximumFractionDigits: 2}}) + ' km';
                             }}
                         }}
                     }}
@@ -101,7 +113,10 @@ def gerar_bloco_hodometro_from_csv(csv_path, meta_km=12000, filename='bloco_hodo
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    print(f"✅ Bloco de hodômetro salvo em: {output_path.resolve()}")
+    # print(f"✅ Bloco de hodômetro salvo em: {output_path.resolve()}")
 
 if __name__ == "__main__":
-    gerar_bloco_hodometro_from_csv('hodometro/resultado_viagens.csv')
+    # This part of the code will need to be updated to pass a DataFrame
+    # For now, it will raise an error if 'hodometro/resultado_viagens.csv' is not a DataFrame
+    # gerar_bloco_hodometro_from_csv('hodometro/resultado_viagens.csv')
+    pass # Placeholder for future DataFrame generation

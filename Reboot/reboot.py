@@ -1,18 +1,8 @@
 import pandas as pd
 
-def reboot(df_path, caminho_saida='Reboot/reboot_eventos.csv'):
+def reboot(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
     try:
-        # Tenta múltiplas codificações para abrir o CSV
-        for enc in ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']:
-            try:
-                df = pd.read_csv(df_path, encoding=enc, low_memory=False)
-                break
-            except Exception:
-                continue
-        else:
-            print("❌ Erro: Não foi possível abrir o arquivo.")
-            return
-
         # Adiciona coluna 'linha' como index global
         df['linha'] = df.index + 2
 
@@ -48,12 +38,13 @@ def reboot(df_path, caminho_saida='Reboot/reboot_eventos.csv'):
         resultado = df_reboot[['linha', 'Reboot Nº', 'Data/Hora Evento', 'Tipo Mensagem', 'Motivo Power On', 'Descrição Motivo Power On']]
 
         # Salvar CSV
-        resultado.to_csv(caminho_saida, index=False, encoding='iso-8859-1')
-        print(f"✅ Reboots encontrados: {len(resultado)}")
-        print(f"📁 Resultado salvo em: {caminho_saida}")
+        # print(f"✅ Reboots encontrados: {len(resultado)}")
+        # print(f"📁 Resultado salvo em: {caminho_saida}")
+        return resultado
 
     except Exception as e:
         print(f"❌ Erro inesperado: {e}")
+        return None
 
 if __name__ == "__main__":
     reboot('logs/867488061317839_decoded.csv')

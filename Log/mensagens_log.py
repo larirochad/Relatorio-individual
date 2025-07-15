@@ -1,18 +1,8 @@
 import pandas as pd
 
-def logs(caminho_arquivo, caminho_saida='Log/logs.csv'):
+def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    df = df.copy()
     try:
-        df = None
-        for enc in ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']:
-            try:
-                df = pd.read_csv(caminho_arquivo, encoding=enc, low_memory=False)
-                break
-            except Exception:
-                continue
-        if df is None:
-            print("❌ Não foi possível ler o arquivo.")
-            return
-        
         # Adicionar índice da linha original (considerando cabeçalho)
         df['Linha'] = df.index + 2  # +2 porque index começa em 0 e tem o cabeçalho
         
@@ -43,6 +33,7 @@ def logs(caminho_arquivo, caminho_saida='Log/logs.csv'):
             max_delay_idx = delay_series.idxmax()
             mensagem_maior_delay = df_logs.loc[max_delay_idx, 'Tipo Mensagem']
             maior_delay = df_logs.loc[max_delay_idx, 'Delay']
+            # print(maior_delay)
             linha_maior_delay = df_logs.loc[max_delay_idx, 'Linha']
         else:
             mensagem_maior_delay = ""
@@ -50,41 +41,30 @@ def logs(caminho_arquivo, caminho_saida='Log/logs.csv'):
             linha_maior_delay = ""
 
         # Criar DataFrame de resultado apenas com logs
-        colunas = ['Linha', 'Tipo Mensagem', 'Data/Hora Inclusão', 'Data/Hora Evento', 'Delay', 'Log',
-                   'Percentual_Logs_Total', 'Media_Delay_Logs', 'Mensagem_Maior_Delay', 'Maior_Delay_Encontrado', 'Linha_Maior_Delay']
-        df_resultado = df_logs[['Linha', 'Tipo Mensagem', 'Data/Hora Inclusão', 'Data/Hora Evento', 'Delay', 'Log']].copy()
-        for col in colunas[6:]:
-            df_resultado[col] = ''
-        df_resultado = df_resultado[colunas]  # garantir ordem
+        colunas = ['Linha', 'Tipo Mensagem', 'Data/Hora Inclusão', 'Data/Hora Evento', 'Delay', 'Log']
+        df_resultado = df_logs[colunas].copy()
         if not isinstance(df_resultado, pd.DataFrame):
             df_resultado = pd.DataFrame(df_resultado)
 
-        # Adicionar linha com estatísticas na primeira linha, apenas valores
-        linha_estatisticas = pd.DataFrame({
-            'Linha': [''],
-            'Tipo Mensagem': [''],
-            'Data/Hora Inclusão': [''],
-            'Data/Hora Evento': [''],
-            'Delay': [''],
-            'Log': [''],
+        # Criar DataFrame separado com estatísticas
+        df_estatisticas = pd.DataFrame({
+            'Tipo Mensagem': ['ESTATÍSTICAS'],
             'Percentual_Logs_Total': [f"{percentual_logs:.2f}%"],
             'Media_Delay_Logs': [f"{media_delay:.2f}s"],
             'Mensagem_Maior_Delay': [mensagem_maior_delay],
             'Maior_Delay_Encontrado': [f"{maior_delay:.2f}s"],
             'Linha_Maior_Delay': [linha_maior_delay]
-        })[colunas]
-        if not isinstance(linha_estatisticas, pd.DataFrame):
-            linha_estatisticas = pd.DataFrame(linha_estatisticas)
-        
-        # Concatenar estatísticas antes dos logs
-        df_final = pd.concat([linha_estatisticas, df_resultado], ignore_index=True)
+        })
 
         # Exibir resultado
-        print("OK ")
-        df_final.to_csv(caminho_saida, index=False)
-
+        # print("OK ")
+        # print(df_resultado)
+        return df_resultado, df_estatisticas
+        
     except Exception as e:
         print(f"❌ Erro inesperado: {e}")
+        return pd.DataFrame(), pd.DataFrame() # Retorna DataFrames vazios em caso de erro
 
 if __name__ == "__main__":
-    logs('logs/analise_par09.csv') 
+    df = pd.read_csv('logs/867488065171646_decoded.csv', encoding='iso-8859-1')
+    logs(df)     
