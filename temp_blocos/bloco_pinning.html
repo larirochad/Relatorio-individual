@@ -113,31 +113,21 @@
     .zoom-controls button:hover { transform: translateY(-2px); opacity: 0.9;}
     </style>
     
-    <div class="bloco-pinning">
+    <div class="bloco-pinning" id="bloco-pinning">
         <span class="dashboard-title-analise">Análise de Pinning (Distância Incremental)</span>
         
     <div class="resumo-anomalias-container">
       <div class="resumo-anomalia-card">
         <div class="resumo-anomalia-titulo">Soma dos incrementos únicos &gt; 40m</div>
-        <div class="resumo-anomalia-numero">49931.20 m</div>
+        <div class="resumo-anomalia-numero">2950.44 m</div>
         <div class="resumo-anomalia-legenda">Soma dos valores únicos acima de 40m</div>
       </div>
     </div>
     
-        
-        <div class="tabela-container">
-            <div class="grafico-titulo-container">
-                <h3 class="grafico-titulo">Mensagens com Distância Incremental > 0</h3>
-            </div>
-            <div class="faixa-legenda">Todas as mensagens com distância não nula e motion status = 21.</div>
-            <table class="tabela-estatisticas" id="tabela_nonzero">
-                <thead><tr><th>linha</th><th>Hodômetro anterior</th><th>Hodômetro Total</th><th>Tipo Mensagem</th><th>Motion Status</th><th>Distância incremental (m)</th></tr></thead>
-                <tbody>
-        <tr><td>33646</td><td>1798.6</td><td>1775.4</td><td>GTSTT</td><td>21</td><td>49759.82876135573</td></tr><tr><td>7046</td><td>574.4</td><td>574.6</td><td>GTIGL</td><td>21</td><td>171.36887051384264</td></tr></tbody></table></div>
         <div class='grafico-container'>
             <button class='btn-maximizar' onclick="maximizeChart('graficoPinning')">🔍 Maximizar</button>
             <div class='grafico-titulo-container'>
-                <h3 class='grafico-titulo'>Distância Incremental por Evento</h3>
+                <h3 class='grafico-titulo'>Gráfico de todas as distâncias com motion = 21 </h3>
             </div>
             <div class='chart-wrapper'>
                 <canvas id="graficoPinning"></canvas>
@@ -152,13 +142,35 @@
         
         <div class="tabela-container">
             <div class="grafico-titulo-container">
-                <h3 class="grafico-titulo">Incrementos de Hodômetro</h3>
+                <h3 class="grafico-titulo">Mensagens com Motion = 21 e Distância > 40m</h3>
             </div>
-            <div class="faixa-legenda">Apenas linhas com incremento de hodômetro e distância maior que 40m.</div>
-            <table class="tabela-estatisticas" id="tabela_hodo">
-                <thead><tr><th>linha</th><th>Hodômetro anterior</th><th>Hodômetro Total</th><th>Tipo Mensagem</th><th>Motion Status</th><th>Distância incremental (m)</th></tr></thead>
+            <div class="faixa-legenda">Inclui todas as mensagens com Motion Status igual a 21 e distância incremental maior que 40 metros.</div>
+            <table class="tabela-estatisticas" id="tabela_motion21_40m">
+                <thead><tr><th>Linha</th><th>Hodômetro antes da parada</th><th>Hodômetro com status parado</th><th>Tipo de mensagem</th><th>Motion Status</th><th>Distância até detecção de parada (m)</th></tr></thead>
                 <tbody>
-        <tr><td>33646</td><td>1798.6</td><td>1775.4</td><td>GTSTT</td><td>21</td><td>49759.82876135573</td></tr><tr><td>7046</td><td>574.4</td><td>574.6</td><td>GTIGL</td><td>21</td><td>171.36887051384264</td></tr></tbody></table></div>
+        <tr><td>17643</td><td>4250.9</td><td>4250.9</td><td>GTSTT</td><td>21</td><td>48.06</td></tr><tr><td>17680</td><td>4253.6</td><td>4253.6</td><td>GTSTT</td><td>21</td><td>51.42</td></tr><tr><td>17688</td><td>4254.2</td><td>4254.8</td><td>GTSTT</td><td>21</td><td>676.29</td></tr><tr><td>18087</td><td>4268.9</td><td>4269.4</td><td>GTSTT</td><td>21</td><td>513.92</td></tr><tr><td>19116</td><td>4293.2</td><td>4293.5</td><td>GTSTT</td><td>21</td><td>296.16</td></tr><tr class="linha-oculta linha-motion21_40m"><td>19121</td><td>4293.6</td><td>4293.7</td><td>GTSTT</td><td>21</td><td>132.56</td></tr><tr class="linha-oculta linha-motion21_40m"><td>19888</td><td>4403.0</td><td>4402.6</td><td>GTPNR</td><td>21</td><td>154.74</td></tr><tr class="linha-oculta linha-motion21_40m"><td>19892</td><td>4402.6</td><td>4402.6</td><td>GTRTL</td><td>21</td><td>510.25</td></tr><tr class="linha-oculta linha-motion21_40m"><td>24880</td><td>4449.1</td><td>4449.1</td><td>GTPNR</td><td>21</td><td>194.04</td></tr><tr class="linha-oculta linha-motion21_40m"><td>29019</td><td>4586.3</td><td>4586.6</td><td>GTSTT</td><td>21</td><td>302.57</td></tr><tr class="linha-oculta linha-motion21_40m"><td>29039</td><td>4590.3</td><td>4590.4</td><td>GTSTT</td><td>21</td><td>70.42</td></tr></tbody></table>
+            <div style="text-align: center;">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('motion21_40m', 11)" id="btn_motion21_40m" data-tabela="tabela_motion21_40m">
+                    Ver todos os dados
+                </button>
+            </div>
+            </div>
+        
+        <div class="tabela-container">
+            <div class="grafico-titulo-container">
+                <h3 class="grafico-titulo">Mensagens com incremento de hodômetro</h3>
+            </div>
+            <div class="faixa-legenda">Inclui todas as mensagens que tiveram qualquer incremento de hodômetro, independente da distância.</div>
+            <table class="tabela-estatisticas" id="tabela_incremento_hodo">
+                <thead><tr><th>Linha</th><th>Hodômetro antes da parada</th><th>Hodômetro com status parado</th><th>Tipo de mensagem</th><th>Motion Status</th><th>Distância até detecção de parada (m)</th></tr></thead>
+                <tbody>
+        <tr><td>17242</td><td>4137.0</td><td>4136.8</td><td>GTPNR</td><td>21</td><td>0.24</td></tr><tr><td>17688</td><td>4254.2</td><td>4254.8</td><td>GTSTT</td><td>21</td><td>676.29</td></tr><tr><td>18087</td><td>4268.9</td><td>4269.4</td><td>GTSTT</td><td>21</td><td>513.92</td></tr><tr><td>19116</td><td>4293.2</td><td>4293.5</td><td>GTSTT</td><td>21</td><td>296.16</td></tr><tr><td>19121</td><td>4293.6</td><td>4293.7</td><td>GTSTT</td><td>21</td><td>132.56</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>19888</td><td>4403.0</td><td>4402.6</td><td>GTPNR</td><td>21</td><td>154.74</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>29019</td><td>4586.3</td><td>4586.6</td><td>GTSTT</td><td>21</td><td>302.57</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>29039</td><td>4590.3</td><td>4590.4</td><td>GTSTT</td><td>21</td><td>70.42</td></tr></tbody></table>
+            <div style="text-align: center;">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('incremento_hodo', 8)" id="btn_incremento_hodo" data-tabela="tabela_incremento_hodo">
+                    Ver todos os dados
+                </button>
+            </div>
+            </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
@@ -189,11 +201,11 @@
                 window.charts['graficoPinning'] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: [0, 33646, 7046],
+                        labels: [0, 10573, 11657, 15677, 17242, 17643, 17680, 17688, 18087, 19110, 19116, 19121, 19888, 19892, 24880, 29019, 29039, 29216],
                         datasets: [
                             {
                                 label: 'Distância Incremental',
-                                data: [0, 49759.82876135573, 171.36887051384264],
+                                data: [0, 29.56991547702549, 1.0059818127685, 6.963983743452506, 0.2448319058093485, 48.062933261965945, 51.41846670613879, 676.2924180375484, 513.9225597661489, 18.01626462921929, 296.1564525048271, 132.56030055681032, 154.7417094570788, 510.2507013546039, 194.0430729498493, 302.57366209954165, 70.41683723940531, 2.556012950177953],
                                 borderColor: 'blue',
                                 backgroundColor: 'rgba(30, 136, 229, 0.08)',
                                 borderWidth: 2,
@@ -203,7 +215,7 @@
                             },
                             {
                                 label: 'Limite 40m',
-                                data: Array(3).fill(40),
+                                data: Array(18).fill(40),
                                 borderColor: 'red',
                                 borderWidth: 2,
                                 borderDash: [8,6],
@@ -230,7 +242,7 @@
                                 title: { display: true, text: 'DISTÂNCIA ENTRE OS PONTOS(m)', font: { size: 14, weight: 'bold', family: 'Arial' }, color: '#000' }
                             },
                             x: {
-                                title: { display: true, text: 'LINHA DO CSV ', font: { size: 14, weight: 'bold', family: 'Arial' }, color: '#000' }
+                                title: { display: true, text: 'LINHA DA PLANILHA ', font: { size: 14, weight: 'bold', family: 'Arial' }, color: '#000' }
                             }
                         }
                     }

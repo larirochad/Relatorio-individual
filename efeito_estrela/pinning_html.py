@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from pathlib import Path
 from typing import Union
+import numpy as np
 
 def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, filename='bloco_pinning.html'):
     # Caminhos
@@ -18,23 +19,33 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
     else:
         blocos = pd.read_csv(csv_blocos)
 
+    # Corrigir nome da coluna de distância para o nome correto do CSV
     dist_col = 'Distância incremental (m)'
     linha_col = 'linha' if 'linha' in blocos.columns else 'Linha'
 
     # --- Tabela 2: todos com incremento > 0 (usada para gráfico e tabela)
     blocos_nonzero = blocos[blocos[dist_col] > 0]
 
+    # Garantir que o gráfico use apenas motion = 21
+    if 'Motion Status' in blocos.columns:
+        blocos_motion21 = blocos[blocos['Motion Status'] == 21]
+        blocos_nonzero = blocos_motion21[blocos_motion21[dist_col] > 0]
+
+    # --- Tabela 2: todos com incremento > 40 (usada para gráfico e tabela)
+    blocos_maior_40 = blocos[blocos[dist_col] > 40]
+
+    # Primeira tabela: motion = 21 e distância > 40m
+    tabela1_df = blocos[(blocos['Motion Status'] == 21) & (blocos[dist_col] > 40)]
+    # Segunda tabela: incremento de hodômetro, independente da distância
+    tabela2_df = df_inc[df_inc['Hodômetro anterior'] != df_inc['Hodômetro Total']]
+
     # --- Dados para gráfico (usar blocos_nonzero)
-    x_raw = blocos_nonzero.get(linha_col, [])
-    y_raw = blocos_nonzero.get(dist_col, [])
-    if x_raw is not None and hasattr(x_raw, 'tolist'):
-        x = [int(v) for v in x_raw.tolist()]
-    else:
-        x = [0]
-    if y_raw is not None and hasattr(y_raw, 'tolist'):
-        y = [float(v) for v in y_raw.tolist()]
-    else:
-        y = [0]
+    if not isinstance(blocos_nonzero, pd.DataFrame):
+        blocos_nonzero = pd.DataFrame({linha_col: [], dist_col: []})
+    x_raw = blocos_nonzero[linha_col] if linha_col in blocos_nonzero.columns else pd.Series([], dtype=int)
+    y_raw = blocos_nonzero[dist_col] if dist_col in blocos_nonzero.columns else pd.Series([], dtype=float)
+    x = [int(v) for v in x_raw.tolist()] if not x_raw.empty else [0]
+    y = [float(v) for v in y_raw.tolist()] if not y_raw.empty else [0]
     if not (x and x[0] == 0 and y[0] == 0):
         x = [0] + x
         y = [0] + y
@@ -47,6 +58,24 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
         # Limita a 5 linhas inicialmente
         df_display = df.head(max_linhas)
         tem_mais = len(df) > max_linhas
+        # Novo cabeçalho de exibição
+        display_headers = [
+            "Linha",
+            "Hodômetro antes da parada",
+            "Hodômetro com status parado",
+            "Tipo de mensagem",
+            "Motion Status",
+            "Distância até detecção de parada (m)"
+        ]
+        # Mapeamento dos nomes de exibição para os nomes das colunas do DataFrame
+        data_columns = [
+            linha_col,
+            'Hodômetro anterior',
+            'Hodômetro Total',
+            'Tipo Mensagem',
+            'Motion Status',
+            dist_col
+        ]
         html = f'''
         <div class="tabela-container">
             <div class="grafico-titulo-container">
@@ -54,20 +83,38 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
             </div>
             <div class="faixa-legenda">{legenda}</div>
             <table class="tabela-estatisticas" id="{table_id}">
-                <thead><tr>{''.join(f'<th>{col}</th>' for col in [linha_col, 'Hodômetro anterior', 'Hodômetro Total', 'Tipo Mensagem', 'Motion Status', dist_col])}</tr></thead>
+                <thead><tr>{''.join(f'<th>{header}</th>' for header in display_headers)}</tr></thead>
                 <tbody>
         '''
         for _, row in df_display.iterrows():
-            html += '<tr>' + ''.join(f'<td>{row.get(col, "")}</td>' for col in [linha_col, 'Hodômetro anterior', 'Hodômetro Total', 'Tipo Mensagem', 'Motion Status', dist_col]) + '</tr>'
+            html += '<tr>'
+            for col in data_columns:
+                val = row.get(col, "")
+                if col == dist_col and val != "":
+                    try:
+                        val = f"{float(val):.2f}"
+                    except Exception:
+                        pass
+                html += f'<td>{val}</td>'
+            html += '</tr>'
         # Linhas extras ocultas
         if tem_mais:
             for _, row in df.iloc[max_linhas:].iterrows():
-                html += '<tr class="linha-oculta linha-' + tipo + '">' + ''.join(f'<td>{row.get(col, "")}</td>' for col in [linha_col, 'Hodômetro anterior', 'Hodômetro Total', 'Tipo Mensagem', 'Motion Status', dist_col]) + '</tr>'
+                html += '<tr class="linha-oculta linha-' + tipo + '">' 
+                for col in data_columns:
+                    val = row.get(col, "")
+                    if col == dist_col and val != "":
+                        try:
+                            val = f"{float(val):.2f}"
+                        except Exception:
+                            pass
+                    html += f'<td>{val}</td>'
+                html += '</tr>'
         html += '</tbody></table>'
         if tem_mais:
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo}', {len(df)})" id="btn_{tipo}">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo}', {len(df)})" id="btn_{tipo}" data-tabela="tabela_{tipo}">
                     Ver todos os dados
                 </button>
             </div>
@@ -75,12 +122,20 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
         html += '</div>'
         return html
 
-    # Tabela 1: só incrementos de hodômetro
-    inc_hodo = df_inc[df_inc['Hodômetro anterior'] != df_inc['Hodômetro Total']]
-    table1 = make_table(inc_hodo, 'Incrementos de Hodômetro', 'Apenas linhas com incremento de hodômetro e distância maior que 40m.', 'hodo')
-    # Tabela 2: todos com incremento > 0
-    # (já definida: blocos_nonzero)
-    table2 = make_table(blocos_nonzero, 'Mensagens com Distância Incremental > 0', 'Todas as mensagens com distância não nula e motion status = 21.', 'nonzero')
+    # Tabela 1: motion = 21 e distância > 40m
+    table1 = make_table(
+        tabela1_df,
+        'Mensagens com Motion = 21 e Distância > 40m',
+        'Inclui todas as mensagens com Motion Status igual a 21 e distância incremental maior que 40 metros.',
+        'motion21_40m'
+    )
+    # Tabela 2: incremento de hodômetro
+    table2 = make_table(
+        tabela2_df,
+        'Mensagens com incremento de hodômetro',
+        'Inclui todas as mensagens que tiveram qualquer incremento de hodômetro, independente da distância.',
+        'incremento_hodo'
+    )
 
     # --- Card resumo ---
     acima_40 = blocos_nonzero[blocos_nonzero[dist_col] > 40]
@@ -215,14 +270,13 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
     # --- HTML ---
     html = f'''
     {css}
-    <div class="bloco-pinning">
+    <div class="bloco-pinning" id="bloco-pinning">
         <span class="dashboard-title-analise">Análise de Pinning (Distância Incremental)</span>
         {card}
-        {table2}
         <div class='grafico-container'>
             <button class='btn-maximizar' onclick="maximizeChart('graficoPinning')">🔍 Maximizar</button>
             <div class='grafico-titulo-container'>
-                <h3 class='grafico-titulo'>Distância Incremental por Evento</h3>
+                <h3 class='grafico-titulo'>Gráfico de todas as distâncias com motion = 21 </h3>
             </div>
             <div class='chart-wrapper'>
                 <canvas id="graficoPinning"></canvas>
@@ -235,6 +289,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
             </div>
         </div>
         {table1}
+        {table2}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
@@ -306,7 +361,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
                                 title: {{ display: true, text: 'DISTÂNCIA ENTRE OS PONTOS(m)', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
                             }},
                             x: {{
-                                title: {{ display: true, text: 'LINHA DO CSV ', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
+                                title: {{ display: true, text: 'LINHA DA PLANILHA ', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
                             }}
                         }}
                     }}

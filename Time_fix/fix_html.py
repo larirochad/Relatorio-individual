@@ -26,7 +26,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Total de anomalias de Time fix negativo</div>
-            <div class="resumo-anomalia-numero red">{total_anomalias}</div>
+            <div class="resumo-anomalia-numero red-timefix">{total_anomalias}</div>
             <div class="resumo-anomalia-legenda">Fix "futuro" em relação ao evento</div>
         </div>
     </div>
@@ -48,7 +48,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
             <td>{int(row['Linha'])}</td>
             <td>{row['Data/Hora Evento']}</td>
             <td>{row['GNSS UTC Time']}</td>
-            <td>{row['Time fix']}</td>
+            <td>{'+' + str(int(abs(row['Time fix'])))} </td>
         </tr>
         """
 
@@ -57,7 +57,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     if tem_mais and len(df_neg) > max_linhas:
         botao_html = '''
         <div style="text-align: center;">
-            <button class="btn-mostrar-todos" onclick="toggleLinhasTimefix()" id="btn_timefix">
+            <button class="btn-mostrar-todos" onclick="toggleLinhasTimefix()" id="btn_timefix" data-tabela="tabela_timefix">
                 Ver todos os dados
             </button>
         </div>
@@ -108,7 +108,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     .linha-oculta {
         display: none;
     }
-    .resumo-anomalia-numero.red {
+    .resumo-anomalia-numero.red-timefix {
         color: #dc3545;
     }
     </style>
@@ -139,7 +139,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
 
     html = f'''
     {css}
-    <div class="bloco-temporizadas">
+    <div class="bloco-temporizadas" id="bloco-timefix">
         <span class="dashboard-title-temporizadas">Anomalias com Time fix negativo </span>
         {resumo_html}
         {tabela}

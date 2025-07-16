@@ -33,15 +33,18 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
         def tipo_dispositivo(df):
             tipo_dispositivo = ''
             if 'Tipo Dispositivo' in df.columns and not df['Tipo Dispositivo'].empty:
-                valor = df['Tipo Dispositivo'].iloc[0]
-                if pd.notna(valor):
+                # Busca o primeiro valor não nulo e não vazio
+                valor = df['Tipo Dispositivo'].dropna().astype(str).str.strip()
+                valor = valor[valor != '']  # Remove strings vazias
+                if not valor.empty:
                     try:
-                        tipo_dispositivo = str(int(float(valor)))
+                        tipo_dispositivo = str(int(float(valor.iloc[0])))
                     except ValueError:
-                        tipo_dispositivo = str(valor).strip()
+                        tipo_dispositivo = valor.iloc[0]
             return tipo_dispositivo
-
+        # print(tipo_dispositivo)
         dispositivo = tipo_dispositivo(df)
+        # print(f"Tipo Dispositivo detectado: {dispositivo} ({type(dispositivo)})")
         df = df.sort_values('Sequência', ascending=True)
         df = df.drop_duplicates(subset='Sequência', keep='first')
 
@@ -82,7 +85,7 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
             final = evento  # valor padrão
 
             # Lógica para dispositivos específicos
-            if dispositivo in ['802003']:
+            if dispositivo == '802003':
                 if evento == 'GTIGN':
                     ign_on += 1
                     modo_eco_ativo = False
@@ -126,7 +129,7 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
                 aggfunc='count',
                 fill_value=0
             ).reset_index()
-
+            print(tabela_pivo)
             return contagem, tabela_pivo
         else:
             # print('⚠️ Coluna "Data/Hora Evento" não encontrada para análise por dia.')
@@ -138,6 +141,6 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     # Exemplo de uso: ler um arquivo CSV e passar o DataFrame para a função
-    df_exemplo = pd.read_csv('logs/analise_par09.csv')
+    df_exemplo = pd.read_csv('logs/867488061438379_decoded.csv', encoding='latin-1', low_memory=False)
     resultado = eventos(df_exemplo)
   

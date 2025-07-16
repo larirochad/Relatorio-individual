@@ -128,13 +128,31 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
     .ver-todos-btn:hover {
         background: linear-gradient(to right, #667eea, #764ba2);
     }
+    /* Novo CSS para centralizar e estilizar o botão com a nova classe */
+    .btn-mostrar-todos {
+        display: block;
+        margin: 18px auto 0 auto;
+        padding: 10px 28px;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(102, 51, 153, 0.07);
+    }
+    .btn-mostrar-todos:hover {
+        background: linear-gradient(to right, #667eea, #764ba2);
+    }
     </style>
     """
 
     # Monta tabela HTML
     html = f"""
     {css}
-    <div class="bloco-reboot">
+    <div class="bloco-reboot" id="bloco-reboot">
         <span class="dashboard-title-reboot">Reboots do Equipamento</span>
         <div class="tabela-reboot-container">
             <div class="resumo-reboot">
@@ -177,7 +195,7 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
     # Adiciona botão se houver mais de 5 linhas
     if len(df) > 5:
         html += """
-            <button class='ver-todos-btn' id='btn-ver-todos-reboot' onclick="toggleLinhasReboot()">Ver todos os dados</button>
+            <button class='btn-mostrar-todos' id='btn-ver-todos-reboot' onclick="toggleLinhasReboot()" data-tabela="bloco-reboot">Ver todos os dados</button>
             <script>
             function toggleLinhasReboot() {
                 var extras = document.querySelectorAll('.linha-extra-reboot');
@@ -186,7 +204,7 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
                 for (var i = 0; i < extras.length; i++) {
                     extras[i].style.display = mostrando ? 'none' : '';
                 }
-                btn.innerText = mostrando ? 'Ver todos os dados' : 'Ocultar dados';
+                btn.innerText = mostrando ? 'Ver todos os dados' : 'Mostrar menos';
                 btn.setAttribute('data-mostrando', mostrando ? 'false' : 'true');
             }
             </script>

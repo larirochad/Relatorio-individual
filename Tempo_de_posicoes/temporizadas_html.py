@@ -131,11 +131,17 @@ def gerar_bloco_temporizadas(df: pd.DataFrame, filename='bloco_temporizadas.html
     
     """
     css_resumo = """
-    .resumo-anomalias-container {
-        display: flex;
-        justify-content: center;
+    #bloco-temporizadas .resumo-anomalias-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 32px;
         margin: 0 0 24px 0;
+        width: 100%;
+    }
+    @media (max-width: 900px) {
+        #bloco-temporizadas .resumo-anomalias-container {
+            grid-template-columns: 1fr;
+        }
     }
     .resumo-anomalia-card {
         background: #f8f9fa;
@@ -254,7 +260,7 @@ def gerar_bloco_temporizadas(df: pd.DataFrame, filename='bloco_temporizadas.html
     {css}
     {css_resumo}
     </style>
-    <div class="bloco-temporizadas">
+    <div class="bloco-temporizadas" id="bloco-temporizadas">
         <span class="dashboard-title-temporizadas">Anomalias de Intervalo entre mensagens temporizadas</span>
         {resumo_html}
     </div>

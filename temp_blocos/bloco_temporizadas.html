@@ -113,11 +113,17 @@
     
     
     
-    .resumo-anomalias-container {
-        display: flex;
-        justify-content: center;
+    #bloco-temporizadas .resumo-anomalias-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 32px;
         margin: 0 0 24px 0;
+        width: 100%;
+    }
+    @media (max-width: 900px) {
+        #bloco-temporizadas .resumo-anomalias-container {
+            grid-template-columns: 1fr;
+        }
     }
     .resumo-anomalia-card {
         background: #f8f9fa;
@@ -146,30 +152,30 @@
     }
     
     </style>
-    <div class="bloco-temporizadas">
+    <div class="bloco-temporizadas" id="bloco-temporizadas">
         <span class="dashboard-title-temporizadas">Anomalias de Intervalo entre mensagens temporizadas</span>
         
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Anomalias por tempo em movimento</div>
-            <div class="resumo-anomalia-numero">861</div>
-            <div class="resumo-anomalia-legenda">de 1390 eventos de temporização</div>
+            <div class="resumo-anomalia-numero">181</div>
+            <div class="resumo-anomalia-legenda">de 563 eventos de temporização</div>
         </div>
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Anomalias por modo econômico</div>
-            <div class="resumo-anomalia-numero">604</div>
-            <div class="resumo-anomalia-legenda">de 1188 eventos de temporização</div>
+            <div class="resumo-anomalia-numero">220</div>
+            <div class="resumo-anomalia-legenda">de 904 eventos de temporização</div>
         </div>
     </div>
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Média dos tempos das anomalias em movimento</div>
-            <div class="resumo-anomalia-numero">68.06 s</div>
+            <div class="resumo-anomalia-numero">72.68 s</div>
             <div class="resumo-anomalia-legenda">(valores fora de 180s)</div>
         </div>
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Média dos tempos das anomalias modo econômico</div>
-            <div class="resumo-anomalia-numero">695.80 s</div>
+            <div class="resumo-anomalia-numero">1446.12 s</div>
             <div class="resumo-anomalia-legenda">(valores fora de 3600s)</div>
         </div>
     </div>

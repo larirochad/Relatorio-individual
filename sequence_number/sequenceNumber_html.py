@@ -2,18 +2,26 @@ import pandas as pd
 from pathlib import Path
 from typing import Union
 
+# Adiciona função utilitária para formatar datas
+
+def format_datetime(val):
+    try:
+        return pd.to_datetime(val).strftime('%d/%m/%y - %H:%M:%S') if pd.notnull(val) and val else ''
+    except Exception:
+        return val or ''
+
 def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.html'):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
 
-    tipos = ['salto_na_sequencia', 'valor_repetido', 'reset_de_contagem', 'regressao_de_contagem', 'ordem_incorreta_temporal']
+    tipos = ['salto_na_sequencia', 'valor_repetido_igual', 'valor_repetido_diferente', 'reset_de_contagem', 'regressao_de_contagem']
     nomes = {
         'salto_na_sequencia': 'Saltos na Sequência',
-        'valor_repetido': 'Valores Repetidos',
+        'valor_repetido_igual': 'Valores Repetidos para mensagens iguais',
+        'valor_repetido_diferente': 'Valores Repetidos para mensagens diferentes',
         'reset_de_contagem': 'Reset de Contagem',
-        'regressao_de_contagem': 'Regressão de contagem',
-        'ordem_incorreta_temporal': 'Ordem incorreta temporal'
+        'regressao_de_contagem': 'Regressão de contagem'
     }
     resumos = {}
     tabelas = {}
@@ -26,45 +34,85 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         linhas_html = ""
         for i, (_, row) in enumerate(df_tipo.iterrows()):
             extra_class = "linha-oculta linha-extra-seq" if i >= max_linhas else ""
-            if tipo == 'valor_repetido':
+            if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
+                linha_val = row.get('linha')
+                linha_rep_val = row.get('linha_repetida')
+                valor_anterior = row.get('valor_anterior', '')
+                valor_repetido = row.get('valor_repetido', '')
+                def format_int(val):
+                    return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
+                valor_anterior_fmt = format_int(valor_anterior)
+                valor_repetido_fmt = format_int(valor_repetido)
+                linha_val_fmt = format_int(linha_val)
+                linha_rep_val_fmt = format_int(linha_rep_val)
                 linhas_html += f"""
                 <tr class='{extra_class}'>
-                    <td>{int(row['linha'])}</td>
-                    <td>{row['sequencia_anterior']}</td>
-                    <td>{row['sequencia_atual']}</td>
+                    <td>{linha_val_fmt}</td>
+                    <td>{linha_rep_val_fmt}</td>
+                    <td>{valor_anterior_fmt}</td>
+                    <td>{valor_repetido_fmt}</td>
+                    <td>{row.get('mensagem_atual', '')}</td>
+                    <td>{row.get('mensagem_repetida', '')}</td>
+                    <td>{format_datetime(row.get('data_anterior', ''))}</td>
+                    <td>{format_datetime(row.get('data_repetida', ''))}</td>
+                </tr>
+                """
+            elif tipo == 'salto_na_sequencia':
+                sequencia_anterior = row['sequencia_anterior']
+                sequencia_atual = row['sequencia_atual']
+                diferenca = row['Diferenca']
+                def format_int(val):
+                    return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
+                linhas_html += f"""
+                <tr class='{extra_class}'>
+                    <td>{format_int(row['linha'])}</td>
+                    <td>{format_int(sequencia_anterior)}</td>
+                    <td>{format_int(sequencia_atual)}</td>
                     <td>{row['tipo_mensagem_atual']}</td>
+                    <td>{format_int(diferenca)}</td>
                 </tr>
                 """
             else:
+                sequencia_anterior = row['sequencia_anterior']
+                sequencia_atual = row['sequencia_atual']
+                diferenca = row['Diferenca']
+                def format_int(val):
+                    return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
                 linhas_html += f"""
                 <tr class='{extra_class}'>
-                    <td>{int(row['linha'])}</td>
-                    <td>{row['sequencia_anterior']}</td>
-                    <td>{row['sequencia_atual']}</td>
+                    <td>{format_int(row['linha'])}</td>
+                    <td>{format_int(sequencia_anterior)}</td>
+                    <td>{format_int(sequencia_atual)}</td>
                     <td>{row['tipo_mensagem_atual']}</td>
-                    <td>{row['Diferenca']}</td>
+                    <td>{format_int(diferenca)}</td>
                 </tr>
                 """
         botao_html = ""
         if len(df_tipo) > max_linhas:
             botao_html = f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhasSeq('{tipo}')" id="btn_seq_{tipo}">
+                <button class="btn-mostrar-todos" onclick="toggleLinhasSeq('{tipo}')" id="btn_seq_{tipo}" data-tabela="tabela_seq_{tipo}">
                     Ver todos os dados
                 </button>
             </div>
             '''
-        if tipo == 'valor_repetido':
+        if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
+            # Título descritivo
+            tabela_titulo = f"Valores Repetidos ({'mensagem igual' if tipo == 'valor_repetido_igual' else 'mensagem diferente'})"
             tabelas[tipo] = f'''
             <div class="tabela-temporizadas-container">
-                <div class="grafico-titulo-container"><span class="grafico-titulo">{nomes[tipo]}</span></div>
+                <div class="grafico-titulo-container"><span class="grafico-titulo">{tabela_titulo}</span></div>
                 <table class="tabela-temporizadas" id="tabela_seq_{tipo}">
                     <thead>
                         <tr>
-                            <th>Linha</th>
-                            <th>Valor anterior</th>
-                            <th>Valor atual</th>
-                            <th>Mensagem atual</th>
+                            <th>Linha da primeira ocorrência</th>
+                            <th>Linha da repetição detectada</th>
+                            <th>Valor da primeira ocorrência</th>
+                            <th>Valor da repetição detectada</th>
+                            <th>Tipo de mensagem da primeira ocorrência</th>
+                            <th>Tipo de mensagem da repetição detectada</th>
+                            <th>Data da primeira ocorrência</th>
+                            <th>Data da repetição detectada</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,18 +122,63 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 {botao_html}
             </div>
             '''
-        else:
+        elif tipo == 'salto_na_sequencia':
+            tabela_titulo = "Saltos na Sequência"
             tabelas[tipo] = f'''
             <div class="tabela-temporizadas-container">
-                <div class="grafico-titulo-container"><span class="grafico-titulo">{nomes[tipo]}</span></div>
+                <div class="grafico-titulo-container"><span class="grafico-titulo">{tabela_titulo}</span></div>
                 <table class="tabela-temporizadas" id="tabela_seq_{tipo}">
                     <thead>
                         <tr>
                             <th>Linha</th>
-                            <th>Valor anterior</th>
-                            <th>Valor atual</th>
-                            <th>Mensagem atual</th>
-                            <th>Diferença</th>
+                            <th>Valor anterior na sequência</th>
+                            <th>Valor após salto</th>
+                            <th>Tipo de mensagem</th>
+                            <th>Tamanho do salto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {linhas_html}
+                    </tbody>
+                </table>
+                {botao_html}
+            </div>
+            '''
+        elif tipo == 'reset_de_contagem':
+            tabela_titulo = "Reset de Contagem"
+            tabelas[tipo] = f'''
+            <div class="tabela-temporizadas-container">
+                <div class="grafico-titulo-container"><span class="grafico-titulo">{tabela_titulo}</span></div>
+                <table class="tabela-temporizadas" id="tabela_seq_{tipo}">
+                    <thead>
+                        <tr>
+                            <th>Linha</th>
+                            <th>Valor antes do reset</th>
+                            <th>Valor após o reset</th>
+                            <th>Mensagem</th>
+                            <th>Reset detectado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {linhas_html}
+                    </tbody>
+                </table>
+                {botao_html}
+            </div>
+            '''
+        elif tipo == 'regressao_de_contagem':
+            tabela_titulo = "Regressão de Contagem"
+            tabelas[tipo] = f'''
+            <div class="tabela-temporizadas-container">
+                <div class="grafico-titulo-container"><span class="grafico-titulo">{tabela_titulo}</span></div>
+                <table class="tabela-temporizadas" id="tabela_seq_{tipo}">
+                    <thead>
+                        <tr>
+                            <th>Linha</th>
+                            <th>Valor antes</th>
+                            <th>Valor depois (regressão)</th>
+                            <th>Mensagem</th>
+                            <th>Regressão detectada</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -104,9 +197,14 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
             <div class="resumo-anomalia-legenda">Eventos com salto</div>
         </div>
         <div class="resumo-anomalia-card">
-            <div class="resumo-anomalia-titulo">Valores repetidos</div>
-            <div class="resumo-anomalia-numero">{resumos.get('valor_repetido', 0)}</div>
-            <div class="resumo-anomalia-legenda">Eventos com repetição</div>
+            <div class="resumo-anomalia-titulo">Valores repetidos para mensagens iguais</div>
+            <div class="resumo-anomalia-numero">{resumos.get('valor_repetido_igual', 0)}</div>
+            <div class="resumo-anomalia-legenda">Repetidos com mesma mensagem</div>
+        </div>
+        <div class="resumo-anomalia-card">
+            <div class="resumo-anomalia-titulo">Valores repetidos para mensagens diferentes</div>
+            <div class="resumo-anomalia-numero">{resumos.get('valor_repetido_diferente', 0)}</div>
+            <div class="resumo-anomalia-legenda">Repetidos com mensagem diferente</div>
         </div>
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Reset de contagem</div>
@@ -117,11 +215,6 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
             <div class="resumo-anomalia-titulo">Regressão de contagem</div>
             <div class="resumo-anomalia-numero">{resumos.get('regressao_de_contagem', 0)}</div>
             <div class="resumo-anomalia-legenda">Eventos de regressão</div>
-        </div>
-        <div class="resumo-anomalia-card">
-            <div class="resumo-anomalia-titulo">Ordem incorreta temporal</div>
-            <div class="resumo-anomalia-numero">{resumos.get('ordem_incorreta_temporal', 0)}</div>
-            <div class="resumo-anomalia-legenda">Eventos fora de ordem temporal</div>
         </div>
     </div>
     '''
@@ -186,14 +279,14 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
     '''
     html = f'''
     {css}
-    <div class="bloco-temporizadas">
+    <div class="bloco-temporizadas" id="bloco-sequenceNumber">
         <span class="dashboard-title-temporizadas">Anomalias na Sequência de Mensagens</span>
         {resumo_html}
         {tabelas.get('salto_na_sequencia', '')}
-        {tabelas.get('valor_repetido', '')}
+        {tabelas.get('valor_repetido_igual', '')}
+        {tabelas.get('valor_repetido_diferente', '')}
         {tabelas.get('reset_de_contagem', '')}
         {tabelas.get('regressao_de_contagem', '')}
-        {tabelas.get('ordem_incorreta_temporal', '')}
         {regressao_html}
     </div>
     {js}

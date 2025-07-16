@@ -62,7 +62,7 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
         margin-bottom: 2px;
     }
     .resumo-anomalia-numero.red {
-        color: #dc3545;
+        color: #38b349 !important;
     }
     .resumo-anomalia-legenda {
         font-size: 0.95em;
@@ -127,7 +127,7 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
     def resumo_html(df_resumo):
         total = df_resumo.loc[df_resumo['Métrica'] == 'Total de registros', 'Valor'].values[0]
         validos = df_resumo.loc[df_resumo['Métrica'] == 'Registros válidos', 'Valor'].values[0]
-        perc_invalidos = df_resumo.loc[df_resumo['Métrica'] == '% Inválidos', 'Valor'].values[0]
+        perc_invalidos = df_resumo.loc[df_resumo['Métrica'] == '% Válidos', 'Valor'].values[0]
         return f'''
         <div class="resumo-anomalias-container">
             <div class="resumo-anomalia-card">
@@ -141,9 +141,9 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
                 <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
             </div>
             <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Porcentagem de registros inválidos</div>
+                <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
                 <div class="resumo-anomalia-numero red">{perc_invalidos}</div>
-                <div class="resumo-anomalia-legenda">Proporção de dados inválidos</div>
+                <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
             </div>
         </div>
         '''
@@ -191,7 +191,7 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
 
     html = f'''
     {css}
-    <div class="bloco-satelites">
+    <div class="bloco-satelites" id="bloco-satelites">
         <span class="dashboard-title-analise">Análise de Satélites</span>
         {resumo_html(df_resumo)}
         {tabela(df_todos, "Estatísticas - Todos os dados", "Considera todos os registros, inclusive inválidos")}

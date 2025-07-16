@@ -38,7 +38,7 @@ def gerar_bloco_hodometro_from_csv(df: pd.DataFrame, filename='bloco_hodometro.h
     transition: box-shadow 0.3s, transform 0.3s;
 }}
 </style>
-<div class="dashboard-bloco-analise" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 2000px; margin: 0 auto 40px auto; transition: box-shadow 0.3s, transform 0.3s;">
+<div class="dashboard-bloco-analise" id="bloco-hodometro" style="background: #fff; border-radius: 30px; box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10); padding: 60px 200px 70px 200px; max-width: 2000px; margin: 0 auto 40px auto; transition: box-shadow 0.3s, transform 0.3s;">
     <span class="dashboard-title-analise" style="
         font-family: 'Saira', sans-serif;
         background: linear-gradient(to right, #764ba2, #667eea);
@@ -56,7 +56,7 @@ def gerar_bloco_hodometro_from_csv(df: pd.DataFrame, filename='bloco_hodometro.h
         box-shadow: none;
     ">Hodômetro</span>
     <div class="grafico-container grafico-hodometro" style="background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); margin-bottom: 0; transition: box-shadow 0.3s, transform 0.3s;">
-        <h4 style="text-align:center; font-family: Arial, Helvetica, sans-serif; font-weight: 700; margin-bottom: 10px; color: #111;">Teste</h4>
+        <h4 style="text-align:center; font-family: Arial, Helvetica, sans-serif; font-weight: 700; margin-bottom: 10px; color: #111;">Total km percorrido</h4>
         <div class="canvas-wrapper" style="position: relative; width: 350px; height: 180px; margin: 0 auto;">
             <canvas id="hodometro_teste" width="350" height="180" style="display: block; box-sizing: border-box; border:0;"></canvas>
             <div style="position: absolute; left: 10px;  font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">0 km</div>

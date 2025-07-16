@@ -106,7 +106,14 @@ def get_device_info(df):
     if 'Versão Firmware' in df.columns:
         versoes_unicas = df['Versão Firmware'].dropna().unique()
         if len(versoes_unicas) > 0:
-            versao_firmware = ', '.join([str(v) for v in versoes_unicas])
+            hex_str = str(versoes_unicas[0]).lower().replace('0x', '')
+            hex_str = hex_str.zfill(4)
+            major_hex = hex_str[:2]
+            minor_hex = hex_str[2:4]
+            # Converte cada parte para decimal
+            versao_firmware_1 = int(major_hex, 16)
+            versao_firmware_2 = int(minor_hex, 16)
+            versao_firmware = f"{versao_firmware_1}.{versao_firmware_2}"
     return {
         'tipo_dispositivo': tipo_dispositivo,
         'imei': imei,
@@ -155,16 +162,22 @@ def unir_blocos(df_raw):
         # print(f"Error: Directory '{blocks_dir}' not found!")
         return
     
-    # Define manual order of files
-    # html_files = [
-    #     str(blocks_dir / "bloco_viagens.html"),
-    #     str(blocks_dir / "bloco_dashboard.html"),
-    #     str(blocks_dir / "bloco_eventos_diarios.html"),
-    #     str(blocks_dir / "bloco_conexao_gprs.html"),
-    #     str(blocks_dir / "bloco_satellite_estabilidade.html"),
-    # ]
+    #Define manual order of files
+    html_files = [
+        str(blocks_dir / "bloco_hodometro.html"),
+        str(blocks_dir / "bloco_eventos_diarios.html"),
+        str(blocks_dir / "bloco_ignicao.html"),
+        str(blocks_dir / "bloco_log.html"),
+        str(blocks_dir / "bloco_reboot.html"),
+        str(blocks_dir / "bloco_satelites.html"),
+        str(blocks_dir / "bloco_sequenceNumber.html"),
+        str(blocks_dir / "bloco_temporizadas.html"),
+        str(blocks_dir / "bloco_pinning.html"),
+        str(blocks_dir / "bloco_timefix.html"),
+        str(blocks_dir / "bloco_velocidade.html"),
+    ]
     
-    html_files = sorted([str(f) for f in blocks_dir.glob('*.html')])
+    # html_files = sorted([str(f) for f in blocks_dir.glob('*.html')])
 
     if not html_files:
         # print(f"Error: No HTML files found in '{blocks_dir}'!")
@@ -519,6 +532,55 @@ def unir_blocos(df_raw):
             </div>
         </div>
 
+        <button id="fabMinimizar" class="btn-mostrar-todos" style="display:none; position: fixed; bottom: 40px; right: 40px; z-index: 9999;">Mostrar menos</button>
+        <script>
+        // Botão flutuante global
+        const fabMinimizar = document.getElementById('fabMinimizar');
+        let tabelaExpandida = null;
+        // Função para mostrar o botão flutuante quando uma tabela é expandida
+        function mostrarFabMinimizar(tabelaId) {{
+          tabelaExpandida = tabelaId;
+          fabMinimizar.style.display = 'block';
+        }}
+        // Função para esconder o botão flutuante
+        function esconderFabMinimizar() {{
+          tabelaExpandida = null;
+          fabMinimizar.style.display = 'none';
+        }}
+        // Ao clicar no botão flutuante, minimiza a tabela expandida
+        fabMinimizar.onclick = function() {{
+          if (!tabelaExpandida) return;
+          // Procura o botão de "Ver todos os dados" correspondente e clica nele para minimizar
+          const btn = document.querySelector(`[data-tabela="${{tabelaExpandida}}"]`);
+          if (btn) btn.click();
+          esconderFabMinimizar();
+          // Scroll para o topo da tabela minimizada
+          const tabela = document.getElementById(tabelaExpandida);
+          if (tabela) {{
+            const y = tabela.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({{ top: y, behavior: 'smooth' }});
+          }}
+        }};
+        // Observa cliques nos botões "Ver todos os dados" para mostrar/esconder o botão flutuante
+        document.addEventListener('click', function(e) {{
+          if (e.target.classList.contains('btn-mostrar-todos')) {{
+            const tabelaId = e.target.getAttribute('data-tabela');
+            if (e.target.textContent.includes('Mostrar apenas') || e.target.textContent.includes('menos')) {{
+              mostrarFabMinimizar(tabelaId);
+              // --- NOVO: Scroll para o topo do bloco ao minimizar ---
+              setTimeout(function() {{
+                const tabela = document.getElementById(tabelaId);
+                if (tabela) {{
+                  const y = tabela.getBoundingClientRect().top + window.scrollY - 80;
+                  window.scrollTo({{ top: y, behavior: 'smooth' }});
+                }}
+              }}, 200);
+            }} else {{
+              esconderFabMinimizar();
+            }}
+          }}
+        }});
+        </script>
         <script>{global_js}</script>
         
         <script>
@@ -559,6 +621,30 @@ def unir_blocos(df_raw):
     inline_css, css_links, blocks_without_css = extract_css_from_blocks(blocks)
     global_scripts, clean_blocks = extract_and_consolidate_scripts(blocks_without_css)
 
+    # Adicionar ids nos principais blocos
+    def add_id_to_block(block, block_id):
+        # Adiciona id na primeira div com classe correspondente
+        import re
+        return re.sub(r'<div class=(["\"])' + block_id + r'(["\"])', r'<div class=\1' + block_id + r'\2 id=\"' + block_id + '\"', block, count=1)
+
+    block_id_map = {
+        'bloco_hodometro': 'bloco-hodometro',
+        'bloco_pinning': 'bloco-pinning',
+        'bloco_reboot': 'bloco-reboot',
+        'bloco_velocidade': 'bloco-velocidade',
+        'bloco_sequenceNumber': 'bloco-sequenceNumber',
+        'bloco_timefix': 'bloco-timefix',
+        'bloco_ignicao': 'bloco-ignicao',
+        # Adicione outros blocos se necessário
+    }
+    clean_blocks_with_ids = []
+    for block in clean_blocks:
+        for class_name, block_id in block_id_map.items():
+            if f'class="{class_name}"' in block:
+                block = add_id_to_block(block, class_name)
+                block = block.replace(f'class="{class_name}"', f'class="{class_name}" id="{block_id}"')
+        clean_blocks_with_ids.append(block)
+
     PNG_FILE = Path(__file__).parent / "logo-golfleet-cor.png"
 
         
@@ -573,7 +659,6 @@ def unir_blocos(df_raw):
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Saira:wght@600;700;800&display=swap" rel="stylesheet">
 
-
         <!-- Global CSS -->
         <style>{global_css}</style>
 
@@ -581,8 +666,108 @@ def unir_blocos(df_raw):
         <style>
         {"\n".join(inline_css)}
         </style>
+        <style>
+        /* Floating navigation menu lateral retraído */
+        #floating-nav-wrapper {{
+            position: fixed;
+            top: 30px;
+            left: 0;
+            z-index: 9999;
+            height: auto;
+        }}
+        #floating-nav-toggle {{
+            background: #fff;
+            border-radius: 0 18px 18px 0;
+            box-shadow: 0 4px 16px rgba(102,51,153,0.13);
+            width: 36px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }}
+        #floating-nav-toggle:hover {{
+            background: #e6e6fa;
+        }}
+        #floating-nav {{
+            position: absolute;
+            left: -220px; /* Escondido por padrão */
+            top: 0;
+            min-width: 180px;
+            background: #fff;
+            border-radius: 0 18px 18px 0;
+            box-shadow: 0 4px 16px rgba(102,51,153,0.13);
+            padding: 12px 18px;
+            font-family: 'Saira', sans-serif;
+            transition: left 0.3s;
+            opacity: 0.98;
+            pointer-events: none;
+        }}
+        #floating-nav-wrapper:hover #floating-nav,
+        #floating-nav-wrapper.open #floating-nav {{
+            left: 36px; /* Mostra o menu */
+            pointer-events: auto;
+        }}
+        #floating-nav .nav-title {{
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }}
+        #floating-nav button {{
+            display: block;
+            width: 100%;
+            margin: 6px 0;
+            padding: 8px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Saira', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }}  
+        #floating-nav button:hover {{           
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px) scale(1.03);
+        }}
+        @media (max-width: 700px) {{
+            #floating-nav-wrapper {{ left: 0; top: 5px; }}
+            #floating-nav {{ min-width: 120px; padding: 6px 6px; }}
+            #floating-nav button {{ font-size: 0.9em; padding: 6px 0; }}
+        }}
+        </style>
     </head>
     <body>
+        <div id="floating-nav-wrapper">
+            <div id="floating-nav-toggle">
+                <!-- Seta SVG roxa -->
+                <svg width="36" height="36" viewBox="0 0 36 36">
+                    <polyline points="12,8 24,18 12,28" fill="none" stroke="#764ba2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div id="floating-nav">
+                <div class="nav-title">Ir para bloco:</div>
+                <button onclick="scrollToBloco('bloco-resumo-tecnico')">Resumo Técnico</button>
+                <button onclick="scrollToBloco('bloco-hodometro')">Hodômetro</button>
+                <button onclick="scrollToBloco('bloco-eventos')">Eventos</button>
+                <button onclick="scrollToBloco('bloco-ignicao')">Tempo de Ignição</button>
+                <button onclick="scrollToBloco('bloco-log')">Log</button>
+                <button onclick="scrollToBloco('bloco-reboot')">Reboot</button>
+                <button onclick="scrollToBloco('bloco-satelites')">Satélites</button>
+                <button onclick="scrollToBloco('bloco-sequenceNumber')">Sequence Number</button>
+                <button onclick="scrollToBloco('bloco-temporizadas')">Temporizadas</button>
+                <button onclick="scrollToBloco('bloco-pinning')">Pinning</button>
+                <button onclick="scrollToBloco('bloco-timefix')">Time Fix</button>
+                <button onclick="scrollToBloco('bloco-velocidade')">Velocidade</button>
+            </div>
+        </div>
         <div class='dashboard-container'>
             <!-- Logo com fundo roxo -->
             <div class="logo-container">
@@ -599,11 +784,15 @@ def unir_blocos(df_raw):
 
     # Criar HTML do resumo técnico do equipamento
     device_summary_html = create_device_summary_html(df_raw)
+    # Adicionar id ao bloco de resumo técnico
+    device_summary_html = device_summary_html.replace(
+        "<div class=\"tabela-resumo-tecnico\"", "<div class=\"tabela-resumo-tecnico\" id=\"bloco-resumo-tecnico\""
+    )
 
     # Combine all parts
     final_html = html_header
     final_html += device_summary_html        # Tabela de resumo técnico
-    final_html += "\n".join(clean_blocks)    # HTML blocks without <style> and <script>
+    final_html += "\n".join(clean_blocks_with_ids)    # HTML blocks with ids
     final_html += "\n"
     final_html += global_scripts             # Consolidated scripts
     final_html += "\n"
@@ -716,6 +905,24 @@ def unir_blocos(df_raw):
     # final_html += modal_html
 
     final_html += html_footer                # Close HTML with global JS + modal
+    # Adicionar JS para scroll suave
+    final_html = final_html.replace(
+        '</body>',
+        '''<script>
+        function scrollToBloco(id) {
+            const bloco = document.getElementById(id);
+            if (bloco) {
+                bloco.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                bloco.style.boxShadow = '0 0 0 4px #764ba2';
+                setTimeout(() => bloco.style.boxShadow = '', 1200);
+            }
+        }
+        // Abrir/fechar menu ao clicar na seta
+        document.getElementById('floating-nav-toggle').onclick = function() {
+            document.getElementById('floating-nav-wrapper').classList.toggle('open');
+        };
+        </script>\n</body>'''
+    )
 
     # Write final file
     with open(output_file, "w", encoding="utf-8") as f:

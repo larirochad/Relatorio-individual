@@ -122,7 +122,7 @@ def gerar_bloco_ignicao(df: pd.DataFrame, filename='bloco_ignicao.html'):
     # Montar HTML
     html = f"""
     {css}
-    <div class="bloco-ignicao">
+    <div class="bloco-ignicao" id="bloco-ignicao">
         <span class="dashboard-title-ignicao">Tempos de Ignição (ON/OFF)</span>
         <div class="tabela-ignicao-container">
             <table class="tabela-ignicao">

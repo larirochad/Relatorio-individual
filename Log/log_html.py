@@ -70,7 +70,7 @@ def gerar_bloco_log(df_logs: pd.DataFrame, df_estatisticas: pd.DataFrame, filena
 
     # Bloco HTML
     html = f'''
-    <div class="bloco-temporizadas">
+    <div class="bloco-temporizadas" id="bloco-log">
         <span class="dashboard-title-temporizadas">Resumo dos Logs de Mensagens</span>
         <div class="resumo-anomalias-container" style="justify-content: center; gap: 40px;">
             <div class="resumo-anomalia-card">

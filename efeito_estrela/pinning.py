@@ -71,98 +71,81 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
         
         for i, bloco in enumerate(blocos):
             bloco = bloco.reset_index(drop=True)
-            # Filtrar apenas Motion Status 21 E que não sejam HBD
-            bloco_21 = bloco[bloco['Motion Status'].astype(float).astype(int) == 21].reset_index(drop=True)
-            # FILTRO ADICIONAL: Remover HBD também nos blocos
-            if 'Tipo Mensagem' in bloco_21.columns:
-                bloco_21 = bloco_21[~bloco_21['Tipo Mensagem'].astype(str).str.upper().str.contains('HBD', na=False)].reset_index(drop=True)
+            # Remover HBD do bloco inteiro (para evitar problemas de hodômetro)
+            if 'Tipo Mensagem' in bloco.columns:
+                bloco = bloco[~bloco['Tipo Mensagem'].astype(str).str.upper().str.contains('HBD', na=False)].reset_index(drop=True)
             # Remover linhas sem Hodômetro Total válido
-            if 'Hodômetro Total' in bloco_21.columns:
-                bloco_21 = bloco_21[bloco_21['Hodômetro Total'].notna() & (bloco_21['Hodômetro Total'] != '')].reset_index(drop=True)
-            if bloco_21.empty:
+            if 'Hodômetro Total' in bloco.columns:
+                bloco = bloco[bloco['Hodômetro Total'].notna() & (bloco['Hodômetro Total'] != '')].reset_index(drop=True)
+            if bloco.empty:
                 continue
-            
+
             hodo_inicial = None
             hodo_incremental = 0.0
-            
-            # Filtrar pontos com hodômetro válido
-            pontos_validos = []
-            for idx, (_, ponto) in enumerate(bloco_21.iterrows()):
-                hodo_total = ponto.get('Hodômetro Total', None)
-                
-                # Verificar se hodômetro é válido
+            ultimo_ponto_valido = None  # (lat, lon, hodo, linha, data, motion, tipo_msg, gnss_utc)
+            hodo_ant_f = None
+
+            for idx, ponto in bloco.iterrows():
+                # Verifica se hodômetro é válido
                 try:
-                    hodo_total_f = float(hodo_total)
-                    # Se chegou aqui, hodômetro é válido
-                    if not pd.isna(hodo_total_f):
-                        pontos_validos.append((idx, ponto, hodo_total_f))
+                    hodo_total_f = float(ponto['Hodômetro Total'])
+                    if pd.isna(hodo_total_f):
+                        continue
                 except (TypeError, ValueError):
-                    # Ignorar pontos sem hodômetro válido
-                    # print(f"⚠️  Ignorando ponto na linha {ponto.get('linha', 'N/A')} - Hodômetro inválido: {hodo_total}")
                     continue
-            
-            # print(f"📊 Bloco {i+1}: {len(pontos_validos)} pontos válidos de {len(bloco_21)} totais")
-            
-            # Processar apenas pontos com hodômetro válido
-            for j, (idx_original, ponto, hodo_total_f) in enumerate(pontos_validos):
+
                 lat = float(ponto['Latitude'])
                 lon = float(ponto['Longitude'])
                 linha_atual = ponto['linha'] if 'linha' in ponto else ponto.name + 2
-
-                # Definir ponto anterior (do array de pontos válidos)
-                if j > 0:
-                    _, ponto_anterior, hodo_ant_f = pontos_validos[j - 1]
-                    lat_ant = float(ponto_anterior['Latitude'])
-                    lon_ant = float(ponto_anterior['Longitude'])
-                else:
-                    lat_ant = None
-                    lon_ant = None
-                    hodo_ant_f = None
+                motion_status = int(float(ponto['Motion Status']))
+                tipo_msg = ponto.get('Tipo Mensagem', '')
+                gnss_utc = ponto.get('GNSS UTC Time', '')
+                data_evento = ponto['Data/Hora Evento']
 
                 # Calcular distância incremental
-                if j == 0:
-                    dist_incr = 0.0
-                    hodo_inicial = hodo_total_f
-                    hodo_incremental = 0.0
-                    hodo_ant_f = hodo_total_f  # Ajuste: hodômetro anterior igual ao total no primeiro ponto
-                else:
-                    if lat_ant is not None and lon_ant is not None:
-                        dist_incr = haversine((lat_ant, lon_ant), (lat, lon)) * 1000
-                    else:
-                        dist_incr = 0.0
-                    
-                    if hodo_total_f is not None and hodo_inicial is not None:
+                if ultimo_ponto_valido is not None:
+                    lat_ant, lon_ant, hodo_ant_f, linha_ant, data_ant, motion_ant, tipo_ant, gnss_ant = ultimo_ponto_valido
+                    dist_incr = haversine((lat_ant, lon_ant), (lat, lon)) * 1000
+                    if hodo_inicial is not None:
                         hodo_incremental = hodo_total_f - hodo_inicial
                     else:
-                        hodo_incremental = None
+                        hodo_incremental = 0.0
+                else:
+                    dist_incr = 0.0
+                    hodo_incremental = 0.0
+                    hodo_inicial = hodo_total_f
+                    hodo_ant_f = hodo_total_f
 
-                linha_saida = {
-                    'linha': linha_atual,
-                    'bloco': i+1,
-                    'ordem_no_bloco': j+1,
-                    'latitude': lat,
-                    'longitude': lon,
-                    'latitude_anterior': lat_ant,
-                    'longitude_anterior': lon_ant,
-                    'Hodômetro Total': hodo_total_f,
-                    'Hodômetro anterior': hodo_ant_f,
-                    'Hodômetro incremental do bloco': hodo_incremental,
-                    'Data/Hora Evento': ponto['Data/Hora Evento'],
-                    'GNSS UTC Time': ponto.get('GNSS UTC Time', ''),
-                    'Tipo Mensagem': ponto.get('Tipo Mensagem', ''),
-                    'Motion Status': ponto['Motion Status'],
-                    'Distância incremental (m)': dist_incr
-                }
-                
-                linhas.append(linha_saida)
-                
-                if gerar_incremento:
-                    # Filtro para arquivo de incremento: apenas se hodômetro atual > anterior
+                # Salvar apenas se motion == 21 E hodômetro anterior não é None/nan
+                if motion_status == 21 and ultimo_ponto_valido is not None and hodo_ant_f is not None and not pd.isna(hodo_ant_f):
+                    linha_saida = {
+                        'linha': linha_atual,
+                        'bloco': i+1,
+                        'ordem_no_bloco': idx+1,
+                        'latitude': lat,
+                        'longitude': lon,
+                        'latitude_anterior': lat_ant,
+                        'longitude_anterior': lon_ant,
+                        'Hodômetro Total': hodo_total_f,
+                        'Hodômetro anterior': hodo_ant_f,
+                        'Hodômetro incremental do bloco': hodo_incremental,
+                        'Data/Hora Evento': data_evento,
+                        'GNSS UTC Time': gnss_utc,
+                        'Tipo Mensagem': tipo_msg,
+                        'Motion Status': motion_status,
+                        'Distância incremental (m)': dist_incr
+                    }
+                    linhas.append(linha_saida)
+                    # Filtro para arquivo de incremento: apenas se hodômetro atual > anterior e dist > 40m
                     if (isinstance(hodo_total_f, float) and isinstance(hodo_ant_f, float)
                         and not pd.isna(hodo_total_f) and not pd.isna(hodo_ant_f)
-                        and hodo_total_f > hodo_ant_f):
+                        and hodo_total_f > hodo_ant_f and dist_incr > 40):
                         linhas_incremento.append(linha_saida)
-        
+
+                # Atualiza último ponto válido
+                ultimo_ponto_valido = (lat, lon, hodo_total_f, linha_atual, data_evento, motion_status, tipo_msg, gnss_utc)
+                hodo_ant_f = hodo_total_f
+
         # Criar diretório se não existir
         os.makedirs(os.path.dirname(nome_arquivo), exist_ok=True)
         

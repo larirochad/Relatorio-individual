@@ -57,7 +57,7 @@ def velocidade(df: pd.DataFrame) -> pd.DataFrame:
     df_alerta = df[(df['Velocidade absurda'] != '') | (df['Velocidade com ignição OFF'] != '')]
 
     # Seleciona apenas as colunas desejadas para o output, se existirem
-    colunas_desejadas = ['Linha Original', 'Data/Hora Evento', 'Tipo Mensagem', 'Velocidade absurda','Velocidade com ignição OFF']
+    colunas_desejadas = ['Linha Original', 'Data/Hora Evento', 'Tipo Mensagem','Motion Status', 'Velocidade absurda','Velocidade com ignição OFF']
     colunas_existentes = [col for col in colunas_desejadas if col in df_alerta.columns]
     if colunas_existentes:
         df_alerta = df_alerta[colunas_existentes]

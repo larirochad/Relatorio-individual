@@ -227,6 +227,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                         <th>Data</th>
                         <th>Hora</th>
                         <th>Tipo de Mensagem</th>
+                        <th>Motion Status</th>
                         <th>Velocidade</th>
                     </tr>
                 </thead>
@@ -241,22 +242,14 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                 velocidade_str = 'N/A'
             else:
                 velocidade_str = f"{velocidade} km/h"
-            # --- LINK COMENTADO ---
-            # html += f'''
-            # <tr>
-            #     <td><a href="#" class="Linha-link" onclick="mostrarModal({linha}); return false;">{linha}</a></td>
-            #     <td>{row['Data']}</td>
-            #     <td>{row['Hora']}</td>
-            #     <td>{row['Tipo Mensagem']}</td>
-            #     <td>{velocidade_str}</td>
-            # </tr>
-            # '''
+            motion_status = row['Motion Status'] if 'Motion Status' in row else ''
             html += f'''
             <tr>
                 <td>{linha}</td>
                 <td>{row['Data']}</td>
                 <td>{row['Hora']}</td>
                 <td>{row['Tipo Mensagem']}</td>
+                <td>{motion_status}</td>
                 <td>{velocidade_str}</td>
             </tr>
             '''
@@ -271,22 +264,14 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                     velocidade_str = 'N/A'
                 else:
                     velocidade_str = f"{velocidade} km/h"
-                # --- LINK COMENTADO ---
-                # html += f'''
-                # <tr class="linha-oculta linha-{tipo_alerta}">
-                #     <td><a href="#" class="Linha-link" onclick="mostrarModal({linha}); return false;">{linha}</a></td>
-                #     <td>{row['Data']}</td>
-                #     <td>{row['Hora']}</td>
-                #     <td>{row['Tipo Mensagem']}</td>
-                #     <td>{velocidade_str}</td>
-                # </tr>
-                # '''
+                motion_status = row['Motion Status'] if 'Motion Status' in row else ''
                 html += f'''
                 <tr class="linha-oculta linha-{tipo_alerta}">
                     <td>{linha}</td>
                     <td>{row['Data']}</td>
                     <td>{row['Hora']}</td>
                     <td>{row['Tipo Mensagem']}</td>
+                    <td>{motion_status}</td>
                     <td>{velocidade_str}</td>
                 </tr>
                 '''
@@ -299,7 +284,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         if tem_mais:
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo_alerta}', {len(df_data)})" id="btn_{tipo_alerta}">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo_alerta}', {len(df_data)})" id="btn_{tipo_alerta}" data-tabela="tabela_{tipo_alerta}">
                     Ver todos os dados
                 </button>
             </div>
@@ -311,7 +296,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
     # Montar HTML completo
     html = f"""
     {css}
-    <div class="bloco-velocidade">
+    <div class="bloco-velocidade" id="bloco-velocidade">
         <span class="dashboard-title-velocidade">Análise de Velocidade</span>
         {resumo_html()}
         {tabela_html(df_absurda, "Velocidades Absurdas (>150 km/h)", "absurda")}

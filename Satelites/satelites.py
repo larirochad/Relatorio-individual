@@ -25,7 +25,7 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     registros_validos = ((satelites > 0) & (hdop > 0)).sum()
     registros_invalidos = total_registros - registros_validos
     perc_invalidos = (registros_invalidos / total_registros * 100) if total_registros > 0 else 0
-
+    perc_validos = (registros_validos / total_registros * 100) if total_registros > 0 else 0
     # === TABELA 1: TODOS OS DADOS ===
     def stats_serie(serie):
         return {
@@ -57,7 +57,7 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     resumo = pd.DataFrame([
         {'Métrica': 'Total de registros', 'Valor': total_registros},
         {'Métrica': 'Registros válidos', 'Valor': registros_validos},
-        {'Métrica': '% Inválidos', 'Valor': f"{perc_invalidos:.1f}%"}
+        {'Métrica': '% Válidos', 'Valor': f"{perc_validos:.1f}%"}
     ])
     if salvar_csv:
         resumo.to_csv('Satelites/estatisticas_gps_resumo.csv', index=False, encoding='utf-8-sig')

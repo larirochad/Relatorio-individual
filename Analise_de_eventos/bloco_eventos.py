@@ -4,6 +4,12 @@ from pathlib import Path
 from typing import Union
 
 def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filename='bloco_eventos_diarios.html'):
+    # Filtra mensagens indesejadas em uma única expressão
+    if 'Tipo mensagem' in df.columns:
+        tipo_msg = df['Tipo mensagem'].str.strip()
+        mask = (~tipo_msg.isin(['HBD', 'ACK'])) & (~tipo_msg.str.startswith('AT', na=False))
+        df = df[mask].copy()
+        df = pd.DataFrame(df)
     # Diretório de saída
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
@@ -22,8 +28,8 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
     # Defina as cores para cada evento 
     cores_eventos = [
-        "#0e0561", "#3ae8ff", "#3b08b3", "#4ff9ff", "#3c04d6",
-        "#00bfff", "#2519CC", "#48d8f1", "#9370db", "#000000"
+        "#BDB76B", "#DAA520", "#708090", "#0000FF", "#836FFF",
+        "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#708090"
     ]
     # Repete as cores se tiver mais eventos
     background_colors = [cores_eventos[i % len(cores_eventos)] for i in range(len(labels_barras))]
@@ -91,7 +97,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
     html = f"""{css_local}
     <!-- BLOCO DE GRÁFICO - INÍCIO -->
-    <div class='dashboard-bloco-analise'>
+    <div class='dashboard-bloco-analise' id='bloco-eventos'>
         <span class='dashboard-title-analise'>Análise de eventos</span>
         <div class='grafico-container'>
             <button class='btn-maximizar' onclick="maximizeChart('barrasTotais')">🔍 Maximizar</button>
