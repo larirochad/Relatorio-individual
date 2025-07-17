@@ -66,6 +66,9 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
         return blocos
 
     def gerar_csv_blocos(blocos, df_original):
+        def is_zero_latlon(val):
+            val_str = str(val).replace('.', '').replace(' ', '').replace('-', '').lstrip('0')
+            return val_str == ''
         linhas = []
         linhas_incremento = []
         
@@ -86,7 +89,6 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
             hodo_ant_f = None
 
             for idx, ponto in bloco.iterrows():
-                # Verifica se hodômetro é válido
                 try:
                     hodo_total_f = float(ponto['Hodômetro Total'])
                     if pd.isna(hodo_total_f):
@@ -94,15 +96,22 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
                 except (TypeError, ValueError):
                     continue
 
-                lat = float(ponto['Latitude'])
-                lon = float(ponto['Longitude'])
+                lat = ponto['Latitude']
+                lon = ponto['Longitude']
+
+                if is_zero_latlon(lat) or is_zero_latlon(lon):
+                    # Zera último ponto válido pois não queremos transição de/para zero
+                    ultimo_ponto_valido = None
+                    continue  # pula esse ponto
+
+                lat = float(lat)
+                lon = float(lon)
                 linha_atual = ponto['linha'] if 'linha' in ponto else ponto.name + 2
                 motion_status = int(float(ponto['Motion Status']))
                 tipo_msg = ponto.get('Tipo Mensagem', '')
                 gnss_utc = ponto.get('GNSS UTC Time', '')
                 data_evento = ponto['Data/Hora Evento']
 
-                # Calcular distância incremental
                 if ultimo_ponto_valido is not None:
                     lat_ant, lon_ant, hodo_ant_f, linha_ant, data_ant, motion_ant, tipo_ant, gnss_ant = ultimo_ponto_valido
                     dist_incr = haversine((lat_ant, lon_ant), (lat, lon)) * 1000
@@ -116,7 +125,6 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
                     hodo_inicial = hodo_total_f
                     hodo_ant_f = hodo_total_f
 
-                # Salvar apenas se motion == 21 E hodômetro anterior não é None/nan
                 if motion_status == 21 and ultimo_ponto_valido is not None and hodo_ant_f is not None and not pd.isna(hodo_ant_f):
                     linha_saida = {
                         'linha': linha_atual,
@@ -136,15 +144,14 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
                         'Distância incremental (m)': dist_incr
                     }
                     linhas.append(linha_saida)
-                    # Filtro para arquivo de incremento: apenas se hodômetro atual > anterior e dist > 40m
-                    if (isinstance(hodo_total_f, float) and isinstance(hodo_ant_f, float)
-                        and not pd.isna(hodo_total_f) and not pd.isna(hodo_ant_f)
-                        and hodo_total_f > hodo_ant_f and dist_incr > 40):
+
+                    if (hodo_total_f > hodo_ant_f and dist_incr > 40):
                         linhas_incremento.append(linha_saida)
 
-                # Atualiza último ponto válido
+                # Atualiza apenas se o ponto atual for válido
                 ultimo_ponto_valido = (lat, lon, hodo_total_f, linha_atual, data_evento, motion_status, tipo_msg, gnss_utc)
                 hodo_ant_f = hodo_total_f
+
 
         # Criar diretório se não existir
         os.makedirs(os.path.dirname(nome_arquivo), exist_ok=True)

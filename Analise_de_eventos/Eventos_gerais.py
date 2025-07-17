@@ -129,7 +129,7 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
                 aggfunc='count',
                 fill_value=0
             ).reset_index()
-            print(tabela_pivo)
+            # print(tabela_pivo)
             return contagem, tabela_pivo
         else:
             # print('⚠️ Coluna "Data/Hora Evento" não encontrada para análise por dia.')

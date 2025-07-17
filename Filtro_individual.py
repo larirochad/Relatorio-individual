@@ -6,7 +6,7 @@ from Analise_de_eventos.Eventos_gerais import eventos
 from Analise_de_eventos.bloco_eventos import gerar_bloco_eventos
 from efeito_estrela.pinning import analise_pinning
 from efeito_estrela.pinning_html import gerar_bloco_pinning
-from hodometro.Hodometro import viagens
+from hodometro.Hodometro import viagens, regressao
 from hodometro.html_hodometro import gerar_bloco_hodometro_from_csv
 from Log.mensagens_log import logs
 from Log.log_html import gerar_bloco_log
@@ -25,6 +25,7 @@ from Time_fix.fix_html import gerar_bloco_timefix
 from Velocidade.velocidade import velocidade
 from Velocidade.velocidade_html import gerar_bloco_velocidade
 from html_final import unir_blocos
+
 def executar_analise_completa(input1):
     """
     Função orquestradora: recebe o caminho do CSV de entrada,
@@ -50,6 +51,7 @@ def executar_analise_completa(input1):
     df_sequencia = verificar_sequencia(df)
     # print("✅ Sequência concluído")
     df_viagens = viagens(df)
+    df_reg = regressao(df)
     # print("✅ Viagens concluído")
     df_logs, df_estatisticas_logs = logs(df)
     # print("✅ Logs concluído")
@@ -93,10 +95,10 @@ def executar_analise_completa(input1):
             'linha', 'sequencia_anterior', 'sequencia_atual', 'data_anterior', 'data_atual',
             'tipo_mensagem_anterior', 'tipo_mensagem_atual', 'tipo_problema', 'Diferenca'
         ]
-        df_vazio = pd.DataFrame(columns=colunas)
+        df_vazio = pd.DataFrame(data=None, columns=colunas)
         gerar_bloco_sequenceNumber(df_vazio)
     if df_viagens is not None:
-        gerar_bloco_hodometro_from_csv(df_viagens)
+        gerar_bloco_hodometro_from_csv(df_viagens, df_reg)
     if df_logs is not None and df_estatisticas_logs is not None:
         gerar_bloco_log(df_logs, df_estatisticas_logs)
     if df_reboot is not None:
@@ -112,7 +114,7 @@ def executar_analise_completa(input1):
     print("✅ Blocos HTML gerados com sucesso!")
     unir_blocos(df)
 
-if __name__ == "__main__":
+if __name__ == "__main__":  
     executar_analise_completa(
         input1='logs/867488061438379_decoded.csv',
     )

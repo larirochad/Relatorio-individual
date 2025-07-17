@@ -24,7 +24,6 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
 
     def extrair_viagens(df):
         df = df.copy()
-        # print(df.columns)
         df.columns = [col.strip() for col in df.columns]
         df['Data/Hora Evento'] = pd.to_datetime(df['Data/Hora Evento'], errors='coerce')
         df = df.dropna(subset=['Data/Hora Evento'])
@@ -85,6 +84,7 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
         df = df.sort_values('Data/Hora Evento')
         in_viagem = False
         start_idx = None
+        start_dia = None  # Inicializa para evitar UnboundLocalError
         for idx, row in df.iterrows():
             motion = str(row.get('Motion Status', '')).strip()
             hodometro = pd.to_numeric(row.get('Hodômetro Total', 0), errors='coerce')
@@ -99,7 +99,7 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
                 start_time = datahora
                 start_hodo = hodometro
                 start_dia = dia
-            elif (motion.startswith('1') or dia != start_dia) and in_viagem:
+            elif in_viagem and start_dia is not None and (motion.startswith('1') or dia != start_dia):
                 # Fim de viagem
                 end_time = datahora
                 end_hodo = hodometro
@@ -114,6 +114,7 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
                     })
                 in_viagem = False
                 start_idx = None
+                start_dia = None  # Limpa ao finalizar a viagem
         # Se acabar o arquivo e ainda estiver em viagem, ignora o bloco incompleto
                             
         return pd.DataFrame(viagens)
@@ -158,15 +159,139 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
         resultado_df = resultado_df.sort_values(by='Dia')
         resultado_df['Dia'] = resultado_df['Dia'].dt.strftime('%d/%m/%Y')
 
-    # Salvando em CSV
-    # resultado_df.to_csv(caminho_saida, index=False, encoding='utf-8-sig') # This line was removed as per the edit hint
-    # print(f"✅ Planilha salva em: {caminho_saida}") # This line was removed as per the edit hint
-    # print(resultado_df)
     return resultado_df
 
-if __name__ == "__main__":
-    df = pd.read_csv('logs/867488061434766_decoded.csv', encoding='iso-8859-1', dtype=str, low_memory=False)
 
+def regressao(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Função corrigida para análise de regressão do hodômetro.
+    Ordena primeiro os registros normais, depois posiciona os de 2019 baseado na sequência.
+    """
+    df = df.copy()
+    df.columns = df.columns.str.strip().str.lower()
+
+    # Coluna de referência para rastrear origem
+    if 'linha_arquivo_original' not in df.columns:
+        df['linha_arquivo_original'] = df.index + 2
+
+    # Conversões básicas
+    df['data/hora evento'] = pd.to_datetime(df['data/hora evento'], errors='coerce')
+    df['sequência'] = pd.to_numeric(df['sequência'], errors='coerce')
+    df['hodômetro total'] = pd.to_numeric(df['hodômetro total'], errors='coerce')
+
+    # Remove linhas sem data/hora ou sequência válidas
+    df = df.dropna(subset=['data/hora evento', 'sequência']).copy()
+
+    # Identifica registros com datas problemáticas (2019)
+    df['data_problematica'] = df['data/hora evento'].dt.year == 2019
+    
+    # Separa os dados normais e problemáticos
+    df_normais = df[~df['data_problematica']].copy()
+    df_problematicos = df[df['data_problematica']].copy()
+    
+    if len(df_normais) == 0:
+        print("⚠️  Todos os registros têm datas problemáticas!")
+        return pd.DataFrame()
+    
+    # Ordena os dados normais por data/hora e sequência
+    df_normais = df_normais.sort_values(['data/hora evento', 'sequência']).reset_index(drop=True)
+    
+    # Para cada registro problemático, encontra a melhor posição nos dados normais
+    for _, row_prob in df_problematicos.iterrows():
+        seq_prob = row_prob['sequência']
+        melhor_posicao = None
+        menor_diff = float('inf')
+        
+        # Encontra o registro normal com sequência mais próxima
+        for i, row_normal in df_normais.iterrows():
+            diff = abs(row_normal['sequência'] - seq_prob)
+            if diff < menor_diff:
+                menor_diff = diff
+                melhor_posicao = i
+        
+        # Insere o registro problemático após a melhor posição encontrada
+        if melhor_posicao is not None:
+            if seq_prob > df_normais.iloc[melhor_posicao]['sequência']:
+                # Insere após a melhor posição
+                df_normais = pd.concat([
+                    df_normais.iloc[:melhor_posicao+1],
+                    pd.DataFrame([row_prob]),
+                    df_normais.iloc[melhor_posicao+1:]
+                ]).reset_index(drop=True)
+            else:
+                # Insere antes da melhor posição
+                df_normais = pd.concat([
+                    df_normais.iloc[:melhor_posicao],
+                    pd.DataFrame([row_prob]),
+                    df_normais.iloc[melhor_posicao:]
+                ]).reset_index(drop=True)
+    
+    # Agora df_normais contém todos os registros, ordenados corretamente
+    df_ordenado = df_normais.copy()
+    
+    # Remove colunas auxiliares
+    df_ordenado = df_ordenado.drop(columns=['data_problematica'])
+    
+    # Salva debug
+    df_ordenado.to_csv('hodometro_ordenado_debug_corrigido.csv', index=False, encoding='utf-8-sig')
+    # print(f"✅ Dados ordenados salvos em 'hodometro_ordenado_debug_corrigido.csv' ({len(df_ordenado)} registros)")
+    
+    # Análise de regressão apenas com registros que têm hodômetro
+    df_hod = df_ordenado[df_ordenado['hodômetro total'].notna()].copy()
+    
+    if len(df_hod) < 2:
+        print("⚠️  Dados insuficientes para análise de hodômetro!")
+        return pd.DataFrame()
+    
+    # print(f"📊 Analisando {len(df_hod)} registros com hodômetro válido...")
+    
+    registros_analise = []
+    regressoes = 0
+    
+    for i in range(1, len(df_hod)):
+        anterior = df_hod.iloc[i - 1]
+        atual = df_hod.iloc[i]
+        
+        hod_anterior = anterior['hodômetro total']
+        hod_atual = atual['hodômetro total']
+        diferenca = hod_atual - hod_anterior
+        
+        if hod_atual >= hod_anterior:
+            status = 'ok'
+        else:
+            status = 'regressão'
+            regressoes += 1
+        
+        registros_analise.append({
+            'linha': atual.get('linha_arquivo_original', atual.name + 2),
+            'Hodômetro_anterior': hod_anterior,
+            'Hodômetro_atual': hod_atual,
+            'data_anterior': anterior['data/hora evento'],
+            'data_atual': atual['data/hora evento'],
+            'sequencia_anterior': anterior['sequência'],
+            'sequencia_atual': atual['sequência'],
+            'tipo_mensagem_anterior': anterior.get('tipo mensagem', 'N/D'),
+            'tipo_mensagem_atual': atual.get('tipo mensagem', 'N/D'),
+            'tipo_problema': status,
+            'Diferenca': diferenca
+        })
+    
+    df_resultado = pd.DataFrame(registros_analise)
+    
+    # print(f"📈 Análise concluída:")
+    # print(f"   • Total de comparações: {len(registros_analise)}")
+    # print(f"   • Registros OK: {len(registros_analise) - regressoes}")
+    # print(f"   • Regressões encontradas: {regressoes}")
+    
+    return df_resultado
+
+
+# Exemplo de uso
+if __name__ == "__main__":
+    # Carrega dados
+    df = pd.read_csv('logs/867488061395116_decoded.csv', encoding='latin-1', dtype=str, low_memory=False, on_bad_lines='skip')
+    
+    # Processa coluna hodômetro se existir
     if 'Hodômetro Total' in df.columns:
         df['Hodômetro Total'] = (
             df['Hodômetro Total']
@@ -175,4 +300,20 @@ if __name__ == "__main__":
             .str.replace(r'[^\d\.]', '', regex=True)
         )
         df['Hodômetro Total'] = pd.to_numeric(df['Hodômetro Total'], errors='coerce')
-    viagens(df) 
+    
+    # Executa análise de regressão
+    print("🔍 Iniciando análise de regressão do hodômetro...")
+    df_reg = regressao(df)
+    
+    # Salva resultado
+    if not df_reg.empty:
+        df_reg.to_csv('hod_regressao_corrigido.csv', index=False, encoding='utf-8-sig')
+        print(f"✅ Análise salva em 'hod_regressao_corrigido.csv'")
+        
+        # Mostra primeiras regressões encontradas
+        regressoes = df_reg[df_reg['tipo_problema'] == 'regressão']
+        if not regressoes.empty:
+            print(f"\n⚠️  Primeiras regressões encontradas:")
+            print(regressoes.head(10)[['linha', 'Hodômetro_anterior', 'Hodômetro_atual', 'Diferenca', 'sequencia_atual']])
+    else:
+        print("❌ Nenhum resultado gerado!")
