@@ -178,6 +178,12 @@ def unir_blocos(df_raw):
         str(blocks_dir / "bloco_smp_eco.html"),
         str(blocks_dir / "bloco_gap.html"),
     ]
+    # Lê o bloco de trajetos separadamente
+    bloco_trajetos_path = str(blocks_dir / "bloco_trajetos.html")
+    bloco_trajetos_html = ''
+    if os.path.exists(bloco_trajetos_path):
+        with open(bloco_trajetos_path, "r", encoding="utf-8") as f:
+            bloco_trajetos_html = f.read().strip()
     
     # html_files = sorted([str(f) for f in blocks_dir.glob('*.html')])
 
@@ -772,11 +778,35 @@ def unir_blocos(df_raw):
             color: #fff;
             transform: translateY(-2px) scale(1.03);
         }}
+        /* Botão flutuante Trajetos */
+        .btn-flutuante-trajetos {{
+            position: fixed;
+            top: 90px;
+            right: 40px;
+            z-index: 99999;
+            background: linear-gradient(135deg, #00bfff 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 24px;
+            font-size: 1em;
+            box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            font-family: Arial, Helvetica, sans-serif;
+        }}
+        .btn-flutuante-trajetos:hover {{
+            background: linear-gradient(135deg, #764ba2 0%, #00bfff 100%);
+            color: #fff;
+            transform: translateY(-2px) scale(1.03);
+        }}
         </style>
     </head>
     <body>
+        <button id="btn-trajetos" class="btn-flutuante-trajetos" onclick="showTrajetos()">Trajetos</button>
+        <button id="btn-analises-gerais" class="btn-flutuante-l2" style="display:none;top:90px;right:40px;" onclick="showAnalisesGerais()">Análises gerais</button>
         <button id="btn-analises-l2" class="btn-flutuante-l2" onclick="showAnalisesL2()">Análises L2</button>
-        <button id="btn-analises-gerais" class="btn-flutuante-l2" style="display:none;" onclick="showAnalisesGerais()">Análises gerais</button>
         <div id="floating-nav-wrapper">
             <div id="floating-nav-toggle">
                 <!-- Seta SVG roxa -->
@@ -789,6 +819,7 @@ def unir_blocos(df_raw):
                 <button onclick="scrollToBloco('bloco-resumo-tecnico')">Resumo Técnico</button>
                 <button onclick="scrollToBloco('bloco-hodometro')">Hodômetro</button>
                 <button onclick="scrollToBloco('bloco-eventos')">Eventos</button>
+                <button onclick="scrollToBloco('bloco-trajetos')">Trajetos</button>
                 <button onclick="scrollToBloco('bloco-ignicao')">Tempo de Ignição</button>
                 <button onclick="scrollToBloco('bloco-log')">Log</button>
                 <button onclick="scrollToBloco('bloco-reboot')">Reboot</button>
@@ -826,6 +857,9 @@ def unir_blocos(df_raw):
     final_html += device_summary_html        # Tabela de resumo técnico
     final_html += "\n".join(clean_blocks_with_ids)    # HTML blocks with ids
     final_html += "\n"
+    # Adiciona o bloco de trajetos, mas escondido por padrão e pronto para fullscreen
+    if bloco_trajetos_html:
+        final_html += f"<div id='pagina-trajetos-full' style='display:none;width:100vw;height:100vh;position:fixed;top:0;left:0;z-index:10000;background:#fff;'>{bloco_trajetos_html}</div>"
     final_html += global_scripts             # Consolidated scripts
     final_html += "\n"
     # Embutir o DataFrame principal como JSON
@@ -982,16 +1016,28 @@ def unir_blocos(df_raw):
             }
         }
         function showAnalisesGerais() {
-            // Mostra todos os blocos normais e esconde o bloco de análises L2
-            document.querySelectorAll('.bloco-smp-eco').forEach(function(el) { el.style.display = 'none'; });
-            document.querySelectorAll('.dashboard-bloco-analise, .bloco-hodometro, .bloco-eventos, .bloco-ignicao, .bloco-log, .bloco-reboot, .bloco-satelites, .bloco-sequenceNumber, .bloco-temporizadas, .bloco-pinning, .bloco-timefix, .bloco-velocidade, #bloco-resumo-tecnico').forEach(function(el) { el.style.display = ''; });
-            // Mostra o botão de análises L2
-            document.getElementById('btn-analises-l2').style.display = '';
+            document.body.classList.remove('trajetos-full');
+            var traj = document.getElementById('pagina-trajetos-full');
+            if (traj) traj.style.display = 'none';
+            document.getElementById('btn-trajetos').style.display = '';
             document.getElementById('btn-analises-gerais').style.display = 'none';
-            // Mostra o menu lateral
+            // Restaurar todos os blocos normais, menu lateral, botões e logo/título
             document.getElementById('floating-nav-wrapper').style.display = '';
-            // Scroll para o topo
+            document.getElementById('btn-analises-l2').style.display = '';
+            document.querySelectorAll('.dashboard-container, .logo-container, .dashboard-title, .dashboard-bloco-analise, #bloco-resumo-tecnico').forEach(function(el) { el.style.display = ''; });
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function showTrajetos() {
+            document.body.classList.add('trajetos-full');
+            var traj = document.getElementById('pagina-trajetos-full');
+            if (traj) traj.style.display = 'block';
+            document.getElementById('btn-trajetos').style.display = 'none';
+            document.getElementById('btn-analises-gerais').style.display = '';
+            document.getElementById('btn-analises-l2').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(function() {
+                window.dispatchEvent(new Event('resize'));
+            }, 300);
         }
         // Abrir/fechar menu ao clicar na seta
         document.getElementById('floating-nav-toggle').onclick = function() {

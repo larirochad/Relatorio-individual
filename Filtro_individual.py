@@ -31,6 +31,7 @@ from L2.Sempre_modoeco import sempre_modoeco
 from L2.html_smp_eco import gerar_bloco_smp_eco
 from L2.GAP import gap
 from L2.gap_html import gerar_bloco_gap
+from mapa import gerar_bloco_trajetos
 
 def organizar_dataframe(df: pd.DataFrame, caminho_saida_debug: str = 'csv_ordenado_debug.csv') -> pd.DataFrame:
     """
@@ -160,8 +161,11 @@ def executar_analise_completa(input1):
             else:
                 # Se eventos retornou apenas contagem
                 gerar_bloco_eventos(df_eventos)
+        # Gerar bloco de trajetos (mapa interativo)
+        gerar_bloco_trajetos(df)
         if df_pinning is not None:
             gerar_bloco_pinning(df_pinning, df_pinning)
+            
         else:
             # Cria DataFrame vazio com as colunas esperadas
             colunas = [
@@ -209,4 +213,5 @@ if __name__ == "__main__":
     executar_analise_completa(
         input1='logs/867488061395116_decoded.csv',
     )
+
 
