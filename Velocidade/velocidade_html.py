@@ -25,7 +25,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             data_hora = str(row['Data/Hora Evento'])
             if ' ' in data_hora:
                 data, hora = data_hora.split(' ', 1)
-                df_absurda.at[idx, 'Data'] = data[5:7] + '/' + data[8:10]  # Extrai dd/mm
+                df_absurda.at[idx, 'Data'] = data[8:10] + '/' + data[5:7]  # Extrai dd/mm
                 df_absurda.at[idx, 'Hora'] = hora[:8]  # Extrai HH:MM:SS
         except:
             pass
@@ -35,7 +35,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             data_hora = str(row['Data/Hora Evento'])
             if ' ' in data_hora:
                 data, hora = data_hora.split(' ', 1)
-                df_ignicao_off.at[idx, 'Data'] = data[5:7] + '/' + data[8:10]  # Extrai dd/mm
+                df_ignicao_off.at[idx, 'Data'] = data[8:10] + '/' + data[5:7]  # Extrai dd/mm
                 df_ignicao_off.at[idx, 'Hora'] = hora[:8]  # Extrai HH:MM:SS
         except:
             pass
@@ -293,22 +293,104 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         html += '</div>'
         return html
 
+    # Preparar dados para o gráfico
+    # Se só houver uma das séries, usar só ela
+    x_absurda = df_absurda['Linha Original'].tolist() if not df_absurda.empty else []
+    y_absurda = pd.to_numeric(df_absurda['Velocidade absurda'], errors='coerce').tolist() if not df_absurda.empty else []
+    x_ignicao = df_ignicao_off['Linha Original'].tolist() if not df_ignicao_off.empty else []
+    y_ignicao = pd.to_numeric(df_ignicao_off['Velocidade com ignição OFF'], errors='coerce').tolist() if not df_ignicao_off.empty else []
+
+    import json
+
+    # Lógica para montar datasets e labels do gráfico
+    chart_labels = []
+    datasets = []
+    if x_absurda and y_absurda:
+        chart_labels = x_absurda
+        datasets.append({
+            'label': 'Velocidade Absurda',
+            'data': y_absurda,
+            'borderColor': 'red',
+            'backgroundColor': 'rgba(220,53,69,0.08)',
+            'borderWidth': 2,
+            'pointRadius': 2,
+            'fill': False,
+            'tension': 0.2
+        })
+    if x_ignicao and y_ignicao:
+        # Se não há absurda, usar x_ignicao como labels
+        if not chart_labels:
+            chart_labels = x_ignicao
+            ignicao_data = y_ignicao
+        else:
+            # Alinhar ignicao_off com x_absurda
+            ignicao_data = [None]*len(chart_labels)
+            for i, x in enumerate(x_ignicao):
+                if x in chart_labels:
+                    idx = chart_labels.index(x)
+                    ignicao_data[idx] = y_ignicao[i]
+        datasets.append({
+            'label': 'Velocidade com Ignição OFF',
+            'data': ignicao_data,
+            'borderColor': 'blue',
+            'backgroundColor': 'rgba(30,136,229,0.08)',
+            'borderWidth': 2,
+            'pointRadius': 2,
+            'fill': False,
+            'tension': 0.2
+        })
+    # Se não houver dados, mostrar label dummy
+    if not chart_labels:
+        chart_labels = ['']
+        datasets = [{
+            'label': 'Sem dados',
+            'data': [None],
+            'borderColor': 'gray',
+            'backgroundColor': 'rgba(200,200,200,0.08)',
+            'borderWidth': 2,
+            'pointRadius': 2,
+            'fill': False,
+            'tension': 0.2
+        }]
+
     # Montar HTML completo
     html = f"""
     {css}
     <div class="bloco-velocidade" id="bloco-velocidade">
         <span class="dashboard-title-velocidade">Análise de Velocidade</span>
-        {resumo_html()}
-        {tabela_html(df_absurda, "Velocidades Absurdas (>150 km/h)", "absurda")}
-        {tabela_html(df_ignicao_off, "Velocidades com Ignição OFF", "ignicao_off")}
+        <div style='text-align:center; margin-bottom: 24px;'>
+            <button id="btn-toggle-grafico-tabela" class="btn-mostrar-todos" onclick="toggleGraficoTabela()">Ver Gráfico</button>
+        </div>
+        <div id="container-tabelas-velocidade">
+            {resumo_html()}
+            {tabela_html(df_absurda, "Velocidades Absurdas (>150 km/h)", "absurda")}
+            {tabela_html(df_ignicao_off, "Velocidades com Ignição OFF", "ignicao_off")}
+        </div>
+        <div id="container-grafico-velocidade" style="display:none;">
+            <div class='grafico-container'>
+                <button class='btn-maximizar' onclick="maximizeChart('graficoVelocidade')">🔍 Maximizar</button>
+                <div class='grafico-titulo-container'>
+                    <h3 class='grafico-titulo'>Gráfico das Velocidades com Ignição OFF </h3>
+                </div>
+                <div class='chart-wrapper'>
+                    <canvas id="graficoVelocidade"></canvas>
+                </div>
+                <div class='zoom-controls'>
+                    <button onclick="resetZoom('graficoVelocidade')">Reset Zoom</button>
+                </div>
+                <div class='zoom-instruction' style='margin-top:8px; color:#666; font-size:0.8em; font-style:italic;'>
+                    Use o scroll do mouse para zoom ou duplo clique para resetar
+                </div>
+            </div>
+        </div>
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
     <script>
     function toggleLinhas(tipo, total) {{
         const linhas = document.querySelectorAll('.linha-' + tipo);
         const btn = document.getElementById('btn_' + tipo);
         const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
-        
         linhas.forEach(linha => {{
             if (todasOcultas) {{
                 linha.classList.remove('linha-oculta');
@@ -316,11 +398,92 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                 linha.classList.add('linha-oculta');
             }}
         }});
-        
         if (todasOcultas) {{
             btn.textContent = 'Mostrar apenas 5 registros';
         }} else {{
             btn.textContent = 'Ver todos os dados';
+        }}
+    }}
+    // Alternar entre gráfico e tabela
+    function toggleGraficoTabela() {{
+        const containerTabela = document.getElementById('container-tabelas-velocidade');
+        const containerGrafico = document.getElementById('container-grafico-velocidade');
+        const btn = document.getElementById('btn-toggle-grafico-tabela');
+        if (containerTabela.style.display === 'none') {{
+            containerTabela.style.display = '';
+            containerGrafico.style.display = 'none';
+            btn.textContent = 'Ver Gráfico';
+        }} else {{
+            containerTabela.style.display = 'none';
+            containerGrafico.style.display = '';
+            btn.textContent = 'Ver Tabela';
+            if (!window.charts || !window.charts['graficoVelocidade']) {{
+                renderGraficoVelocidade();
+            }}
+        }}
+    }}
+    // Função para maximizar o gráfico
+    function maximizeChart(id) {{
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        if (!canvas.classList.contains('maximizado')) {{
+            canvas.style.position = 'fixed';
+            canvas.style.top = '50%';
+            canvas.style.left = '50%';
+            canvas.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            canvas.style.zIndex = 9999;
+            canvas.style.background = '#fff';
+            canvas.classList.add('maximizado');
+            document.body.style.overflow = 'hidden';
+            canvas.onclick = function() {{ maximizeChart(id); }};
+        }} else {{
+            canvas.style = '';
+            canvas.classList.remove('maximizado');
+            document.body.style.overflow = '';
+            canvas.onclick = null;
+        }}
+    }}
+    // Função para resetar zoom
+    function resetZoom(id) {{
+        if(window.charts && window.charts[id]) {{ window.charts[id].resetZoom(); }}
+    }}
+    // Renderizar o gráfico de velocidade
+    function renderGraficoVelocidade() {{
+        if (typeof window.charts === 'undefined') {{ window.charts = {{}}; }}
+        if (typeof Chart !== 'undefined' && Chart.register && typeof ChartZoom !== 'undefined') {{ Chart.register(ChartZoom); }}
+        const ctx = document.getElementById('graficoVelocidade').getContext('2d');
+        if (!window.charts['graficoVelocidade']) {{
+            window.charts['graficoVelocidade'] = new Chart(ctx, {{
+                type: 'line',
+                data: {{
+                    labels: {json.dumps(chart_labels)},
+                    datasets: {json.dumps(datasets)}
+                }},
+                options: {{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {{ mode: 'nearest', intersect: false }},
+                    plugins: {{
+                        legend: {{ position: 'top' }},
+                        zoom: {{
+                            pan: {{ enabled: true, mode: 'xy' }},
+                            zoom: {{ wheel: {{ enabled: true }}, pinch: {{ enabled: true }}, drag: {{ enabled: true }}, mode: 'xy' }}
+                        }}
+                    }},
+                    scales: {{
+                        y: {{
+                            beginAtZero: true,
+                            title: {{ display: true, text: 'VELOCIDADE (km/h)', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
+                        }},
+                        x: {{
+                            title: {{ display: true, text: 'LINHA DA PLANILHA', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
+                        }}
+                    }}
+                }}
+            }});
+            ctx.canvas.addEventListener('dblclick', function() {{
+                if(window.charts['graficoVelocidade']) {{ window.charts['graficoVelocidade'].resetZoom(); }}
+            }});
         }}
     }}
     </script>

@@ -25,6 +25,34 @@
         border-radius: 0;
         box-shadow: none;
     }
+    .satelites-btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .satelites-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 22px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        font-family: 'Saira', sans-serif;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        transition: all 0.3s ease;
+    }
+    .satelites-btn.active, .satelites-btn:focus {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        outline: none;
+    }
+    .satelites-btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
     .resumo-anomalias-container {
         display: flex;
         justify-content: center;
@@ -53,7 +81,7 @@
         margin-bottom: 2px;
     }
     .resumo-anomalia-numero.red {
-        color: #38b349 !important;
+        color: #dc3545 !important;
     }
     .resumo-anomalia-legenda {
         font-size: 0.95em;
@@ -115,65 +143,87 @@
     
     <div class="bloco-satelites" id="bloco-satelites">
         <span class="dashboard-title-analise">Análise de Satélites</span>
-        
-        <div class="resumo-anomalias-container">
-            <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Total de registros</div>
-                <div class="resumo-anomalia-numero">5479</div>
-                <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
-            </div>
-            <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Registros válidos</div>
-                <div class="resumo-anomalia-numero">4605</div>
-                <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
-            </div>
-            <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
-                <div class="resumo-anomalia-numero red">84.0%</div>
-                <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
-            </div>
+        <div class="satelites-btn-container">
+            <button class="satelites-btn active" id="btn-validos" onclick="mostrarTabelaSatelites('validos')">Válidos</button>
+            <button class="satelites-btn" id="btn-invalidos" onclick="mostrarTabelaSatelites('invalidos')">Inválidos</button>
         </div>
         
-        
-        <div class="tabela-container">
-            <div class="grafico-titulo-container">
-                <h3 class="grafico-titulo">Estatísticas - Todos os dados</h3>
+            <div class="resumo-anomalias-container" id="resumo-validos" style="display:flex;">
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total de registros</div>
+                    <div class="resumo-anomalia-numero">7298</div>
+                    <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Registros válidos</div>
+                    <div class="resumo-anomalia-numero">6090</div>
+                    <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
+                    <div class="resumo-anomalia-numero red" style="color:#38b349 !important;">83.4%</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
+                </div>
             </div>
-            <div class="faixa-legenda">Considera todos os registros, inclusive inválidos</div>
-            <table class="tabela-estatisticas">
-                <thead>
-                    <tr>
-                        <th>Dado</th>
-                        <th>Média</th>
-                        <th>Moda</th>
-                        <th>Desvio Padrão</th>
-                        <th>Valor máximo</th>
-                        <th>Valor mínimo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Satélites</td>
-                        <td>11.59</td>
-                        <td>12.0</td>
-                        <td>1.29</td>
-                        <td>12.00</td>
-                        <td>4.00</td>
-                    </tr>
-                    <tr>
-                        <td>HDOP</td>   
-                        <td>0.84</td>         
-                        <td>1.0</td>  
-                        <td>0.38</td>
-                        <td>3.00</td>
-                        <td>0.00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            
         
-        
-        <div class="tabela-container">
+            <div class="resumo-anomalias-container" id="resumo-invalidos" style="display:none;">
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total de registros</div>
+                    <div class="resumo-anomalia-numero">7298</div>
+                    <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Registros inválidos</div>
+                    <div class="resumo-anomalia-numero">1208</div>
+                    <div class="resumo-anomalia-legenda"> Hdop = 0</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Porcentagem de registros Inválidos</div>
+                    <div class="resumo-anomalia-numero red">16.6%</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos</div>
+                </div>
+            </div>
+            
+        <div id="tabelas-satelites">
+            <div class="tabela-container" id="tabela-todos" style="display:block;">
+                <div class="grafico-titulo-container">
+                    <h3 class="grafico-titulo">Estatísticas - Todos os dados</h3>
+                </div>
+                <div class="faixa-legenda">Considera todos os registros, inclusive inválidos</div>
+                <table class="tabela-estatisticas">
+                    <thead>
+                        <tr>
+                            <th>Dado</th>
+                            <th>Média</th>
+                            <th>Moda</th>
+                            <th>Desvio Padrão</th>
+                            <th>Valor máximo</th>
+                            <th>Valor mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Satélites</td>
+                            <td>11.63</td>
+                            <td>12.0</td>
+                            <td>1.22</td>
+                            <td>12.00</td>
+                            <td>3.00</td>
+                        </tr>
+                        <tr>
+                            <td>HDOP</td>   
+                            <td>0.84</td>         
+                            <td>1.0</td>  
+                            <td>0.39</td>
+                            <td>4.00</td>
+                            <td>0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        <div class="tabela-container" id="tabela-validos" style="display:none;">
             <div class="grafico-titulo-container">
                 <h3 class="grafico-titulo">Estatísticas - Apenas válidos</h3>
             </div>
@@ -192,23 +242,74 @@
                 <tbody>
                     <tr>
                         <td>Satélites</td>
-                        <td>11.59</td>
+                        <td>11.63</td>
                         <td>12.0</td>
-                        <td>1.29</td>
+                        <td>1.22</td>
                         <td>12.00</td>
-                        <td>4.00</td>
+                        <td>3.00</td>
                     </tr>
                     <tr>
                         <td>HDOP</td>   
-                        <td>1.00</td>         
+                        <td>1.01</td>         
                         <td>1.0</td>  
-                        <td>0.08</td>
-                        <td>3.00</td>
+                        <td>0.13</td>
+                        <td>4.00</td>
                         <td>1.00</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         
+            
+        <div class="tabela-container" id="tabela-invalidos" style="display:none;">
+            <div class="grafico-titulo-container">
+                <h3 class="grafico-titulo">Estatísticas - Apenas inválidos</h3>
+            </div>
+            <div class="faixa-legenda">Considera apenas registros inválidos (Hdop = 0)</div>
+            <table class="tabela-estatisticas">
+                <thead>
+                    <tr>
+                        <th>Dado</th>
+                        <th>Média</th>
+                        <th>Moda</th>
+                        <th>Desvio Padrão</th>
+                        <th>Valor máximo</th>
+                        <th>Valor mínimo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Satélites</td>
+                        <td>10.72</td>
+                        <td>12.0</td>
+                        <td>2.21</td>
+                        <td>12.00</td>
+                        <td>6.00</td>
+                    </tr>
+                    <tr>
+                        <td>HDOP</td>   
+                        <td>0.00</td>         
+                        <td>0.0</td>  
+                        <td>0.00</td>
+                        <td>0.00</td>
+                        <td>0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        </div>
     </div>
+    <script>
+    function mostrarTabelaSatelites(tipo) {
+        document.getElementById('tabela-validos').style.display = (tipo === 'validos') ? 'block' : 'none';
+        document.getElementById('tabela-invalidos').style.display = (tipo === 'invalidos') ? 'block' : 'none';
+        document.getElementById('btn-validos').classList.toggle('active', tipo === 'validos');
+        document.getElementById('btn-invalidos').classList.toggle('active', tipo === 'invalidos');
+        document.getElementById('resumo-validos').style.display = (tipo === 'validos') ? 'flex' : 'none';
+        document.getElementById('resumo-invalidos').style.display = (tipo === 'invalidos') ? 'flex' : 'none';
+    }
+    // Inicialmente mostra válidos
+    mostrarTabelaSatelites('validos');
+    </script>
     

@@ -1,6 +1,6 @@
 import pandas as pd
 
-def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     df = df.copy()
     try:
         # Adicionar índice da linha original (considerando cabeçalho)
@@ -11,10 +11,25 @@ def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
         df_filtrado = df.dropna(subset=['Data/Hora Evento', 'Data/Hora Inclusão']).copy()
 
+        # Filtrar apenas linhas em que o ano de evento e inclusão são iguais
+        df_filtrado = df_filtrado[df_filtrado['Data/Hora Evento'].dt.year == df_filtrado['Data/Hora Inclusão'].dt.year]
+
         df_filtrado['Delay'] = (df_filtrado['Data/Hora Inclusão'] - df_filtrado['Data/Hora Evento']).dt.total_seconds().astype(float)
 
         # se é log ou nao 
         df_filtrado['Log'] = df_filtrado['Delay'].apply(lambda x: 'Sim' if x > 60 else 'Não')
+
+        # Adiciona colunas auxiliares para filtragem
+        if 'Motion Status' in df_filtrado.columns:
+            df_filtrado['motion_prefix'] = df_filtrado['Motion Status'].astype(str).str[0]
+        else:
+            df_filtrado['motion_prefix'] = ''
+        if 'Position Report Type' in df_filtrado.columns:
+            df_filtrado['report_type'] = df_filtrado['Position Report Type'].apply(
+                lambda x: str(int(float(str(x)))) if pd.notnull(x) and str(x).strip() else ''
+            )
+        else:
+            df_filtrado['report_type'] = ''
 
         # Filtrar apenas mensagens que são logs
         df_logs = df_filtrado[df_filtrado['Log'] == 'Sim'].copy()
@@ -33,12 +48,25 @@ def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
             max_delay_idx = delay_series.idxmax()
             mensagem_maior_delay = df_logs.loc[max_delay_idx, 'Tipo Mensagem']
             maior_delay = df_logs.loc[max_delay_idx, 'Delay']
-            # print(maior_delay)
             linha_maior_delay = df_logs.loc[max_delay_idx, 'Linha']
         else:
             mensagem_maior_delay = ""
             maior_delay = ""
             linha_maior_delay = ""
+
+        # Formatação robusta dos campos numéricos
+        try:
+            percentual_logs_fmt = f"{float(percentual_logs):.2f}%"
+        except (ValueError, TypeError):
+            percentual_logs_fmt = ""
+        try:
+            media_delay_fmt = f"{float(media_delay):.2f}s"
+        except (ValueError, TypeError):
+            media_delay_fmt = ""
+        try:
+            maior_delay_fmt = f"{float(maior_delay):.2f}s"
+        except (ValueError, TypeError):
+            maior_delay_fmt = ""
 
         # Criar DataFrame de resultado apenas com logs
         colunas = ['Linha', 'Tipo Mensagem', 'Data/Hora Inclusão', 'Data/Hora Evento', 'Delay', 'Log']
@@ -49,21 +77,25 @@ def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         # Criar DataFrame separado com estatísticas
         df_estatisticas = pd.DataFrame({
             'Tipo Mensagem': ['ESTATÍSTICAS'],
-            'Percentual_Logs_Total': [f"{percentual_logs:.2f}%"],
-            'Media_Delay_Logs': [f"{media_delay:.2f}s"],
+            'Percentual_Logs_Total': [percentual_logs_fmt],
+            'Media_Delay_Logs': [media_delay_fmt],
             'Mensagem_Maior_Delay': [mensagem_maior_delay],
-            'Maior_Delay_Encontrado': [f"{maior_delay:.2f}s"],
+            'Maior_Delay_Encontrado': [maior_delay_fmt],
             'Linha_Maior_Delay': [linha_maior_delay]
         })
 
-        # Exibir resultado
-        # print("OK ")
-        # print(df_resultado)
-        return df_resultado, df_estatisticas
+        # Filtros para temporizadas, periódicas e modo econômico
+        df_temporizadas = df_filtrado[df_filtrado['Tipo Mensagem'] == 'GTERI'].copy()
+        df_periodicas = df_temporizadas[(df_temporizadas['motion_prefix'] == '2') & (df_temporizadas['report_type'] == '10')].copy()
+        df_eco = df_temporizadas[df_temporizadas['motion_prefix'] == '1'].copy()
+        # Salvar o DataFrame filtrado em um arquivo CSV
+        df_filtrado.to_csv('resultado_logs.csv', index=False, encoding='utf-8')
+        df_resultado = df_filtrado  # Mantém o DataFrame para uso posterior
+        return df_resultado, df_estatisticas, df_temporizadas, df_periodicas, df_eco
         
     except Exception as e:
-        print(f"❌ Erro inesperado: {e}")
-        return pd.DataFrame(), pd.DataFrame() # Retorna DataFrames vazios em caso de erro
+        print(f"❌ Erro inesperado em logs: {e}")
+        return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame() # Retorna DataFrames vazios em caso de erro
 
 if __name__ == "__main__":
     df = pd.read_csv('logs/867488065171646_decoded.csv', encoding='iso-8859-1')

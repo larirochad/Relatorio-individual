@@ -24,7 +24,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
     cores_eventos = [
         "#BDB76B", "#DAA520", "#708090", "#0000FF", "#836FFF",
-        "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#66c7ff", "#1C1C1C", "#2F4F4F", "#808000", "#A020F0", 	"#87CEEB","	#BC8F8F"
+        "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#66c7ff", "#1C1C1C",  "#808000", "#A020F0", 	"#87CEEB","	#BC8F8F"
     ]
     background_colors = [cores_eventos[i % len(cores_eventos)] for i in range(len(labels_barras))]
 

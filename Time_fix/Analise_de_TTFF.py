@@ -8,6 +8,9 @@ def calcular_time_fix(df: pd.DataFrame) -> pd.DataFrame:
 
     df_filtrado = df.dropna(subset=['Data/Hora Evento', 'GNSS UTC Time']).copy()
 
+    # Filtrar apenas linhas em que o ano de evento e GNSS UTC Time são iguais
+    df_filtrado = df_filtrado[df_filtrado['Data/Hora Evento'].dt.year == df_filtrado['GNSS UTC Time'].dt.year]
+
     df_filtrado['Time fix'] = (df_filtrado['Data/Hora Evento'] - df_filtrado['GNSS UTC Time']).dt.total_seconds()
 
     # Calcula as médias

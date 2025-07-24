@@ -2,10 +2,20 @@ import pandas as pd
 from pathlib import Path
 from typing import Union
 
-def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_resumo: pd.DataFrame, filename='bloco_satelites.html'):
+def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_invalidos: pd.DataFrame, df_resumo: pd.DataFrame, filename='bloco_satelites.html'):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
+
+    # Calcular resumo para inválidos
+    total_registros = df_resumo.loc[df_resumo['Métrica'] == 'Total de registros', 'Valor'].values[0]
+    registros_invalidos = total_registros - df_resumo.loc[df_resumo['Métrica'] == 'Registros válidos', 'Valor'].values[0]
+    perc_invalidos = 100 - float(str(df_resumo.loc[df_resumo['Métrica'] == '% Válidos', 'Valor'].values[0]).replace('%',''))
+    resumo_invalidos = [
+        {'Métrica': 'Total de registros', 'Valor': total_registros},
+        {'Métrica': 'Registros inválidos', 'Valor': registros_invalidos},
+        {'Métrica': '% Inválidos', 'Valor': f"{perc_invalidos:.1f}%"}
+    ]
 
     # CSS isolado
     css = """
@@ -33,6 +43,34 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
         padding: 0;
         border-radius: 0;
         box-shadow: none;
+    }
+    .satelites-btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .satelites-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 22px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        font-family: 'Saira', sans-serif;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        transition: all 0.3s ease;
+    }
+    .satelites-btn.active, .satelites-btn:focus {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        outline: none;
+    }
+    .satelites-btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
     }
     .resumo-anomalias-container {
         display: flex;
@@ -62,7 +100,7 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
         margin-bottom: 2px;
     }
     .resumo-anomalia-numero.red {
-        color: #38b349 !important;
+        color: #dc3545 !important;
     }
     .resumo-anomalia-legenda {
         font-size: 0.95em;
@@ -124,34 +162,58 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
     """
 
     # Resumo
-    def resumo_html(df_resumo):
-        total = df_resumo.loc[df_resumo['Métrica'] == 'Total de registros', 'Valor'].values[0]
-        validos = df_resumo.loc[df_resumo['Métrica'] == 'Registros válidos', 'Valor'].values[0]
-        perc_invalidos = df_resumo.loc[df_resumo['Métrica'] == '% Válidos', 'Valor'].values[0]
-        return f'''
-        <div class="resumo-anomalias-container">
-            <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Total de registros</div>
-                <div class="resumo-anomalia-numero">{total}</div>
-                <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+    def resumo_html(df_resumo, tipo='validos'):
+        if tipo == 'validos':
+            total = df_resumo.loc[df_resumo['Métrica'] == 'Total de registros', 'Valor'].values[0]
+            validos = df_resumo.loc[df_resumo['Métrica'] == 'Registros válidos', 'Valor'].values[0]
+            perc_validos = df_resumo.loc[df_resumo['Métrica'] == '% Válidos', 'Valor'].values[0]
+            return f'''
+            <div class="resumo-anomalias-container" id="resumo-validos" style="display:flex;">
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total de registros</div>
+                    <div class="resumo-anomalia-numero">{total}</div>
+                    <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Registros válidos</div>
+                    <div class="resumo-anomalia-numero">{validos}</div>
+                    <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
+                    <div class="resumo-anomalia-numero red" style="color:#38b349 !important;">{perc_validos}</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
+                </div>
             </div>
-            <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Registros válidos</div>
-                <div class="resumo-anomalia-numero">{validos}</div>
-                <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
+            '''
+        else:
+            total = resumo_invalidos[0]['Valor']
+            invalidos = resumo_invalidos[1]['Valor']
+            perc_inv = resumo_invalidos[2]['Valor']
+            return f'''
+            <div class="resumo-anomalias-container" id="resumo-invalidos" style="display:none;">
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total de registros</div>
+                    <div class="resumo-anomalia-numero">{total}</div>
+                    <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Registros inválidos</div>
+                    <div class="resumo-anomalia-numero">{invalidos}</div>
+                    <div class="resumo-anomalia-legenda"> Hdop = 0</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Porcentagem de registros Inválidos</div>
+                    <div class="resumo-anomalia-numero red">{perc_inv}</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos</div>
+                </div>
             </div>
-            <div class="resumo-anomalia-card">
-                <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
-                <div class="resumo-anomalia-numero red">{perc_invalidos}</div>
-                <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
-            </div>
-        </div>
-        '''
+            '''
 
     # Função para montar tabela
-    def tabela(df, titulo, legenda):
+    def tabela(df, titulo, legenda, id_tabela):
         return f'''
-        <div class="tabela-container">
+        <div class="tabela-container" id="{id_tabela}" style="display:none;">
             <div class="grafico-titulo-container">
                 <h3 class="grafico-titulo">{titulo}</h3>
             </div>
@@ -193,10 +255,65 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_r
     {css}
     <div class="bloco-satelites" id="bloco-satelites">
         <span class="dashboard-title-analise">Análise de Satélites</span>
-        {resumo_html(df_resumo)}
-        {tabela(df_todos, "Estatísticas - Todos os dados", "Considera todos os registros, inclusive inválidos")}
-        {tabela(df_validos, "Estatísticas - Apenas válidos", "Considera apenas registros válidos (Satélites > 0 e Hdop > 0)")}
+        <div class="satelites-btn-container">
+            <button class="satelites-btn active" id="btn-validos" onclick="mostrarTabelaSatelites('validos')">Válidos</button>
+            <button class="satelites-btn" id="btn-invalidos" onclick="mostrarTabelaSatelites('invalidos')">Inválidos</button>
+        </div>
+        {resumo_html(df_resumo, 'validos')}
+        {resumo_html(df_resumo, 'invalidos')}
+        <div id="tabelas-satelites">
+            <div class="tabela-container" id="tabela-todos" style="display:block;">
+                <div class="grafico-titulo-container">
+                    <h3 class="grafico-titulo">Estatísticas - Todos os dados</h3>
+                </div>
+                <div class="faixa-legenda">Considera todos os registros, inclusive inválidos</div>
+                <table class="tabela-estatisticas">
+                    <thead>
+                        <tr>
+                            <th>Dado</th>
+                            <th>Média</th>
+                            <th>Moda</th>
+                            <th>Desvio Padrão</th>
+                            <th>Valor máximo</th>
+                            <th>Valor mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Satélites</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Satélites','Média'].values[0]}</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Satélites','Moda'].values[0]}</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Satélites','Desvio Padrão'].values[0]}</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Satélites','Valor máximo'].values[0]}</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Satélites','Valor mínimo'].values[0]}</td>
+                        </tr>
+                        <tr>
+                            <td>HDOP</td>   
+                            <td>{df_todos.loc[df_todos['Dado']=='Hdop','Média'].values[0]}</td>         
+                            <td>{df_todos.loc[df_todos['Dado']=='Hdop','Moda'].values[0]}</td>  
+                            <td>{df_todos.loc[df_todos['Dado']=='Hdop','Desvio Padrão'].values[0]}</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Hdop','Valor máximo'].values[0]}</td>
+                            <td>{df_todos.loc[df_todos['Dado']=='Hdop','Valor mínimo'].values[0]}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {tabela(df_validos, "Estatísticas - Apenas válidos", "Considera apenas registros válidos (Satélites > 0 e Hdop > 0)", "tabela-validos")}
+            {tabela(df_invalidos, "Estatísticas - Apenas inválidos", "Considera apenas registros inválidos (Hdop = 0)", "tabela-invalidos")}
+        </div>
     </div>
+    <script>
+    function mostrarTabelaSatelites(tipo) {{
+        document.getElementById('tabela-validos').style.display = (tipo === 'validos') ? 'block' : 'none';
+        document.getElementById('tabela-invalidos').style.display = (tipo === 'invalidos') ? 'block' : 'none';
+        document.getElementById('btn-validos').classList.toggle('active', tipo === 'validos');
+        document.getElementById('btn-invalidos').classList.toggle('active', tipo === 'invalidos');
+        document.getElementById('resumo-validos').style.display = (tipo === 'validos') ? 'flex' : 'none';
+        document.getElementById('resumo-invalidos').style.display = (tipo === 'invalidos') ? 'flex' : 'none';
+    }}
+    // Inicialmente mostra válidos
+    mostrarTabelaSatelites('validos');
+    </script>
     '''
 
     with open(output_path, 'w', encoding='utf-8') as f:

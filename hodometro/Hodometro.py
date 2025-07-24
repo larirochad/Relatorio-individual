@@ -158,7 +158,7 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
         resultado_df['Dia'] = pd.to_datetime(resultado_df['Dia'], format='%d/%m/%Y')
         resultado_df = resultado_df.sort_values(by='Dia')
         resultado_df['Dia'] = resultado_df['Dia'].dt.strftime('%d/%m/%Y')
-
+    # print(resultado_df)
     return resultado_df
 
 
@@ -273,7 +273,7 @@ def regressao(df: pd.DataFrame) -> pd.DataFrame:
             'tipo_mensagem_anterior': anterior.get('tipo mensagem', 'N/D'),
             'tipo_mensagem_atual': atual.get('tipo mensagem', 'N/D'),
             'tipo_problema': status,
-            'Diferenca': diferenca
+            'Diferenca': round(diferenca, 1)
         })
     
     df_resultado = pd.DataFrame(registros_analise)
@@ -289,7 +289,7 @@ def regressao(df: pd.DataFrame) -> pd.DataFrame:
 # Exemplo de uso
 if __name__ == "__main__":
     # Carrega dados
-    df = pd.read_csv('logs/867488061395116_decoded.csv', encoding='latin-1', dtype=str, low_memory=False, on_bad_lines='skip')
+    df = pd.read_csv('logs/teste.csv', encoding='utf-8', dtype=str, low_memory=False, on_bad_lines='skip')
     
     # Processa coluna hodômetro se existir
     if 'Hodômetro Total' in df.columns:
@@ -304,7 +304,7 @@ if __name__ == "__main__":
     # Executa análise de regressão
     print("🔍 Iniciando análise de regressão do hodômetro...")
     df_reg = regressao(df)
-    
+    def_viagens = viagens(df)
     # Salva resultado
     if not df_reg.empty:
         df_reg.to_csv('hod_regressao_corrigido.csv', index=False, encoding='utf-8-sig')

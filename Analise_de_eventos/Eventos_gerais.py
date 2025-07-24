@@ -103,7 +103,6 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
                         final = 'Posicionamento por tempo em movimento'
                     elif (motion_prefix == '2' and report_type == '10') or codigo == '30':
                         peri += 1
-                    # Se quiser manter outros casos, pode adicionar aqui
                 elif evento == 'MODOECO':
                     eco += 1
 
@@ -116,7 +115,6 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
         contagem = df['Evento Classificado'].value_counts().reset_index()
         contagem.columns = ['Tipo mensagem', 'Quantidade']
 
-        # --- NOVO: Contagem de eventos por dia (tabela pivô) ---
         if 'Data/Hora Evento' in df.columns:
             df['Data/Hora Evento'] = pd.to_datetime(df['Data/Hora Evento'], errors='coerce')
             df = df.dropna(subset=['Data/Hora Evento'])
@@ -125,7 +123,7 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
             tabela_pivo = df.pivot_table(
                 index='Dia',
                 columns='Evento Classificado',
-                values='Sequência',  # Pode ser qualquer coluna, pois vamos contar
+                values='Sequência',  
                 aggfunc='count',
                 fill_value=0
             ).reset_index()
@@ -136,11 +134,10 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
             return contagem
 
     except Exception as e:
-        print(f"❌ Erro inesperado: {str(e)}")
+        print(f"❌ Erro inesperado no eventos: {str(e)}")
         return None
 
 if __name__ == "__main__":
-    # Exemplo de uso: ler um arquivo CSV e passar o DataFrame para a função
     df_exemplo = pd.read_csv('logs/867488061438379_decoded.csv', encoding='latin-1', low_memory=False)
     resultado = eventos(df_exemplo)
-  
+    print(resultado)

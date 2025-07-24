@@ -4,6 +4,10 @@ from haversine import haversine, Unit
 def velocidade(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
+    # Garante que a coluna 'Linha Original' já existe e não recalcula
+    if 'Linha Original' not in df.columns:
+        df['Linha Original'] = df.index + 2  # fallback, mas normalmente já existe
+
     # Converte a coluna de velocidade para numérico
     df['Velocidade'] = pd.to_numeric(df['Velocidade'], errors='coerce')
 
@@ -43,15 +47,11 @@ def velocidade(df: pd.DataFrame) -> pd.DataFrame:
             alerta_ignicao_off.append(vel_float)
         else:
             alerta_ignicao_off.append('')
-        # Guarda a linha original (começando em 2 por causa do cabeçalho)
-        try:
-            linhas_originais.append(int(str(i)) + 2)
-        except Exception:
-            linhas_originais.append(None)
+        # Não recalcula 'Linha Original' aqui
 
     df['Velocidade absurda'] = alerta_velocidade_absurda
     df['Velocidade com ignição OFF'] = alerta_ignicao_off
-    df['Linha Original'] = linhas_originais
+    # Não recalcula 'Linha Original' aqui
     
     # Filtra apenas as linhas com algum alerta
     df_alerta = df[(df['Velocidade absurda'] != '') | (df['Velocidade com ignição OFF'] != '')]
@@ -67,6 +67,10 @@ def velocidade(df: pd.DataFrame) -> pd.DataFrame:
     # Garante que df_alerta é um DataFrame antes de salvar
     if not isinstance(df_alerta, pd.DataFrame):
         df_alerta = pd.DataFrame(df_alerta)
+
+    # Remove duplicatas baseando-se na coluna 'Sequência', mantendo apenas a primeira ocorrência
+    if 'Sequência' in df_alerta.columns:
+        df_alerta = df_alerta.drop_duplicates(subset=['Sequência'], keep='first')
 
     # Salva os alertas em CSV
     # caminho_saida = 'Velocidade/velocidade_analisada.csv' # Removido

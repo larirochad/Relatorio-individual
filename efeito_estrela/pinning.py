@@ -7,6 +7,7 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
     Executa toda a análise de pinning a partir de um DataFrame já carregado.
     Salva os CSVs de blocos e de incremento com nomes fixos.
     """
+    # print(df.head(10))
     nome_arquivo = "efeito_estrela/distancia_blocos.csv"
     nome_arquivo_incremento = "efeito_estrela/distancia_blocos_incremento.csv"
     gerar_incremento = True
@@ -168,18 +169,30 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
     # Execução principal
     if not validar_colunas(df):
         print("\n❌ Erro: Colunas necessárias não encontradas")
+        # Sobrescrever arquivos com DataFrame vazio
+        colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
+        pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
         return None
     
     df_processado = processar_dados(df)
-    
+    # print(df_processado.head(10))
     if len(df_processado) == 0:
         print("\n❌ Erro: Nenhum dado válido encontrado")
+        # Sobrescrever arquivos com DataFrame vazio
+        colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
+        pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
         return None
     
     blocos_ignicao = identificar_blocos_ignicao(df_processado)
     
     if len(blocos_ignicao) == 0:
         print("\n❌ Erro: Nenhum bloco de ignição encontrado")
+        # Sobrescrever arquivos com DataFrame vazio
+        colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
+        pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
         return None
     
     # print(f"📊 Encontrados {len(blocos_ignicao)} blocos de ignição")
@@ -196,5 +209,6 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     # Exemplo de uso
-    df = pd.read_csv('logs/867488065171646_decoded.csv', encoding='iso-8859-1', dtype=str, low_memory=False)
+    df = pd.read_csv('logs/teste.csv', encoding='utf-8', dtype=str, low_memory=False)
     resultado = analise_pinning(df)
+    print(resultado)

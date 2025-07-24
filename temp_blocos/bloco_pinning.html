@@ -116,12 +116,25 @@
     <div class="bloco-pinning" id="bloco-pinning">
         <span class="dashboard-title-analise">Análise de Pinning (Distância Incremental)</span>
         
+    <div style="display: flex; gap: 30px; justify-content: center; margin-bottom: 30px;">
+      
     <div class="resumo-anomalias-container">
       <div class="resumo-anomalia-card">
         <div class="resumo-anomalia-titulo">Soma dos incrementos únicos &gt; 40m</div>
-        <div class="resumo-anomalia-numero">3008.85 m</div>
+        <div class="resumo-anomalia-numero">3493.97 m</div>
         <div class="resumo-anomalia-legenda">Soma dos valores únicos acima de 40m</div>
       </div>
+    </div>
+    
+      
+        <div class="resumo-anomalias-container">
+          <div class="resumo-anomalia-card" style="background:#f8f9fa;">
+            <div class="resumo-anomalia-titulo">Soma dos incrementos de hodômetro parado</div>
+            <div class="resumo-anomalia-numero">2.40 km</div>
+            <div class="resumo-anomalia-legenda">Total de hodômetro incrementado enquanto status era parado</div>
+          </div>
+        </div>
+        
     </div>
     
         <div class='grafico-container'>
@@ -148,9 +161,9 @@
             <table class="tabela-estatisticas" id="tabela_motion21_40m">
                 <thead><tr><th>Linha</th><th>Hodômetro antes da parada</th><th>Hodômetro com status parado</th><th>Tipo de mensagem</th><th>Motion Status</th><th>Distância até detecção de parada (m)</th></tr></thead>
                 <tbody>
-        <tr><td>17643</td><td>4250.9</td><td>4250.9</td><td>GTSTT</td><td>21</td><td>48.06</td></tr><tr><td>17680</td><td>4253.6</td><td>4253.6</td><td>GTSTT</td><td>21</td><td>51.42</td></tr><tr><td>17688</td><td>4254.2</td><td>4254.8</td><td>GTSTT</td><td>21</td><td>676.29</td></tr><tr><td>18087</td><td>4268.9</td><td>4269.4</td><td>GTSTT</td><td>21</td><td>513.92</td></tr><tr><td>19116</td><td>4293.2</td><td>4293.5</td><td>GTSTT</td><td>21</td><td>296.16</td></tr><tr class="linha-oculta linha-motion21_40m"><td>19121</td><td>4293.6</td><td>4293.7</td><td>GTSTT</td><td>21</td><td>132.56</td></tr><tr class="linha-oculta linha-motion21_40m"><td>19888</td><td>4403.0</td><td>4402.6</td><td>GTPNR</td><td>21</td><td>154.74</td></tr><tr class="linha-oculta linha-motion21_40m"><td>19894</td><td>4402.6</td><td>4402.6</td><td>GTERI</td><td>21</td><td>510.25</td></tr><tr class="linha-oculta linha-motion21_40m"><td>24880</td><td>4449.1</td><td>4449.1</td><td>GTPNR</td><td>21</td><td>194.04</td></tr><tr class="linha-oculta linha-motion21_40m"><td>29019</td><td>4586.3</td><td>4586.6</td><td>GTSTT</td><td>21</td><td>302.57</td></tr><tr class="linha-oculta linha-motion21_40m"><td>29039</td><td>4590.3</td><td>4590.4</td><td>GTSTT</td><td>21</td><td>70.42</td></tr><tr class="linha-oculta linha-motion21_40m"><td>29505</td><td>4636.7</td><td>4636.7</td><td>GTSTT</td><td>21</td><td>58.41</td></tr></tbody></table>
+        <tr><td>3158</td><td>4250.9</td><td>4250.9</td><td>GTSTT</td><td>21</td><td>48.06</td></tr><tr><td>3189</td><td>4253.6</td><td>4253.6</td><td>GTSTT</td><td>21</td><td>51.42</td></tr><tr><td>3194</td><td>4254.2</td><td>4254.8</td><td>GTSTT</td><td>21</td><td>676.29</td></tr><tr><td>3330</td><td>4268.9</td><td>4269.4</td><td>GTSTT</td><td>21</td><td>513.92</td></tr><tr><td>3674</td><td>4293.2</td><td>4293.5</td><td>GTSTT</td><td>21</td><td>296.16</td></tr><tr class="linha-oculta linha-motion21_40m"><td>3678</td><td>4293.6</td><td>4293.7</td><td>GTSTT</td><td>21</td><td>132.56</td></tr><tr class="linha-oculta linha-motion21_40m"><td>3919</td><td>4403.0</td><td>4402.6</td><td>GTPNR</td><td>21</td><td>154.74</td></tr><tr class="linha-oculta linha-motion21_40m"><td>3922</td><td>4402.6</td><td>4402.6</td><td>GTRTL</td><td>21</td><td>510.25</td></tr><tr class="linha-oculta linha-motion21_40m"><td>4472</td><td>4449.1</td><td>4449.1</td><td>GTPNR</td><td>21</td><td>194.04</td></tr><tr class="linha-oculta linha-motion21_40m"><td>5137</td><td>4586.3</td><td>4586.6</td><td>GTSTT</td><td>21</td><td>302.57</td></tr><tr class="linha-oculta linha-motion21_40m"><td>5149</td><td>4590.3</td><td>4590.4</td><td>GTSTT</td><td>21</td><td>70.42</td></tr><tr class="linha-oculta linha-motion21_40m"><td>5384</td><td>4636.7</td><td>4636.7</td><td>GTSTT</td><td>21</td><td>58.41</td></tr><tr class="linha-oculta linha-motion21_40m"><td>5940</td><td>4755.1</td><td>4755.4</td><td>GTSTT</td><td>21</td><td>225.92</td></tr><tr class="linha-oculta linha-motion21_40m"><td>6763</td><td>5130.4</td><td>5130.6</td><td>GTSTT</td><td>21</td><td>259.20</td></tr></tbody></table>
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhas('motion21_40m', 12)" id="btn_motion21_40m" data-tabela="tabela_motion21_40m">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('motion21_40m', 14)" id="btn_motion21_40m" data-tabela="tabela_motion21_40m">
                     Ver todos os dados
                 </button>
             </div>
@@ -164,9 +177,9 @@
             <table class="tabela-estatisticas" id="tabela_incremento_hodo">
                 <thead><tr><th>Linha</th><th>Hodômetro antes da parada</th><th>Hodômetro com status parado</th><th>Tipo de mensagem</th><th>Motion Status</th><th>Distância até detecção de parada (m)</th></tr></thead>
                 <tbody>
-        <tr><td>17242</td><td>4137.0</td><td>4136.8</td><td>GTPNR</td><td>21</td><td>0.24</td></tr><tr><td>17688</td><td>4254.2</td><td>4254.8</td><td>GTSTT</td><td>21</td><td>676.29</td></tr><tr><td>18087</td><td>4268.9</td><td>4269.4</td><td>GTSTT</td><td>21</td><td>513.92</td></tr><tr><td>19116</td><td>4293.2</td><td>4293.5</td><td>GTSTT</td><td>21</td><td>296.16</td></tr><tr><td>19121</td><td>4293.6</td><td>4293.7</td><td>GTSTT</td><td>21</td><td>132.56</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>19888</td><td>4403.0</td><td>4402.6</td><td>GTPNR</td><td>21</td><td>154.74</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>29019</td><td>4586.3</td><td>4586.6</td><td>GTSTT</td><td>21</td><td>302.57</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>29039</td><td>4590.3</td><td>4590.4</td><td>GTSTT</td><td>21</td><td>70.42</td></tr></tbody></table>
+        <tr><td>2822</td><td>4137.0</td><td>4136.8</td><td>GTPNR</td><td>21</td><td>0.24</td></tr><tr><td>3194</td><td>4254.2</td><td>4254.8</td><td>GTSTT</td><td>21</td><td>676.29</td></tr><tr><td>3330</td><td>4268.9</td><td>4269.4</td><td>GTSTT</td><td>21</td><td>513.92</td></tr><tr><td>3674</td><td>4293.2</td><td>4293.5</td><td>GTSTT</td><td>21</td><td>296.16</td></tr><tr><td>3678</td><td>4293.6</td><td>4293.7</td><td>GTSTT</td><td>21</td><td>132.56</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>3919</td><td>4403.0</td><td>4402.6</td><td>GTPNR</td><td>21</td><td>154.74</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>5137</td><td>4586.3</td><td>4586.6</td><td>GTSTT</td><td>21</td><td>302.57</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>5149</td><td>4590.3</td><td>4590.4</td><td>GTSTT</td><td>21</td><td>70.42</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>5940</td><td>4755.1</td><td>4755.4</td><td>GTSTT</td><td>21</td><td>225.92</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>6707</td><td>5128.0</td><td>5127.7</td><td>GTPNR</td><td>21</td><td>4.31</td></tr><tr class="linha-oculta linha-incremento_hodo"><td>6763</td><td>5130.4</td><td>5130.6</td><td>GTSTT</td><td>21</td><td>259.20</td></tr></tbody></table>
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhas('incremento_hodo', 8)" id="btn_incremento_hodo" data-tabela="tabela_incremento_hodo">
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('incremento_hodo', 11)" id="btn_incremento_hodo" data-tabela="tabela_incremento_hodo">
                     Ver todos os dados
                 </button>
             </div>
@@ -201,11 +214,11 @@
                 window.charts['graficoPinning'] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: [0, 10573, 11657, 15677, 17242, 17643, 17680, 17688, 18087, 19110, 19116, 19121, 19888, 19894, 24880, 29019, 29039, 29216, 29505],
+                        labels: [0, 1442, 1752, 2257, 2822, 3158, 3189, 3194, 3330, 3669, 3674, 3678, 3919, 3922, 4472, 5137, 5149, 5213, 5384, 5940, 6707, 6763],
                         datasets: [
                             {
                                 label: 'Distância Incremental',
-                                data: [0, 29.56991547702549, 1.0059818127685, 6.963983743452506, 0.2448319058093485, 48.062933261965945, 51.41846670613879, 676.2924180375484, 513.9225597661489, 18.01626462921929, 296.1564525048271, 132.56030055681032, 154.7417094570788, 510.2507013546039, 194.0430729498493, 302.57366209954165, 70.41683723940531, 2.556012950177953, 58.414189975083474],
+                                data: [0, 29.56991547702549, 1.0059818127685, 6.963983743452506, 0.2448319058093485, 48.062933261965945, 51.41846670613879, 676.2924180375484, 513.9225597661489, 18.01626462921929, 296.1564525048271, 132.56030055681032, 154.7417094570788, 510.2507013546039, 194.0430729498493, 302.57366209954165, 70.41683723940531, 2.556012950177953, 58.414189975083474, 225.9230476449161, 4.31497620069714, 259.1984604700729],
                                 borderColor: 'blue',
                                 backgroundColor: 'rgba(30, 136, 229, 0.08)',
                                 borderWidth: 2,
@@ -215,7 +228,7 @@
                             },
                             {
                                 label: 'Limite 40m',
-                                data: Array(19).fill(40),
+                                data: Array(22).fill(40),
                                 borderColor: 'red',
                                 borderWidth: 2,
                                 borderDash: [8,6],

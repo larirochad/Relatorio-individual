@@ -7,8 +7,8 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
 
-    # Filtra apenas os valores negativos de Time fix
-    df_neg = df[df['Time fix'] < 0].copy()
+    # Filtra apenas os valores negativos de Time fix (agora apenas menores que -2)
+    df_neg = df[df['Time fix'] < -2].copy()
     total_anomalias = len(df_neg)
 
     # Formata as datas
@@ -25,9 +25,9 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     resumo_html = f'''
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
-            <div class="resumo-anomalia-titulo">Total de anomalias de Time fix negativo</div>
+            <div class="resumo-anomalia-titulo">Total de anomalias de Time fix no futuro</div>
             <div class="resumo-anomalia-numero red-timefix">{total_anomalias}</div>
-            <div class="resumo-anomalia-legenda">Fix "futuro" em relação ao evento</div>
+            <div class="resumo-anomalia-legenda">Fix no "futuro" em relação ao evento > 2s </div>
         </div>
     </div>
     '''
@@ -140,7 +140,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     html = f'''
     {css}
     <div class="bloco-temporizadas" id="bloco-timefix">
-        <span class="dashboard-title-temporizadas">Anomalias com Time fix negativo </span>
+        <span class="dashboard-title-temporizadas">Anomalias com Time fix no futuro </span>
         {resumo_html}
         {tabela}
     </div>

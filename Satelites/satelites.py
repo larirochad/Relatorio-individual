@@ -20,7 +20,7 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
 
     # Calcular totais e válidos/invalidos separadamente para Satélites e HDOP
     total_registros = len(df_filtrado)
-    satelites_invalidos = (satelites == 0).sum()
+    satelites_invalidos = (hdop == 0).sum()
     hdop_invalidos = (hdop == 0).sum()
     registros_validos = ((satelites > 0) & (hdop > 0)).sum()
     registros_invalidos = total_registros - registros_validos
@@ -53,6 +53,16 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     if salvar_csv:
         tabela_validos.to_csv('Satelites/estatisticas_gps_validos.csv', index=False, encoding='utf-8-sig')
 
+    # === TABELA 3: APENAS INVÁLIDOS ===
+    satelites_invalidos_serie = satelites[hdop == 0]
+    hdop_invalidos_serie = hdop[hdop == 0]
+    tabela_invalidos = pd.DataFrame([
+        {'Dado': 'Satélites', **stats_serie(satelites_invalidos_serie)},
+        {'Dado': 'Hdop', **stats_serie(hdop_invalidos_serie)}
+    ])
+    if salvar_csv:
+        tabela_invalidos.to_csv('Satelites/estatisticas_gps_invalidos.csv', index=False, encoding='utf-8-sig')
+
     # === RESUMO ===
     resumo = pd.DataFrame([
         {'Métrica': 'Total de registros', 'Valor': total_registros},
@@ -63,7 +73,7 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
         resumo.to_csv('Satelites/estatisticas_gps_resumo.csv', index=False, encoding='utf-8-sig')
 
     # print("✅ Arquivos de estatísticas gerados com sucesso.")
-    return tabela_todos, tabela_validos, resumo
+    return tabela_todos, tabela_validos, tabela_invalidos, resumo
 
 if __name__ == "__main__":
     # This part of the code will need to be updated to pass a DataFrame instead of a file path

@@ -43,7 +43,7 @@ def reboot(df: pd.DataFrame) -> pd.DataFrame:
         return resultado
 
     except Exception as e:
-        print(f"❌ Erro inesperado: {e}")
+        print(f"❌ Erro inesperado em reboot: {e}")
         return None
 
 if __name__ == "__main__":

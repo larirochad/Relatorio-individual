@@ -86,21 +86,11 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
                 <thead><tr>{''.join(f'<th>{header}</th>' for header in display_headers)}</tr></thead>
                 <tbody>
         '''
-        for _, row in df_display.iterrows():
-            html += '<tr>'
-            for col in data_columns:
-                val = row.get(col, "")
-                if col == dist_col and val != "":
-                    try:
-                        val = f"{float(val):.2f}"
-                    except Exception:
-                        pass
-                html += f'<td>{val}</td>'
-            html += '</tr>'
-        # Linhas extras ocultas
-        if tem_mais:
-            for _, row in df.iloc[max_linhas:].iterrows():
-                html += '<tr class="linha-oculta linha-' + tipo + '">' 
+        if df.empty:
+            html += f'<tr><td colspan="{len(display_headers)}">Nenhum dado encontrado</td></tr>'
+        else:
+            for _, row in df_display.iterrows():
+                html += '<tr>'
                 for col in data_columns:
                     val = row.get(col, "")
                     if col == dist_col and val != "":
@@ -110,8 +100,21 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
                             pass
                     html += f'<td>{val}</td>'
                 html += '</tr>'
+            # Linhas extras ocultas
+            if tem_mais:
+                for _, row in df.iloc[max_linhas:].iterrows():
+                    html += '<tr class="linha-oculta linha-' + tipo + '">' 
+                    for col in data_columns:
+                        val = row.get(col, "")
+                        if col == dist_col and val != "":
+                            try:
+                                val = f"{float(val):.2f}"
+                            except Exception:
+                                pass
+                        html += f'<td>{val}</td>'
+                    html += '</tr>'
         html += '</tbody></table>'
-        if tem_mais:
+        if tem_mais and not df.empty:
             html += f'''
             <div style="text-align: center;">
                 <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo}', {len(df)})" id="btn_{tipo}" data-tabela="tabela_{tipo}">
@@ -139,15 +142,47 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
 
     # --- Card resumo ---
     acima_40 = blocos_nonzero[blocos_nonzero[dist_col] > 40]
-    dist_series = pd.Series(list(acima_40[dist_col]))
-    soma_uniq = dist_series.drop_duplicates().sum()
+    if not acima_40.empty:
+        dist_series = pd.Series(list(acima_40[dist_col]))
+        soma_uniq = dist_series.drop_duplicates().sum()
+        card_valor = f"{soma_uniq:.2f} m"
+        card_legenda = "Soma dos valores únicos acima de 40m"
+    else:
+        card_valor = "0 m"
+        card_legenda = "Nenhum incremento acima de 40m encontrado"
     card = f'''
     <div class="resumo-anomalias-container">
       <div class="resumo-anomalia-card">
         <div class="resumo-anomalia-titulo">Soma dos incrementos únicos &gt; 40m</div>
-        <div class="resumo-anomalia-numero">{soma_uniq:.2f} m</div>
-        <div class="resumo-anomalia-legenda">Soma dos valores únicos acima de 40m</div>
+        <div class="resumo-anomalia-numero">{card_valor}</div>
+        <div class="resumo-anomalia-legenda">{card_legenda}</div>
       </div>
+    </div>
+    '''
+
+    # --- Novo Card: Soma dos incrementos de hodômetro parado ---
+    # Considera apenas linhas onde Hodômetro Total > Hodômetro anterior
+    if 'Hodômetro Total' in blocos.columns and 'Hodômetro anterior' in blocos.columns:
+        df_incremento_parado = blocos[(blocos['Hodômetro Total'] > blocos['Hodômetro anterior'])].copy()
+        soma_incremento_parado = (df_incremento_parado['Hodômetro Total'] - df_incremento_parado['Hodômetro anterior']).sum()
+        # Se os valores estiverem em metros, converta para km se necessário. Aqui mantemos como está, mas pode ajustar a unidade se quiser.
+        card_incremento_parado = f'''
+        <div class="resumo-anomalias-container">
+          <div class="resumo-anomalia-card" style="background:#f8f9fa;">
+            <div class="resumo-anomalia-titulo">Soma dos incrementos de hodômetro parado</div>
+            <div class="resumo-anomalia-numero">{soma_incremento_parado:.2f} km</div>
+            <div class="resumo-anomalia-legenda">Total de hodômetro incrementado enquanto status era parado</div>
+          </div>
+        </div>
+        '''
+    else:
+        card_incremento_parado = ''
+
+    # --- Cards lado a lado ---
+    cards_html = f'''
+    <div style="display: flex; gap: 30px; justify-content: center; margin-bottom: 30px;">
+      {card}
+      {card_incremento_parado}
     </div>
     '''
 
@@ -272,7 +307,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
     {css}
     <div class="bloco-pinning" id="bloco-pinning">
         <span class="dashboard-title-analise">Análise de Pinning (Distância Incremental)</span>
-        {card}
+        {cards_html}
         <div class='grafico-container'>
             <button class='btn-maximizar' onclick="maximizeChart('graficoPinning')">🔍 Maximizar</button>
             <div class='grafico-titulo-container'>

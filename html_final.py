@@ -174,7 +174,9 @@ def unir_blocos(df_raw):
         str(blocks_dir / "bloco_temporizadas.html"),
         str(blocks_dir / "bloco_pinning.html"),
         str(blocks_dir / "bloco_timefix.html"),
-        str(blocks_dir / "bloco_velocidade.html"),
+        str(blocks_dir / "bloco_velocidade.html"),  
+        str(blocks_dir / "bloco_smp_eco.html"),
+        str(blocks_dir / "bloco_gap.html"),
     ]
     
     # html_files = sorted([str(f) for f in blocks_dir.glob('*.html')])
@@ -635,7 +637,9 @@ def unir_blocos(df_raw):
         'bloco_sequenceNumber': 'bloco-sequenceNumber',
         'bloco_timefix': 'bloco-timefix',
         'bloco_ignicao': 'bloco-ignicao',
-        # Adicione outros blocos se necessário
+        'bloco_smp_eco': 'bloco-smp-eco',
+        'bloco_gap': 'bloco-gap',
+                
     }
     clean_blocks_with_ids = []
     for block in clean_blocks:
@@ -673,7 +677,10 @@ def unir_blocos(df_raw):
             top: 30px;
             left: 0;
             z-index: 9999;
-            height: auto;
+            /* Ajuste para cobrir toda a área do menu lateral */
+            min-height: 600px; /* ajuste conforme necessário para cobrir o menu todo */
+            width: 260px;      /* igual ou maior que o menu + botão */
+            background: transparent; /* permite que o mouse "pegue" o wrapper */
         }}
         #floating-nav-toggle {{
             background: #fff;
@@ -705,12 +712,12 @@ def unir_blocos(df_raw):
             font-family: 'Saira', sans-serif;
             transition: left 0.3s;
             opacity: 0.98;
-            pointer-events: none;
+            /* Removido pointer-events: none; para permitir interação no espaço branco */
         }}
         #floating-nav-wrapper:hover #floating-nav,
         #floating-nav-wrapper.open #floating-nav {{
             left: 36px; /* Mostra o menu */
-            pointer-events: auto;
+            /* pointer-events: auto; removido pois não é mais necessário */
         }}
         #floating-nav .nav-title {{
             font-weight: bold;
@@ -732,19 +739,44 @@ def unir_blocos(df_raw):
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s, transform 0.2s;
-        }}  
-        #floating-nav button:hover {{           
+        }}
+        #floating-nav button:hover {{        
             background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
             transform: translateY(-2px) scale(1.03);
         }}
         @media (max-width: 700px) {{
-            #floating-nav-wrapper {{ left: 0; top: 5px; }}
+            #floating-nav-wrapper {{ left: 0; top: 5px; min-height: 0; width: 140px; }}
             #floating-nav {{ min-width: 120px; padding: 6px 6px; }}
-            #floating-nav button {{ font-size: 0.9em; padding: 6px 0; }}
+            #floating-nav button {{font-size: 0.9em; padding: 6px 0; }}
+        }}
+        /* Botão flutuante Análises L2 */
+        .btn-flutuante-l2 {{
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            z-index: 99999;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 24px;
+            font-size: 1em;
+            box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            font-family: Arial, Helvetica, sans-serif;
+        }}
+        .btn-flutuante-l2:hover {{
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: #fff;
+            transform: translateY(-2px) scale(1.03);
         }}
         </style>
     </head>
     <body>
+        <button id="btn-analises-l2" class="btn-flutuante-l2" onclick="showAnalisesL2()">Análises L2</button>
+        <button id="btn-analises-gerais" class="btn-flutuante-l2" style="display:none;" onclick="showAnalisesGerais()">Análises gerais</button>
         <div id="floating-nav-wrapper">
             <div id="floating-nav-toggle">
                 <!-- Seta SVG roxa -->
@@ -910,12 +942,56 @@ def unir_blocos(df_raw):
         '</body>',
         '''<script>
         function scrollToBloco(id) {
+            // Se for o bloco de análises L2, use showAnalisesL2()
+            if (id === 'bloco-smp-eco') {
+                showAnalisesL2();
+                return;
+            }
+            // Mostra todos os blocos normais e esconde o bloco de análises L2
+            document.querySelectorAll('.bloco-smp-eco').forEach(function(el) { el.style.display = 'none'; });
+            document.querySelectorAll('.dashboard-bloco-analise, .bloco-hodometro, .bloco-eventos, .bloco-ignicao, .bloco-log, .bloco-reboot, .bloco-satelites, .bloco-sequenceNumber, .bloco-temporizadas, .bloco-pinning, .bloco-timefix, .bloco-velocidade').forEach(function(el) { el.style.display = ''; });
+            // Mostra o menu lateral
+            document.getElementById('floating-nav-wrapper').style.display = '';
+            // Mostra/oculta botões flutuantes
+            document.getElementById('btn-analises-l2').style.display = '';
+            document.getElementById('btn-analises-gerais').style.display = 'none';
+            // Scroll para o bloco desejado
             const bloco = document.getElementById(id);
             if (bloco) {
                 bloco.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 bloco.style.boxShadow = '0 0 0 4px #764ba2';
                 setTimeout(() => bloco.style.boxShadow = '', 1200);
             }
+        }
+        function showAnalisesL2() {
+            // Esconde todos os blocos normais
+            document.querySelectorAll('.dashboard-bloco-analise, .bloco-hodometro, .bloco-eventos, .bloco-ignicao, .bloco-log, .bloco-reboot, .bloco-satelites, .bloco-sequenceNumber, .bloco-temporizadas, .bloco-pinning, .bloco-timefix, .bloco-velocidade, #bloco-resumo-tecnico').forEach(function(el) { el.style.display = 'none'; });
+            // Mostra o bloco de análises L2
+            document.querySelectorAll('.bloco-smp-eco').forEach(function(el) { el.style.display = ''; });
+            // Mostra o botão de voltar
+            document.getElementById('btn-analises-l2').style.display = 'none';
+            document.getElementById('btn-analises-gerais').style.display = '';
+            // Esconde o menu lateral
+            document.getElementById('floating-nav-wrapper').style.display = 'none';
+            // Scroll para o bloco de análises L2
+            const bloco = document.getElementById('bloco-smp-eco');
+            if (bloco) {
+                bloco.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                bloco.style.boxShadow = '0 0 0 4px #764ba2';
+                setTimeout(() => bloco.style.boxShadow = '', 1200);
+            }
+        }
+        function showAnalisesGerais() {
+            // Mostra todos os blocos normais e esconde o bloco de análises L2
+            document.querySelectorAll('.bloco-smp-eco').forEach(function(el) { el.style.display = 'none'; });
+            document.querySelectorAll('.dashboard-bloco-analise, .bloco-hodometro, .bloco-eventos, .bloco-ignicao, .bloco-log, .bloco-reboot, .bloco-satelites, .bloco-sequenceNumber, .bloco-temporizadas, .bloco-pinning, .bloco-timefix, .bloco-velocidade, #bloco-resumo-tecnico').forEach(function(el) { el.style.display = ''; });
+            // Mostra o botão de análises L2
+            document.getElementById('btn-analises-l2').style.display = '';
+            document.getElementById('btn-analises-gerais').style.display = 'none';
+            // Mostra o menu lateral
+            document.getElementById('floating-nav-wrapper').style.display = '';
+            // Scroll para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         // Abrir/fechar menu ao clicar na seta
         document.getElementById('floating-nav-toggle').onclick = function() {

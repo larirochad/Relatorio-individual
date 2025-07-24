@@ -2,6 +2,76 @@ import pandas as pd
 import os
 from collections import Counter
 
+def ordenar_robusto_sequence_number(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ordena o DataFrame considerando datas problemáticas (2019) e insere esses registros na posição correta baseada na sequência.
+    """
+    df = df.copy()
+    df.columns = df.columns.str.strip().str.lower()
+
+    # Coluna de referência para rastrear origem
+    if 'linha_arquivo' not in df.columns:
+        df['linha_arquivo'] = df.index + 2
+
+    # Conversões básicas
+    df['data/hora evento'] = pd.to_datetime(df['data/hora evento'], errors='coerce')
+    df['sequência'] = pd.to_numeric(df['sequência'], errors='coerce')
+
+    # Remove linhas sem data/hora ou sequência válidas
+    df = df.dropna(subset=['data/hora evento', 'sequência']).copy()
+
+    # Identifica registros com datas problemáticas (2019)
+    df['data_problematica'] = df['data/hora evento'].dt.year == 2019
+    
+    # Separa os dados normais e problemáticos
+    df_normais = df[~df['data_problematica']].copy()
+    df_problematicos = df[df['data_problematica']].copy()
+    
+    if len(df_normais) == 0:
+        print("⚠️  Todos os registros têm datas problemáticas!")
+        return df.drop(columns=['data_problematica'])
+    
+    # Ordena os dados normais por data/hora e sequência
+    df_normais = df_normais.sort_values(['data/hora evento', 'sequência']).reset_index(drop=True)
+    
+    # Para cada registro problemático, encontra a melhor posição nos dados normais
+    for _, row_prob in df_problematicos.iterrows():
+        seq_prob = row_prob['sequência']
+        melhor_posicao = None
+        menor_diff = float('inf')
+        
+        # Encontra o registro normal com sequência mais próxima
+        for i, row_normal in df_normais.iterrows():
+            diff = abs(row_normal['sequência'] - seq_prob)
+            if diff < menor_diff:
+                menor_diff = diff
+                melhor_posicao = i
+        
+        # Insere o registro problemático após a melhor posição encontrada
+        if melhor_posicao is not None:
+            if seq_prob > df_normais.iloc[melhor_posicao]['sequência']:
+                # Insere após a melhor posição
+                df_normais = pd.concat([
+                    df_normais.iloc[:melhor_posicao+1],
+                    pd.DataFrame([row_prob]),
+                    df_normais.iloc[melhor_posicao+1:]
+                ]).reset_index(drop=True)
+            else:
+                # Insere antes da melhor posição
+                df_normais = pd.concat([
+                    df_normais.iloc[:melhor_posicao],
+                    pd.DataFrame([row_prob]),
+                    df_normais.iloc[melhor_posicao:]
+                ]).reset_index(drop=True)
+    
+    # Agora df_normais contém todos os registros, ordenados corretamente
+    df_ordenado = df_normais.copy()
+    
+    # Remove coluna auxiliar
+    df_ordenado = df_ordenado.drop(columns=['data_problematica'])
+    return df_ordenado
+
+
 def verificar_sequencia(df: pd.DataFrame, caminho_saida = 'sequence_number/problemas_ordenando_sequencia.csv') -> pd.DataFrame:
     try:
         df = df.copy()
@@ -22,8 +92,10 @@ def verificar_sequencia(df: pd.DataFrame, caminho_saida = 'sequence_number/probl
 
         df['sequência'] = df['sequência'].astype('Int64')
         df = df.dropna(subset=['data/hora evento', 'sequência']).copy()
+        # ORDENAR DE FORMA ROBUSTA
+        df = ordenar_robusto_sequence_number(df)
         # (mantém a ordenação, mas a coluna linha_arquivo já está correta)
-        df = df.sort_values(by=['data/hora evento', 'sequência']).reset_index(drop=True)
+        df = df.reset_index(drop=True)
 
         problemas = []
         for i in range(len(df) - 1):
@@ -121,7 +193,8 @@ def verificar_sequencia(df: pd.DataFrame, caminho_saida = 'sequence_number/probl
                 #print(f"  - {tipo}: {qtd}")
                 return dfp  # Retorna o DataFrame com os problemas
         else:
-            print("✅ Nenhum problema encontrado após ordenação por sequência.")
+            # print("✅ Nenhum problema encontrado após ordenação por sequência.")
+            
             return None
 
     except Exception as e:
