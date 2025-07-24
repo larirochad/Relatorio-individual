@@ -147,7 +147,7 @@ def sempre_modoeco(df: pd.DataFrame) -> dict:
 
         return resultados
     except Exception as e:
-        print(f"❌ Erro inesperado: {str(e)}")
+        print(f"❌ Erro inesperado sempre_modoeco: {str(e)}")
         return None
 
 

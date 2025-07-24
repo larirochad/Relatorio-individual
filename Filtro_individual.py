@@ -132,7 +132,7 @@ def executar_analise_completa(input1):
                 df[col] = pd.to_datetime(df[col], errors='coerce')
         # ORGANIZAÇÃO PADRÃO DO DATAFRAME
         df = organizar_dataframe(df)
-        print(df.columns[10])
+        # print(df.columns[10])
         
         df_eventos = eventos(df)
         df_pinning = analise_pinning(df)
@@ -207,6 +207,6 @@ def executar_analise_completa(input1):
 
 if __name__ == "__main__":  
     executar_analise_completa(
-        input1='logs/867488061438379_decoded.csv',
+        input1='logs/867488061395116_decoded.csv',
     )
 

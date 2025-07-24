@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 
 
 def gap(df: pd.DataFrame) -> pd.DataFrame:
@@ -81,12 +82,22 @@ def gap(df: pd.DataFrame) -> pd.DataFrame:
             evento = str(row.get('Tipo Mensagem', '')).strip().upper()
             report_type_raw = row.get('Position Report Type', '')
             try:
-                report_type = str(int(float(str(report_type_raw)))) if report_type_raw is not None and str(report_type_raw).strip() else ''
-            except (ValueError, TypeError):
+                # DEBUG: print valor antes de tentar converter
+                # print(f"DEBUG report_type_raw: {repr(report_type_raw)}")
+                # Nova lógica simplificada: só considera 10.0 como válido
+                if report_type_raw == 10.0:
+                    report_type = '10'
+                else:
+                    report_type = ''
+            except (ValueError, TypeError) as e:
+                # print(f"DEBUG erro conversao report_type_raw: {repr(report_type_raw)} -> {e}")
                 report_type = ''
             motion = row.get('Motion Status', '')
             if isinstance(motion, (float, int)):
-                motion_str = str(int(motion))
+                if isinstance(motion, float) and math.isnan(motion):
+                    motion_str = ''
+                else:
+                    motion_str = str(int(motion))
             elif isinstance(motion, (str, bytes)):
                 motion_str = str(motion)
             else:
@@ -150,12 +161,12 @@ def gap(df: pd.DataFrame) -> pd.DataFrame:
         if len(gaps_excedidos) > 0:
             return pd.DataFrame(gaps_excedidos)
         else:
-            print('Nenhum gap excedido encontrado.')
+            # print('Nenhum gap excedido encontrado.')
             return pd.DataFrame()
 
   
     except Exception as e:
-        print(f"❌ Erro inesperado: {str(e)}")
+        print(f"❌ Erro inesperado gap: {str(e)}")
         return None
 
 
