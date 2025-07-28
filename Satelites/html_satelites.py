@@ -2,12 +2,46 @@ import pandas as pd
 from pathlib import Path
 from typing import Union
 
-def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_invalidos: pd.DataFrame, df_resumo: pd.DataFrame, filename='bloco_satelites.html'):
+def gerar_bloco_satelites(
+    df_todos: pd.DataFrame,
+    df_validos: pd.DataFrame,
+    df_invalidos: pd.DataFrame,
+    df_resumo: pd.DataFrame,
+    df_invalidos_eco: pd.DataFrame = None,
+    df_invalidos_peri: pd.DataFrame = None,
+    df_resumo_eco: pd.DataFrame = None,
+    df_resumo_peri: pd.DataFrame = None,
+    df_resumo_modos: pd.DataFrame = None,
+    filename='bloco_satelites.html'):
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
 
-    # Calcular resumo para inválidos
+    # Novo: cards de resumo para eco e periódico
+    def card_modo_eco(df_resumo_modos):
+        if df_resumo_modos is None:
+            return ''
+        total_eco = df_resumo_modos.loc[df_resumo_modos['Métrica'] == 'Total de registros modo eco', 'Valor'].values[0]
+        return f'''
+        <div class="resumo-anomalia-card" id="card-modo-eco">
+            <div class="resumo-anomalia-titulo">Total modo eco</div>
+            <div class="resumo-anomalia-numero">{total_eco}</div>
+            <div class="resumo-anomalia-legenda">Todos os eventos modo eco</div>
+        </div>
+        '''
+    def card_modo_peri(df_resumo_modos):
+        if df_resumo_modos is None:
+            return ''
+        total_peri = df_resumo_modos.loc[df_resumo_modos['Métrica'] == 'Total de registros modo periódico', 'Valor'].values[0]
+        return f'''
+        <div class="resumo-anomalia-card" id="card-modo-peri">
+            <div class="resumo-anomalia-titulo">Total modo periódico</div>
+            <div class="resumo-anomalia-numero">{total_peri}</div>
+            <div class="resumo-anomalia-legenda">Todos os eventos periódicos</div>
+        </div>
+        '''
+
+    # Calcular resumo para inválidos gerais
     total_registros = df_resumo.loc[df_resumo['Métrica'] == 'Total de registros', 'Valor'].values[0]
     registros_invalidos = total_registros - df_resumo.loc[df_resumo['Métrica'] == 'Registros válidos', 'Valor'].values[0]
     perc_invalidos = 100 - float(str(df_resumo.loc[df_resumo['Métrica'] == '% Válidos', 'Valor'].values[0]).replace('%',''))
@@ -161,7 +195,7 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_i
     </style>
     """
 
-    # Resumo
+    # Função para montar resumo
     def resumo_html(df_resumo, tipo='validos'):
         if tipo == 'validos':
             total = df_resumo.loc[df_resumo['Métrica'] == 'Total de registros', 'Valor'].values[0]
@@ -183,6 +217,42 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_i
                     <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
                     <div class="resumo-anomalia-numero red" style="color:#38b349 !important;">{perc_validos}</div>
                     <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
+                </div>
+            </div>
+            '''
+        elif tipo == 'invalidos-eco' and df_resumo_eco is not None:
+            total = df_resumo_eco.loc[df_resumo_eco['Métrica'] == 'Total de registros inválidos eco', 'Valor'].values[0]
+            perc = df_resumo_eco.loc[df_resumo_eco['Métrica'] == '% Inválidos eco', 'Valor'].values[0]
+            return f'''
+            <div class="resumo-anomalias-container" id="resumo-invalidos-eco" style="display:none;">
+                {card_modo_eco(df_resumo_modos)}
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total inválidos modo eco</div>
+                    <div class="resumo-anomalia-numero">{total}</div>
+                    <div class="resumo-anomalia-legenda">Hdop = 0 e modo eco</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Porcentagem inválidos eco</div>
+                    <div class="resumo-anomalia-numero red">{perc}</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos eco</div>
+                </div>
+            </div>
+            '''
+        elif tipo == 'invalidos-peri' and df_resumo_peri is not None:
+            total = df_resumo_peri.loc[df_resumo_peri['Métrica'] == 'Total de registros inválidos periódicos', 'Valor'].values[0]
+            perc = df_resumo_peri.loc[df_resumo_peri['Métrica'] == '% Inválidos periódicos', 'Valor'].values[0]
+            return f'''
+            <div class="resumo-anomalias-container" id="resumo-invalidos-peri" style="display:none;">
+                {card_modo_peri(df_resumo_modos)}
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total inválidos periódicos</div>
+                    <div class="resumo-anomalia-numero">{total}</div>
+                    <div class="resumo-anomalia-legenda">Hdop = 0 e periódicos</div>
+                </div>
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Porcentagem inválidos periódicos</div>
+                    <div class="resumo-anomalia-numero red">{perc}</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos periódicos</div>
                 </div>
             </div>
             '''
@@ -256,11 +326,13 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_i
     <div class="bloco-satelites" id="bloco-satelites">
         <span class="dashboard-title-analise">Análise de Satélites</span>
         <div class="satelites-btn-container">
-            <button class="satelites-btn active" id="btn-validos" onclick="mostrarTabelaSatelites('validos')">Válidos</button>
-            <button class="satelites-btn" id="btn-invalidos" onclick="mostrarTabelaSatelites('invalidos')">Inválidos</button>
+            <button class="satelites-btn active" id="btn-validos" onclick="mostrarTabelaSatelites('validos')">Todos os dados válidos</button>
+            <button class="satelites-btn" id="btn-invalidos-eco" onclick="mostrarTabelaSatelites('invalidos-eco')">Inválidos modo eco</button>
+            <button class="satelites-btn" id="btn-invalidos-peri" onclick="mostrarTabelaSatelites('invalidos-peri')">Inválidos periódicos</button>
         </div>
         {resumo_html(df_resumo, 'validos')}
-        {resumo_html(df_resumo, 'invalidos')}
+        {resumo_html(df_resumo_eco, 'invalidos-eco')}
+        {resumo_html(df_resumo_peri, 'invalidos-peri')}
         <div id="tabelas-satelites">
             <div class="tabela-container" id="tabela-todos" style="display:block;">
                 <div class="grafico-titulo-container">
@@ -299,17 +371,22 @@ def gerar_bloco_satelites(df_todos: pd.DataFrame, df_validos: pd.DataFrame, df_i
                 </table>
             </div>
             {tabela(df_validos, "Estatísticas - Apenas válidos", "Considera apenas registros válidos (Satélites > 0 e Hdop > 0)", "tabela-validos")}
-            {tabela(df_invalidos, "Estatísticas - Apenas inválidos", "Considera apenas registros inválidos (Hdop = 0)", "tabela-invalidos")}
+            {tabela(df_invalidos_eco, "Estatísticas - Inválidos modo eco", "Inválidos (Hdop = 0) para mensagens temporizadas modo eco", "tabela-invalidos-eco")}
+            {tabela(df_invalidos_peri, "Estatísticas - Inválidos periódicos", "Inválidos (Hdop = 0) para mensagens temporizadas periódicas", "tabela-invalidos-peri")}
         </div>
     </div>
     <script>
     function mostrarTabelaSatelites(tipo) {{
         document.getElementById('tabela-validos').style.display = (tipo === 'validos') ? 'block' : 'none';
-        document.getElementById('tabela-invalidos').style.display = (tipo === 'invalidos') ? 'block' : 'none';
+        document.getElementById('tabela-invalidos-eco').style.display = (tipo === 'invalidos-eco') ? 'block' : 'none';
+        document.getElementById('tabela-invalidos-peri').style.display = (tipo === 'invalidos-peri') ? 'block' : 'none';
+        document.getElementById('tabela-todos').style.display = (tipo === 'validos') ? 'block' : 'none';
         document.getElementById('btn-validos').classList.toggle('active', tipo === 'validos');
-        document.getElementById('btn-invalidos').classList.toggle('active', tipo === 'invalidos');
+        document.getElementById('btn-invalidos-eco').classList.toggle('active', tipo === 'invalidos-eco');
+        document.getElementById('btn-invalidos-peri').classList.toggle('active', tipo === 'invalidos-peri');
         document.getElementById('resumo-validos').style.display = (tipo === 'validos') ? 'flex' : 'none';
-        document.getElementById('resumo-invalidos').style.display = (tipo === 'invalidos') ? 'flex' : 'none';
+        document.getElementById('resumo-invalidos-eco').style.display = (tipo === 'invalidos-eco') ? 'flex' : 'none';
+        document.getElementById('resumo-invalidos-peri').style.display = (tipo === 'invalidos-peri') ? 'flex' : 'none';
     }}
     // Inicialmente mostra válidos
     mostrarTabelaSatelites('validos');

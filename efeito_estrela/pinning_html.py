@@ -103,7 +103,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
             # Linhas extras ocultas
             if tem_mais:
                 for _, row in df.iloc[max_linhas:].iterrows():
-                    html += '<tr class="linha-oculta linha-' + tipo + '">' 
+                    html += '<tr class="linha-extra" data-tabela="tabela_' + tipo + '" style="display:none;">'
                     for col in data_columns:
                         val = row.get(col, "")
                         if col == dist_col and val != "":
@@ -117,9 +117,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
         if tem_mais and not df.empty:
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo}', {len(df)})" id="btn_{tipo}" data-tabela="tabela_{tipo}">
-                    Ver todos os dados
-                </button>
+                <button class="btn-mostrar-todos" data-tabela="tabela_{tipo}">Ver todos os dados</button>
             </div>
             '''
         html += '</div>'
@@ -329,23 +327,6 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
     <script>
-    function toggleLinhas(tipo, total) {{
-        const linhas = document.querySelectorAll('.linha-' + tipo);
-        const btn = document.getElementById('btn_' + tipo);
-        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
-        linhas.forEach(linha => {{
-            if (todasOcultas) {{
-                linha.classList.remove('linha-oculta');
-            }} else {{
-                linha.classList.add('linha-oculta');
-            }}
-        }});
-        if (todasOcultas) {{
-            btn.textContent = 'Mostrar apenas 5 registros';
-        }} else {{
-            btn.textContent = 'Ver todos os dados';
-        }}
-    }}
     document.addEventListener('DOMContentLoaded', function() {{
         setTimeout(function() {{
             if (typeof window.charts === 'undefined') {{ window.charts = {{}}; }}

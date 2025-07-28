@@ -266,7 +266,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                     velocidade_str = f"{velocidade} km/h"
                 motion_status = row['Motion Status'] if 'Motion Status' in row else ''
                 html += f'''
-                <tr class="linha-oculta linha-{tipo_alerta}">
+                <tr class="linha-extra" data-tabela="tabela_{tipo_alerta}" style="display:none;">
                     <td>{linha}</td>
                     <td>{row['Data']}</td>
                     <td>{row['Hora']}</td>
@@ -284,9 +284,7 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         if tem_mais:
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo_alerta}', {len(df_data)})" id="btn_{tipo_alerta}" data-tabela="tabela_{tipo_alerta}">
-                    Ver todos os dados
-                </button>
+                <button class="btn-mostrar-todos" data-tabela="tabela_{tipo_alerta}">Ver todos os dados</button>
             </div>
             '''
         

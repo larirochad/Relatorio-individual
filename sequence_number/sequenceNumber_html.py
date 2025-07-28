@@ -35,8 +35,8 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         for i, (_, row) in enumerate(df_tipo.iterrows()):
             extra_class = "linha-oculta linha-extra-seq" if i >= max_linhas else ""
             if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
-                linha_val = row.get('linha')
-                linha_rep_val = row.get('linha_repetida')
+                linha_val = row['linha_original']  # Usa APENAS linha_original
+                linha_rep_val = row['linha_repetida_original']  # Usa APENAS linha_repetida_original
                 valor_anterior = row.get('valor_anterior', '')
                 valor_repetido = row.get('valor_repetido', '')
                 def format_int(val):
@@ -53,34 +53,34 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                     <td>{valor_repetido_fmt}</td>
                     <td>{row.get('mensagem_atual', '')}</td>
                     <td>{row.get('mensagem_repetida', '')}</td>
-                    <td>{format_datetime(row.get('data_anterior', ''))}</td>
-                    <td>{format_datetime(row.get('data_repetida', ''))}</td>
+                    <td>{format_datetime(row.get('data_anterior_inclusao', row.get('data_anterior', '')))}</td>
+                    <td>{format_datetime(row.get('data_repetida_inclusao', row.get('data_repetida', '')))}</td>
                 </tr>
                 """
             elif tipo == 'salto_na_sequencia':
                 sequencia_anterior = row['sequencia_anterior']
                 sequencia_atual = row['sequencia_atual']
-                diferenca = row['Diferenca']
+                diferenca = row['diferenca']
                 def format_int(val):
                     return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
                 linhas_html += f"""
                 <tr class='{extra_class}'>
-                    <td>{format_int(row['linha'])}</td>
+                    <td>{format_int(row['linha_original'])}</td>
                     <td>{format_int(sequencia_anterior)}</td>
                     <td>{format_int(sequencia_atual)}</td>
                     <td>{row['tipo_mensagem_atual']}</td>
                     <td>{format_int(diferenca)}</td>
                 </tr>
                 """
-            else:
+            else:  # reset_de_contagem e regressao_de_contagem
                 sequencia_anterior = row['sequencia_anterior']
                 sequencia_atual = row['sequencia_atual']
-                diferenca = row['Diferenca']
+                diferenca = row['diferenca']
                 def format_int(val):
                     return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
                 linhas_html += f"""
                 <tr class='{extra_class}'>
-                    <td>{format_int(row['linha'])}</td>
+                    <td>{format_int(row['linha_original'])}</td>
                     <td>{format_int(sequencia_anterior)}</td>
                     <td>{format_int(sequencia_atual)}</td>
                     <td>{row['tipo_mensagem_atual']}</td>
@@ -111,8 +111,8 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                             <th>Valor da repetição detectada</th>
                             <th>Tipo de mensagem da primeira ocorrência</th>
                             <th>Tipo de mensagem da repetição detectada</th>
-                            <th>Data da primeira ocorrência</th>
-                            <th>Data da repetição detectada</th>
+                            <th>Data/Hora Inclusão da primeira ocorrência</th>
+                            <th>Data/Hora Inclusão da repetição detectada</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -270,7 +270,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
             }
         });
         if (todasOcultas) {
-            btn.textContent = 'Mostrar apenas 5 registros';
+            btn.textContent = 'Mostrar menos';
         } else {
             btn.textContent = 'Ver todos os dados';
         }

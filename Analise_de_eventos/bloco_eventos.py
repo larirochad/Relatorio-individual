@@ -18,6 +18,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
     label_map = {
         'Posicionamento por tempo em movimento': 'Temporizadas',
+        # Nova categoria não precisa de mapeamento especial, será exibida como 'GTERI por report_type 11'
     }
     labels_barras = [label_map.get(lbl, lbl) for lbl in df['Tipo mensagem'].tolist()]
     valores_barras = df['Quantidade'].tolist()

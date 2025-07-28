@@ -2,20 +2,108 @@ import pandas as pd
 import os
 from haversine import haversine
 
+def organizar_dados_por_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Organiza os dados tratando o problema de datas de 2019, mantendo a linha original
+    """
+    df = df.copy()
+    df.columns = df.columns.str.strip().str.lower()
+
+    # Garantir que temos a linha original
+    if 'linha_original' not in df.columns:
+        df['linha_original'] = df.index + 2
+
+    # Conversões básicas
+    df['data/hora evento'] = pd.to_datetime(df['data/hora evento'], errors='coerce')
+    df['sequência'] = pd.to_numeric(df['sequência'], errors='coerce')
+    df['hodômetro total'] = pd.to_numeric(df['hodômetro total'], errors='coerce')
+
+    # Remove linhas sem data/hora ou sequência válidas
+    df = df.dropna(subset=['data/hora evento', 'sequência']).copy()
+
+    # Identifica registros com datas problemáticas (2019)
+    df['data_problematica'] = df['data/hora evento'].dt.year == 2019
+    
+    # Separa os dados normais e problemáticos
+    df_normais = df[~df['data_problematica']].copy()
+    df_problematicos = df[df['data_problematica']].copy()
+    
+    if len(df_normais) == 0:
+        print("⚠️  Todos os registros têm datas problemáticas!")
+        return pd.DataFrame()
+    
+    # Ordena os dados normais por data/hora e sequência e reseta o índice
+    df_normais = df_normais.sort_values(['data/hora evento', 'sequência']).reset_index(drop=True)
+    
+    # Lista para armazenar todos os registros na ordem correta
+    registros_ordenados = []
+    registros_ordenados.extend(df_normais.to_dict('records'))
+    
+    # Para cada registro problemático, encontra a melhor posição
+    for _, row_prob in df_problematicos.iterrows():
+        seq_prob = row_prob['sequência']
+        melhor_posicao = 0
+        menor_diff = float('inf')
+        
+        # Encontra a melhor posição comparando com os registros já ordenados
+        for i, reg in enumerate(registros_ordenados):
+            diff = abs(reg['sequência'] - seq_prob)
+            if diff < menor_diff:
+                menor_diff = diff
+                melhor_posicao = i
+        
+        # Insere o registro problemático na posição correta
+        if seq_prob > registros_ordenados[melhor_posicao]['sequência']:
+            melhor_posicao += 1
+        registros_ordenados.insert(melhor_posicao, row_prob.to_dict())
+    
+    # Converte a lista de registros de volta para DataFrame
+    df_ordenado = pd.DataFrame(registros_ordenados)
+    
+    # Remove colunas auxiliares mas mantém linha_original
+    df_ordenado = df_ordenado.drop(columns=['data_problematica'])
+    
+    # Restaura nomes das colunas para o padrão original
+    df_ordenado.columns = df_ordenado.columns.str.title().str.replace('_', ' ')
+    df_ordenado = df_ordenado.rename(columns={
+        'Data/Hora Evento': 'Data/Hora Evento',
+        'Hodometro Total': 'Hodômetro Total',
+        'Sequencia': 'Sequência',
+        'Linha Original': 'linha_original'  # Mantém o nome em minúsculo para identificação
+    })
+    
+    # Salva o DataFrame ordenado para debug
+    # df_ordenado.to_csv('efeito_estrela/debug_dados_ordenados.csv', index=False, encoding='utf-8')
+    # print(f"✅ Dados ordenados salvos em 'efeito_estrela/debug_dados_ordenados.csv' para análise")
+    
+    return df_ordenado
+
 def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
     """
     Executa toda a análise de pinning a partir de um DataFrame já carregado.
     Salva os CSVs de blocos e de incremento com nomes fixos.
     """
-    # print(df.head(10))
     nome_arquivo = "efeito_estrela/distancia_blocos.csv"
     nome_arquivo_incremento = "efeito_estrela/distancia_blocos_incremento.csv"
     gerar_incremento = True
 
-    # Adiciona coluna 'linha' ao DataFrame original, como no plot_distancia_incremental.py
+    # Adiciona coluna linha_original ao DataFrame original
     df = df.copy()
-    if 'linha' not in df.columns:
-        df['linha'] = df.index + 2
+    if 'linha_original' not in df.columns:
+        df['linha_original'] = df.index + 2
+
+    # Organiza os dados tratando o problema de datas de 2019
+    df = organizar_dados_por_data(df)
+    if df.empty:
+        print("\n❌ Erro: Falha na organização dos dados")
+        colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
+        return None
+
+    # # Após processar os dados, salva para debug
+    # df.to_csv('efeito_estrela/debug_dados_processados.csv', index=False, encoding='utf-8')
+    # print(f"✅ Dados processados salvos em 'efeito_estrela/debug_dados_processados.csv' para análise")
 
     def validar_colunas(df: pd.DataFrame) -> bool:
         colunas_necessarias = ['Data/Hora Evento', 'Latitude', 'Longitude', 'Motion Status']
@@ -33,7 +121,7 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
         
         df_limpo = df_limpo[df_limpo['Latitude'].astype(float).abs() <= 90].copy()
         df_limpo = df_limpo[df_limpo['Longitude'].astype(float).abs() <= 180].copy()
-        df_limpo = df_limpo.sort_values(by='Data/Hora Evento').reset_index(drop=True)
+        # Não reordenar aqui, manter a ordem definida pela organização de datas
         # Remover linhas sem Hodômetro Total válido
         if 'Hodômetro Total' in df_limpo.columns:
             df_limpo = df_limpo[df_limpo['Hodômetro Total'].notna() & (df_limpo['Hodômetro Total'] != '')].copy()
@@ -107,7 +195,8 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
 
                 lat = float(lat)
                 lon = float(lon)
-                linha_atual = ponto['linha'] if 'linha' in ponto else ponto.name + 2
+                # Usar linha_original em vez de linha
+                linha_atual = ponto['linha_original']
                 motion_status = int(float(ponto['Motion Status']))
                 tipo_msg = ponto.get('Tipo Mensagem', '')
                 gnss_utc = ponto.get('GNSS UTC Time', '')
@@ -128,7 +217,7 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
 
                 if motion_status == 21 and ultimo_ponto_valido is not None and hodo_ant_f is not None and not pd.isna(hodo_ant_f):
                     linha_saida = {
-                        'linha': linha_atual,
+                        'linha': linha_atual,  # Agora usando linha_original
                         'bloco': i+1,
                         'ordem_no_bloco': idx+1,
                         'latitude': lat,
@@ -153,55 +242,45 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
                 ultimo_ponto_valido = (lat, lon, hodo_total_f, linha_atual, data_evento, motion_status, tipo_msg, gnss_utc)
                 hodo_ant_f = hodo_total_f
 
-
         # Criar diretório se não existir
         os.makedirs(os.path.dirname(nome_arquivo), exist_ok=True)
         
         df_saida = pd.DataFrame(linhas)
-        df_saida.to_csv(nome_arquivo, index=False, encoding='utf-8')
-        # print(f"✅ Arquivo salvo: {nome_arquivo} ({len(df_saida)} registros)")
+        # df_saida.to_csv(nome_arquivo, index=False, encoding='utf-8')
         
         if gerar_incremento:
             df_incremento = pd.DataFrame(linhas_incremento)
-            df_incremento.to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
-            # print(f"✅ Arquivo de incremento salvo: {nome_arquivo_incremento} ({len(df_incremento)} registros)")
+            # df_incremento.to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
 
     # Execução principal
     if not validar_colunas(df):
         print("\n❌ Erro: Colunas necessárias não encontradas")
-        # Sobrescrever arquivos com DataFrame vazio
         colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
-        pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
-        pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
         return None
     
     df_processado = processar_dados(df)
-    # print(df_processado.head(10))
     if len(df_processado) == 0:
         print("\n❌ Erro: Nenhum dado válido encontrado")
-        # Sobrescrever arquivos com DataFrame vazio
-        colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
-        pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
-        pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
+        # colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
         return None
     
     blocos_ignicao = identificar_blocos_ignicao(df_processado)
     
     if len(blocos_ignicao) == 0:
         print("\n❌ Erro: Nenhum bloco de ignição encontrado")
-        # Sobrescrever arquivos com DataFrame vazio
         colunas = ['linha','bloco','ordem_no_bloco','latitude','longitude','latitude_anterior','longitude_anterior','Hodômetro Total','Hodômetro anterior','Hodômetro incremental do bloco','Data/Hora Evento','GNSS UTC Time','Tipo Mensagem','Motion Status','Distância incremental (m)']
-        pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
-        pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo, index=False, encoding='utf-8')
+        # pd.DataFrame(columns=colunas).to_csv(nome_arquivo_incremento, index=False, encoding='utf-8')
         return None
-    
-    # print(f"📊 Encontrados {len(blocos_ignicao)} blocos de ignição")
     
     gerar_csv_blocos(blocos_ignicao, df_processado)
     
     try:
         df_saida = pd.read_csv(nome_arquivo, encoding='utf-8')
-        # print(f"✅ Análise concluída com sucesso!")
         return df_saida
     except Exception as e:
         print(f"❌ Erro ao ler CSV de saída: {e}")
@@ -209,6 +288,6 @@ def analise_pinning(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     # Exemplo de uso
-    df = pd.read_csv('logs/teste.csv', encoding='utf-8', dtype=str, low_memory=False)
+    df = pd.read_csv('logs/867488061438387_decoded.csv', encoding='latin-1', dtype=str, low_memory=False)
     resultado = analise_pinning(df)
     print(resultado)

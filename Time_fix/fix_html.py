@@ -45,7 +45,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
             extra_class = ""
         linhas_html += f"""
         <tr class='{extra_class}'>
-            <td>{int(row['Linha'])}</td>
+            <td>{int(row['linha_original'])}</td>
             <td>{row['Data/Hora Evento']}</td>
             <td>{row['GNSS UTC Time']}</td>
             <td>{'+' + str(int(abs(row['Time fix'])))} </td>

@@ -144,44 +144,68 @@
     <div class="bloco-satelites" id="bloco-satelites">
         <span class="dashboard-title-analise">Análise de Satélites</span>
         <div class="satelites-btn-container">
-            <button class="satelites-btn active" id="btn-validos" onclick="mostrarTabelaSatelites('validos')">Válidos</button>
-            <button class="satelites-btn" id="btn-invalidos" onclick="mostrarTabelaSatelites('invalidos')">Inválidos</button>
+            <button class="satelites-btn active" id="btn-validos" onclick="mostrarTabelaSatelites('validos')">Todos os dados válidos</button>
+            <button class="satelites-btn" id="btn-invalidos-eco" onclick="mostrarTabelaSatelites('invalidos-eco')">Inválidos modo eco</button>
+            <button class="satelites-btn" id="btn-invalidos-peri" onclick="mostrarTabelaSatelites('invalidos-peri')">Inválidos periódicos</button>
         </div>
         
             <div class="resumo-anomalias-container" id="resumo-validos" style="display:flex;">
                 <div class="resumo-anomalia-card">
                     <div class="resumo-anomalia-titulo">Total de registros</div>
-                    <div class="resumo-anomalia-numero">10020</div>
+                    <div class="resumo-anomalia-numero">16777</div>
                     <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
                 </div>
                 <div class="resumo-anomalia-card">
                     <div class="resumo-anomalia-titulo">Registros válidos</div>
-                    <div class="resumo-anomalia-numero">7453</div>
+                    <div class="resumo-anomalia-numero">14607</div>
                     <div class="resumo-anomalia-legenda">Satélites > 0 e Hdop > 0</div>
                 </div>
                 <div class="resumo-anomalia-card">
                     <div class="resumo-anomalia-titulo">Porcentagem de registros Válidos</div>
-                    <div class="resumo-anomalia-numero red" style="color:#38b349 !important;">74.4%</div>
+                    <div class="resumo-anomalia-numero red" style="color:#38b349 !important;">87.1%</div>
                     <div class="resumo-anomalia-legenda">Proporção de dados válidos</div>
                 </div>
             </div>
             
         
-            <div class="resumo-anomalias-container" id="resumo-invalidos" style="display:none;">
+            <div class="resumo-anomalias-container" id="resumo-invalidos-eco" style="display:none;">
+                
+        <div class="resumo-anomalia-card" id="card-modo-eco">
+            <div class="resumo-anomalia-titulo">Total modo eco</div>
+            <div class="resumo-anomalia-numero">1528</div>
+            <div class="resumo-anomalia-legenda">Todos os eventos modo eco</div>
+        </div>
+        
                 <div class="resumo-anomalia-card">
-                    <div class="resumo-anomalia-titulo">Total de registros</div>
-                    <div class="resumo-anomalia-numero">10020</div>
-                    <div class="resumo-anomalia-legenda">Total de dados recebidos</div>
+                    <div class="resumo-anomalia-titulo">Total inválidos modo eco</div>
+                    <div class="resumo-anomalia-numero">2</div>
+                    <div class="resumo-anomalia-legenda">Hdop = 0 e modo eco</div>
                 </div>
                 <div class="resumo-anomalia-card">
-                    <div class="resumo-anomalia-titulo">Registros inválidos</div>
-                    <div class="resumo-anomalia-numero">2567</div>
-                    <div class="resumo-anomalia-legenda"> Hdop = 0</div>
+                    <div class="resumo-anomalia-titulo">Porcentagem inválidos eco</div>
+                    <div class="resumo-anomalia-numero red">0.0%</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos eco</div>
+                </div>
+            </div>
+            
+        
+            <div class="resumo-anomalias-container" id="resumo-invalidos-peri" style="display:none;">
+                
+        <div class="resumo-anomalia-card" id="card-modo-peri">
+            <div class="resumo-anomalia-titulo">Total modo periódico</div>
+            <div class="resumo-anomalia-numero">1719</div>
+            <div class="resumo-anomalia-legenda">Todos os eventos periódicos</div>
+        </div>
+        
+                <div class="resumo-anomalia-card">
+                    <div class="resumo-anomalia-titulo">Total inválidos periódicos</div>
+                    <div class="resumo-anomalia-numero">2</div>
+                    <div class="resumo-anomalia-legenda">Hdop = 0 e periódicos</div>
                 </div>
                 <div class="resumo-anomalia-card">
-                    <div class="resumo-anomalia-titulo">Porcentagem de registros Inválidos</div>
-                    <div class="resumo-anomalia-numero red">25.6%</div>
-                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos</div>
+                    <div class="resumo-anomalia-titulo">Porcentagem inválidos periódicos</div>
+                    <div class="resumo-anomalia-numero red">0.0%</div>
+                    <div class="resumo-anomalia-legenda">Proporção de dados inválidos periódicos</div>
                 </div>
             </div>
             
@@ -205,18 +229,18 @@
                     <tbody>
                         <tr>
                             <td>Satélites</td>
-                            <td>10.82</td>
+                            <td>11.97</td>
                             <td>12.0</td>
-                            <td>2.42</td>
+                            <td>0.41</td>
                             <td>12.00</td>
-                            <td>0.00</td>
+                            <td>3.00</td>
                         </tr>
                         <tr>
                             <td>HDOP</td>   
-                            <td>0.75</td>         
+                            <td>0.87</td>         
                             <td>1.0</td>  
-                            <td>0.46</td>
-                            <td>4.00</td>
+                            <td>0.34</td>
+                            <td>3.00</td>
                             <td>0.00</td>
                         </tr>
                     </tbody>
@@ -242,18 +266,18 @@
                 <tbody>
                     <tr>
                         <td>Satélites</td>
-                        <td>10.84</td>
+                        <td>11.97</td>
                         <td>12.0</td>
-                        <td>2.37</td>
+                        <td>0.41</td>
                         <td>12.00</td>
                         <td>3.00</td>
                     </tr>
                     <tr>
                         <td>HDOP</td>   
-                        <td>1.01</td>         
+                        <td>1.00</td>         
                         <td>1.0</td>  
-                        <td>0.14</td>
-                        <td>4.00</td>
+                        <td>0.04</td>
+                        <td>3.00</td>
                         <td>1.00</td>
                     </tr>
                 </tbody>
@@ -261,11 +285,11 @@
         </div>
         
             
-        <div class="tabela-container" id="tabela-invalidos" style="display:none;">
+        <div class="tabela-container" id="tabela-invalidos-eco" style="display:none;">
             <div class="grafico-titulo-container">
-                <h3 class="grafico-titulo">Estatísticas - Apenas inválidos</h3>
+                <h3 class="grafico-titulo">Estatísticas - Inválidos modo eco</h3>
             </div>
-            <div class="faixa-legenda">Considera apenas registros inválidos (Hdop = 0)</div>
+            <div class="faixa-legenda">Inválidos (Hdop = 0) para mensagens temporizadas modo eco</div>
             <table class="tabela-estatisticas">
                 <thead>
                     <tr>
@@ -280,11 +304,49 @@
                 <tbody>
                     <tr>
                         <td>Satélites</td>
-                        <td>8.79</td>
-                        <td>12.0</td>
-                        <td>3.10</td>
                         <td>12.00</td>
+                        <td>12.0</td>
                         <td>0.00</td>
+                        <td>12.00</td>
+                        <td>12.00</td>
+                    </tr>
+                    <tr>
+                        <td>HDOP</td>   
+                        <td>0.00</td>         
+                        <td>0.0</td>  
+                        <td>0.00</td>
+                        <td>0.00</td>
+                        <td>0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+            
+        <div class="tabela-container" id="tabela-invalidos-peri" style="display:none;">
+            <div class="grafico-titulo-container">
+                <h3 class="grafico-titulo">Estatísticas - Inválidos periódicos</h3>
+            </div>
+            <div class="faixa-legenda">Inválidos (Hdop = 0) para mensagens temporizadas periódicas</div>
+            <table class="tabela-estatisticas">
+                <thead>
+                    <tr>
+                        <th>Dado</th>
+                        <th>Média</th>
+                        <th>Moda</th>
+                        <th>Desvio Padrão</th>
+                        <th>Valor máximo</th>
+                        <th>Valor mínimo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Satélites</td>
+                        <td>12.00</td>
+                        <td>12.0</td>
+                        <td>0.00</td>
+                        <td>12.00</td>
+                        <td>12.00</td>
                     </tr>
                     <tr>
                         <td>HDOP</td>   
@@ -303,11 +365,15 @@
     <script>
     function mostrarTabelaSatelites(tipo) {
         document.getElementById('tabela-validos').style.display = (tipo === 'validos') ? 'block' : 'none';
-        document.getElementById('tabela-invalidos').style.display = (tipo === 'invalidos') ? 'block' : 'none';
+        document.getElementById('tabela-invalidos-eco').style.display = (tipo === 'invalidos-eco') ? 'block' : 'none';
+        document.getElementById('tabela-invalidos-peri').style.display = (tipo === 'invalidos-peri') ? 'block' : 'none';
+        document.getElementById('tabela-todos').style.display = (tipo === 'validos') ? 'block' : 'none';
         document.getElementById('btn-validos').classList.toggle('active', tipo === 'validos');
-        document.getElementById('btn-invalidos').classList.toggle('active', tipo === 'invalidos');
+        document.getElementById('btn-invalidos-eco').classList.toggle('active', tipo === 'invalidos-eco');
+        document.getElementById('btn-invalidos-peri').classList.toggle('active', tipo === 'invalidos-peri');
         document.getElementById('resumo-validos').style.display = (tipo === 'validos') ? 'flex' : 'none';
-        document.getElementById('resumo-invalidos').style.display = (tipo === 'invalidos') ? 'flex' : 'none';
+        document.getElementById('resumo-invalidos-eco').style.display = (tipo === 'invalidos-eco') ? 'flex' : 'none';
+        document.getElementById('resumo-invalidos-peri').style.display = (tipo === 'invalidos-peri') ? 'flex' : 'none';
     }
     // Inicialmente mostra válidos
     mostrarTabelaSatelites('validos');

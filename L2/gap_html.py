@@ -59,6 +59,19 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
         border-radius: 0;
         box-shadow: none;
     }
+    .gap-legenda {
+        background: linear-gradient(90deg, #f8fafc 60%, #e9ecef 100%);
+        border-radius: 18px;
+        padding: 10px 24px;
+        margin: 18px auto 18px auto;
+        font-size: 1.08em;
+        color: #444;
+        font-family: 'Saira', Arial, sans-serif;
+        font-weight: 500;
+        max-width: 600px;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        text-align: center;
+    }
     .bloco-gap .tabela-container {
         background: #fff;
         border-radius: 15px;
@@ -94,6 +107,17 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
         margin: 30px 0 10px 0;
         font-family: 'Saira', sans-serif;
     }
+    .faixa-legenda {
+        text-align: center;
+        font-size: 14px;
+        color: #898989;
+        margin-bottom: 18px;
+        background: #f8f9fa;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: 10px;
+        margin-top: 8px;
+    }
     </style>
     """
 
@@ -103,6 +127,7 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
         <div class="grafico-titulo-container">
             <h3 class="grafico-titulo">Gaps Excedidos em Mensagens Temporizadas</h3>
         </div>
+        <div class="faixa-legenda">Considera apenas gaps excedidos: <b>Periódicas &gt; 240s</b> | <b>Modo Econômico &gt; 7200s</b></div>
         <table class="tabela-estatisticas" id="tabela_gap_excedido">
             <thead>
                 <tr>

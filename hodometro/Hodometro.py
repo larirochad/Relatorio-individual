@@ -289,7 +289,7 @@ def regressao(df: pd.DataFrame) -> pd.DataFrame:
 # Exemplo de uso
 if __name__ == "__main__":
     # Carrega dados
-    df = pd.read_csv('logs/teste.csv', encoding='utf-8', dtype=str, low_memory=False, on_bad_lines='skip')
+    df = pd.read_csv('logs/867488061438387_decoded.csv', encoding='latin-1', dtype=str, low_memory=False, on_bad_lines='skip')
     
     # Processa coluna hodômetro se existir
     if 'Hodômetro Total' in df.columns:

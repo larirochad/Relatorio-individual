@@ -221,9 +221,10 @@ def diagnosticar_irregularidades(resultados):
     # Regra 4: Desconexões de bateria superiores a 4
     if desconexao >= 4:
         irregularidades.append(4)  # Código 4: Desconexões superior a 4
+    
 
     # Se não houver outras irregularidades, mas há eventos eco com velocidade > 0, adiciona código 5
-    if not irregularidades and any(v['Velocidade'] > 0 for v in velocidades_eco):
+    if any(v['Velocidade'] > 0 for v in velocidades_eco):
         irregularidades.append(5)  # Código 5
 
     if not irregularidades:
