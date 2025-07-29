@@ -117,7 +117,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
         if tem_mais and not df.empty:
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" data-tabela="tabela_{tipo}">Ver todos os dados</button>
+                <button class="btn-mostrar-todos" data-tabela="tabela_{tipo}" data-mostrando="false">Ver todos os dados</button>
             </div>
             '''
         html += '</div>'

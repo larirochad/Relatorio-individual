@@ -1,3 +1,4 @@
+
 import os
 import re
 from pathlib import Path
@@ -1007,8 +1008,13 @@ document.addEventListener('click', function(e) {
         extras.forEach(linha => {
             linha.style.display = mostrando ? 'none' : '';
         });
-        e.target.innerText = mostrando ? 'Mostrar menos';
-        e.target.setAttribute('data-mostrando', mostrando ? 'false' : 'true');
+        if (mostrando) {
+            e.target.innerText = 'Ver todos os dados';
+            e.target.setAttribute('data-mostrando', 'false');
+        } else {
+            e.target.innerText = 'Mostrar menos';
+            e.target.setAttribute('data-mostrando', 'true');
+        }
     }
 });
 </script>\n</body>'''

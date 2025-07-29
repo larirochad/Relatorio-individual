@@ -34,7 +34,7 @@
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
             <div class="resumo-anomalia-titulo">Total de anomalias de Time fix no futuro</div>
-            <div class="resumo-anomalia-numero red-timefix">12</div>
+            <div class="resumo-anomalia-numero red-timefix">0</div>
             <div class="resumo-anomalia-legenda">Fix no "futuro" em relação ao evento > 2s </div>
         </div>
     </div>
@@ -53,121 +53,11 @@
             </thead>
             <tbody>
                 
-        <tr class=''>
-            <td>13152</td>
-            <td>24/06/2025 - 05:18:31</td>
-            <td>24/06/2025 - 05:18:36</td>
-            <td>+5 </td>
-        </tr>
-        
-        <tr class=''>
-            <td>13192</td>
-            <td>24/06/2025 - 05:18:29</td>
-            <td>24/06/2025 - 05:18:36</td>
-            <td>+7 </td>
-        </tr>
-        
-        <tr class=''>
-            <td>13193</td>
-            <td>24/06/2025 - 05:18:31</td>
-            <td>24/06/2025 - 05:18:36</td>
-            <td>+5 </td>
-        </tr>
-        
-        <tr class=''>
-            <td>13194</td>
-            <td>24/06/2025 - 05:18:31</td>
-            <td>24/06/2025 - 05:18:36</td>
-            <td>+5 </td>
-        </tr>
-        
-        <tr class=''>
-            <td>35503</td>
-            <td>14/07/2025 - 04:42:19</td>
-            <td>14/07/2025 - 04:45:51</td>
-            <td>+212 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>35504</td>
-            <td>14/07/2025 - 04:42:22</td>
-            <td>14/07/2025 - 04:45:51</td>
-            <td>+209 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>35505</td>
-            <td>14/07/2025 - 04:42:22</td>
-            <td>14/07/2025 - 04:45:51</td>
-            <td>+209 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>35506</td>
-            <td>14/07/2025 - 04:42:22</td>
-            <td>14/07/2025 - 04:45:51</td>
-            <td>+209 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>37885</td>
-            <td>15/07/2025 - 05:33:17</td>
-            <td>15/07/2025 - 05:36:07</td>
-            <td>+170 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>37892</td>
-            <td>15/07/2025 - 05:33:15</td>
-            <td>15/07/2025 - 05:36:07</td>
-            <td>+172 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>37893</td>
-            <td>15/07/2025 - 05:33:17</td>
-            <td>15/07/2025 - 05:36:07</td>
-            <td>+170 </td>
-        </tr>
-        
-        <tr class='linha-oculta linha-extra-timefix'>
-            <td>37894</td>
-            <td>15/07/2025 - 05:33:17</td>
-            <td>15/07/2025 - 05:36:07</td>
-            <td>+170 </td>
-        </tr>
-        
             </tbody>
         </table>
         
-        <div style="text-align: center;">
-            <button class="btn-mostrar-todos" onclick="toggleLinhasTimefix()" id="btn_timefix" data-tabela="tabela_timefix">
-                Ver todos os dados
-            </button>
-        </div>
-        
     </div>
     
     </div>
-    
-    <script>
-    function toggleLinhasTimefix() {
-        const linhas = document.querySelectorAll('#tabela_timefix .linha-extra-timefix');
-        const btn = document.getElementById('btn_timefix');
-        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
-        linhas.forEach(linha => {
-            if (todasOcultas) {
-                linha.classList.remove('linha-oculta');
-            } else {
-                linha.classList.add('linha-oculta');
-            }
-        });
-        if (todasOcultas) {
-            btn.textContent = 'Mostrar apenas 5 registros';
-        } else {
-            btn.textContent = 'Ver todos os dados';
-        }
-    }
-    </script>
     
     

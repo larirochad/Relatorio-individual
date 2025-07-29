@@ -31,7 +31,7 @@
             <div style="position: absolute; right: 0px; font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">12000 km</div>
         </div>
         <div style="text-align:center; font-size: 1.3em; font-weight: bold; margin-top: 20px; color: #222; font-family: Arial, Helvetica, sans-serif;">
-            2.668,10 km
+            1.962,60 km
         </div>
     </div>
 
@@ -52,27 +52,27 @@
             <tbody>
     
                 <tr>
-                    <td>35507</td>
-                    <td>1840.7</td>
-                    <td>1840.1</td>
-                    <td>GTRTL</td>
-                    <td>-0.6</td>
+                    <td>17242</td>
+                    <td>4137.0</td>
+                    <td>4136.8</td>
+                    <td>GTPNR</td>
+                    <td>-0.2</td>
                 </tr>
         
                 <tr>
-                    <td>35697</td>
-                    <td>1860.7</td>
-                    <td>1860.6</td>
-                    <td>GTMPN</td>
-                    <td>-0.1</td>
+                    <td>19888</td>
+                    <td>4403.0</td>
+                    <td>4402.6</td>
+                    <td>GTPNR</td>
+                    <td>-0.4</td>
                 </tr>
         
                 <tr>
-                    <td>37857</td>
-                    <td>2258.4</td>
-                    <td>2258.3</td>
-                    <td>GTIGF</td>
-                    <td>-0.1</td>
+                    <td>33920</td>
+                    <td>5128.0</td>
+                    <td>5127.7</td>
+                    <td>GTPNR</td>
+                    <td>-0.3</td>
                 </tr>
         
             </tbody>
@@ -89,7 +89,7 @@
         data: {
             labels: ['Concluído', 'Restante'],
             datasets: [{
-                data: [22.23, 77.77],
+                data: [16.36, 83.64],
                 backgroundColor: ['#17becf', '#f5f5f5'],
                 borderWidth: 0
             }]
@@ -105,9 +105,9 @@
                     callbacks: {
                         label: function(context) {
                             if(context.dataIndex === 0) {
-                                return 'Concluído: 2.668,10 km';
+                                return 'Concluído: 1.962,60 km';
                             } else {
-                                return 'Restante: ' + (12000 - 2668.1).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' km';
+                                return 'Restante: ' + (12000 - 1962.6).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' km';
                             }
                         }
                     }

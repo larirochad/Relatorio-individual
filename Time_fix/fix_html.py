@@ -44,7 +44,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
         else:
             extra_class = ""
         linhas_html += f"""
-        <tr class='{extra_class}'>
+        <tr class='linha-extra' data-tabela="tabela_timefix" style="display:none;">
             <td>{int(row['linha_original'])}</td>
             <td>{row['Data/Hora Evento']}</td>
             <td>{row['GNSS UTC Time']}</td>
@@ -57,7 +57,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     if tem_mais and len(df_neg) > max_linhas:
         botao_html = '''
         <div style="text-align: center;">
-            <button class="btn-mostrar-todos" onclick="toggleLinhasTimefix()" id="btn_timefix" data-tabela="tabela_timefix">
+            <button class="btn-mostrar-todos" onclick="toggleLinhasTimefix()" id="btn_timefix" data-tabela="tabela_timefix" data-mostrando="false">
                 Ver todos os dados
             </button>
         </div>
@@ -115,27 +115,7 @@ def gerar_bloco_timefix(df: pd.DataFrame, filename='bloco_timefix.html'):
     '''
 
     # JS para expandir/recolher linhas
-    js = '''
-    <script>
-    function toggleLinhasTimefix() {
-        const linhas = document.querySelectorAll('#tabela_timefix .linha-extra-timefix');
-        const btn = document.getElementById('btn_timefix');
-        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
-        linhas.forEach(linha => {
-            if (todasOcultas) {
-                linha.classList.remove('linha-oculta');
-            } else {
-                linha.classList.add('linha-oculta');
-            }
-        });
-        if (todasOcultas) {
-            btn.textContent = 'Mostrar apenas 5 registros';
-        } else {
-            btn.textContent = 'Ver todos os dados';
-        }
-    }
-    </script>
-    '''
+    js = ''
 
     html = f'''
     {css}

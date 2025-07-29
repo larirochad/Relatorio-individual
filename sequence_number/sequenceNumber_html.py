@@ -33,7 +33,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
             continue
         linhas_html = ""
         for i, (_, row) in enumerate(df_tipo.iterrows()):
-            extra_class = "linha-oculta linha-extra-seq" if i >= max_linhas else ""
+            extra_class = "linha-extra" if i >= max_linhas else ""
             if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
                 linha_val = row['linha_original']  # Usa APENAS linha_original
                 linha_rep_val = row['linha_repetida_original']  # Usa APENAS linha_repetida_original
@@ -45,8 +45,10 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 valor_repetido_fmt = format_int(valor_repetido)
                 linha_val_fmt = format_int(linha_val)
                 linha_rep_val_fmt = format_int(linha_rep_val)
+                data_tabela = f' data-tabela="tabela_seq_{tipo}"' if i >= max_linhas else ''
+                style = ' style="display:none;"' if i >= max_linhas else ''
                 linhas_html += f"""
-                <tr class='{extra_class}'>
+                <tr class='{extra_class}'{data_tabela}{style}>
                     <td>{linha_val_fmt}</td>
                     <td>{linha_rep_val_fmt}</td>
                     <td>{valor_anterior_fmt}</td>
@@ -63,8 +65,10 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 diferenca = row['diferenca']
                 def format_int(val):
                     return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
+                data_tabela = f' data-tabela="tabela_seq_{tipo}"' if i >= max_linhas else ''
+                style = ' style="display:none;"' if i >= max_linhas else ''
                 linhas_html += f"""
-                <tr class='{extra_class}'>
+                <tr class='{extra_class}'{data_tabela}{style}>
                     <td>{format_int(row['linha_original'])}</td>
                     <td>{format_int(sequencia_anterior)}</td>
                     <td>{format_int(sequencia_atual)}</td>
@@ -78,8 +82,10 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 diferenca = row['diferenca']
                 def format_int(val):
                     return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
+                data_tabela = f' data-tabela="tabela_seq_{tipo}"' if i >= max_linhas else ''
+                style = ' style="display:none;"' if i >= max_linhas else ''
                 linhas_html += f"""
-                <tr class='{extra_class}'>
+                <tr class='{extra_class}'{data_tabela}{style}>
                     <td>{format_int(row['linha_original'])}</td>
                     <td>{format_int(sequencia_anterior)}</td>
                     <td>{format_int(sequencia_atual)}</td>
@@ -91,9 +97,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         if len(df_tipo) > max_linhas:
             botao_html = f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" onclick="toggleLinhasSeq('{tipo}')" id="btn_seq_{tipo}" data-tabela="tabela_seq_{tipo}">
-                    Ver todos os dados
-                </button>
+                <button class="btn-mostrar-todos" data-tabela="tabela_seq_{tipo}" data-mostrando="false">Ver todos os dados</button>
             </div>
             '''
         if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
@@ -248,7 +252,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         transform: translateY(-2px);
         opacity: 0.9;
     }
-    .linha-oculta {
+    .linha-extra {
         display: none;
     }
     .resumo-anomalia-numero {
@@ -256,27 +260,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
     }
     </style>
     '''
-    js = '''
-    <script>
-    function toggleLinhasSeq(tipo) {
-        const linhas = document.querySelectorAll(`#tabela_seq_${tipo} .linha-extra-seq, #tabela_seq_${tipo} .linha-oculta`);
-        const btn = document.getElementById(`btn_seq_${tipo}`);
-        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
-        linhas.forEach(linha => {
-            if (todasOcultas) {
-                linha.classList.remove('linha-oculta');
-            } else {
-                linha.classList.add('linha-oculta');
-            }
-        });
-        if (todasOcultas) {
-            btn.textContent = 'Mostrar menos';
-        } else {
-            btn.textContent = 'Ver todos os dados';
-        }
-    }
-    </script>
-    '''
+    js = ''
     html = f'''
     {css}
     <div class="bloco-temporizadas" id="bloco-sequenceNumber">

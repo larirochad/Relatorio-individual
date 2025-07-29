@@ -181,7 +181,7 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
         data_tabela = " data-tabela=\"bloco-reboot\"" if is_extra else ''
         display_style = 'display:none;' if is_extra and not mostrar_todas else ''
         html += f"""
-        <tr class='{extra_class}'{data_tabela} style='{display_style}'>
+        <tr class='linha-extra'{data_tabela} style='{display_style}'>
             <td>{row['linha']}</td>
             <td>{row['Data']}</td>
             <td>{row['Hora']}</td>
@@ -196,7 +196,7 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
     # Adiciona botão se houver mais de 5 linhas
     if len(df) > 5:
         html += """
-            <button class='btn-mostrar-todos' data-tabela="bloco-reboot">Ver todos os dados</button>
+            <button class='btn-mostrar-todos' data-tabela="bloco-reboot" data-mostrando="false">Ver todos os dados</button>
         """
     html += """
         </div>

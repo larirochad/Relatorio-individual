@@ -8,8 +8,6 @@ def gerar_bloco_smp_eco(irregularidades, filename='bloco_smp_eco.html', tipo_vei
         irregularidades: lista de códigos numéricos (ex: [1, 2, 3]) ou lista de dicionários (compatibilidade).
         tipo_veiculo: string ('leve', 'pesado' ou 'desconhecido') para exibir no título.
     """
-    # print(irregularidades)
-    # print(tipo_veiculo)
     base_dir = Path(__file__).parent.parent / 'temp_blocos'
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
@@ -55,12 +53,22 @@ def gerar_bloco_smp_eco(irregularidades, filename='bloco_smp_eco.html', tipo_vei
             'tratativa': 'Validar o uso do cliente.'
         },
         5: {
+            'irregularidade': 'Velocidade em modo econômico - Possível TOW',
+            'indicios': (
+                'Velocidade em modo econômico; '
+                'Tensão da bateria externa menor que 13V, possivelmente TOW;'
+                'Possível caso de reboque (TOW);'
+            ),
+            'tratativa': 'Verificar se o veículo está sendo rebocado'
+        },
+        6: {
             'irregularidade': 'Velocidade em modo econômico',
             'indicios': (
                 'Velocidade em modo econômico; '
-                'Isso pode indicar problema de instalação no T15'
+                'Tensão da bateria externa maior que 13V, então não é TOW; '
+                'Possível conexão errada no T15;'
             ),
-            'tratativa': 'Ignição virtual caso não tenha acessório'
+            'tratativa': 'Verificar instalação do T15'
         },
         0: {
             'irregularidade': 'Nenhuma irregularidade operacional detectada.',
@@ -73,10 +81,80 @@ def gerar_bloco_smp_eco(irregularidades, filename='bloco_smp_eco.html', tipo_vei
     if tipo_veiculo == 'pesado':
         irregularidade_map[4]['irregularidade'] = 'Veículo pesado, possivelmente condutor possa estar desligando chave geral'
 
-    html = """
-    <div class="bloco-smp-eco" id="bloco-smp-eco" style="display:none; background: #fff; border-radius: 30px; box-shadow:0 5px 15px rgba(0,0,0,0.08); padding: 60px 80px 70px 80px; max-width: 2000px; margin: 0 auto 40px auto;">
-        <span class="dashboard-title-analise" style="font-family: 'Saira', sans-serif; background: linear-gradient(to right, #764ba2, #667eea); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 2.1em; font-weight: 800; text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2); display: block; margin: 0 0 30px 0; text-align: center;">Análises L2 - Irregularidades Operacionais</span>
-"""
+    # CSS inline (padrão dos outros blocos)
+    css = """
+    <style>
+    .bloco-smp-eco {
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 8px 25px rgba(102, 51, 153, 0.10);
+        padding: 50px 100px 60px 100px;
+        max-width: 2000px;
+        margin: 0 auto 40px auto;
+    }
+    .bloco-smp-eco .dashboard-title-analise {
+        font-family: 'Saira', sans-serif;
+        background: linear-gradient(to right, #764ba2, #667eea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.1em;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(102, 51, 153, 0.2);
+        display: block;
+        margin: 0 0 30px 0;
+        text-align: center;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .bloco-smp-eco .tabela-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        overflow-x: auto;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bloco-smp-eco .tabela-container:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .bloco-smp-eco .tabela-estatisticas {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1em;
+        margin: 0 auto;
+    }
+    .bloco-smp-eco .tabela-estatisticas th, .bloco-smp-eco .tabela-estatisticas td {
+        border: 1px solid #e9ecef;
+        padding: 12px 18px;
+        text-align: center;
+    }
+    .bloco-smp-eco .tabela-estatisticas th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: bold;
+    }
+    .tipo-veiculo-info {
+        background: linear-gradient(90deg, #f8fafc 60%, #e9ecef 100%);
+        border-radius: 18px;
+        padding: 10px 24px;
+        margin: 18px auto 18px auto;
+        font-size: 1.08em;
+        color: #444;
+        font-family: 'Saira', Arial, sans-serif;
+        font-weight: 500;
+        max-width: 600px;
+        box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        text-align: center;
+    }
+    </style>
+    """
+
     # Adiciona linha de tipo de veículo destacado
     if tipo_veiculo == 'pesado':
         titulo_tipo = 'Veículo pesado (Tensão > 22V)'
@@ -84,24 +162,26 @@ def gerar_bloco_smp_eco(irregularidades, filename='bloco_smp_eco.html', tipo_vei
         titulo_tipo = 'Veículo leve (Tensão < 22V)'
     else:
         titulo_tipo = 'Tipo de veículo desconhecido'
-    html += f"""
-        <div style='background: #f5f6fa; border-radius: 12px; padding: 8px 0 8px 0; margin-bottom:18px; text-align:center;'>
-            <span style='font-size:1.2em; font-weight:600; color:#737373;'>
-                {titulo_tipo}
-            </span>
+
+    html = f"""
+    {css}
+    <div class="bloco-smp-eco" id="bloco-smp-eco" style="display:none;">
+        <span class="dashboard-title-analise">Análises L2 - Irregularidades Operacionais</span>
+        <div class="tipo-veiculo-info">
+            {titulo_tipo}
         </div>
+        <div class="tabela-container">
+            <table class="tabela-estatisticas">
+                <thead>
+                    <tr>
+                        <th>Indícios de Mau Funcionamento</th>
+                        <th>Possíveis irregularidades</th>
+                        <th>Tratativa</th>
+                    </tr>
+                </thead>
+                <tbody>
     """
-    html += """
-        <table class="tabela-estatisticas" style="width:100%; margin-top:20px;">
-            <thead>
-                <tr>
-                    <th>Indícios de Mau Funcionamento</th>
-                    <th>Possíveis irregularidades</th>
-                    <th>Tratativa</th>
-                </tr>
-            </thead>
-            <tbody>
-    """
+
     # Suporta tanto lista de códigos quanto lista de dicionários
     for irr in irregularidades:
         if isinstance(irr, dict):
@@ -111,15 +191,17 @@ def gerar_bloco_smp_eco(irregularidades, filename='bloco_smp_eco.html', tipo_vei
         # Adiciona quebra de linha após cada ';' nos indícios
         indicios_html = row['indicios'].replace(';', ';<br>') if row['indicios'] else ''
         html += f"""
-            <tr>
-                <td>{indicios_html}</td>
-                <td>{row['irregularidade']}</td>
-                <td>{row['tratativa']}</td>
-            </tr>
+                    <tr>
+                        <td>{indicios_html}</td>
+                        <td>{row['irregularidade']}</td>
+                        <td>{row['tratativa']}</td>
+                    </tr>
         """
+
     html += """
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
     """
 

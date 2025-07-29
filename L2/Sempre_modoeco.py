@@ -204,7 +204,7 @@ def diagnosticar_irregularidades(resultados):
     peri = cont['peri']
     desconexao = cont['desconexao']
     velocidades_eco = resultados['velocidades_eco']
-    tensao = cont['tensao']
+    tensao_media = resultados.get('tensao_media', 0)
 
     # Regra 1: Sempre em modo econômico (sem desconexão)
     if eco > 0 and peri == 0 and (ign_on + ign_off) <= 2 and desconexao == 0 and any(v['Velocidade'] > 0 for v in velocidades_eco):
@@ -221,16 +221,17 @@ def diagnosticar_irregularidades(resultados):
     # Regra 4: Desconexões de bateria superiores a 4
     if desconexao >= 4:
         irregularidades.append(4)  # Código 4: Desconexões superior a 4
-    
 
-    # Se não houver outras irregularidades, mas há eventos eco com velocidade > 0, adiciona código 5
+    # Regras 5 e 6: Velocidade em modo eco com diferentes condições de tensão
     if any(v['Velocidade'] > 0 for v in velocidades_eco):
-        irregularidades.append(5)  # Código 5
+        if tensao_media < 13000:
+            irregularidades.append(5)  # Código 5: Possível TOW
+        else:
+            irregularidades.append(6)  # Código 6: Conexão errada em T15
 
     if not irregularidades:
         irregularidades.append(0)  # 0 = Nenhuma irregularidade operacional detectada
 
-    # print(irregularidades)
     return irregularidades
 
 
