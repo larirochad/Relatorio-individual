@@ -20,9 +20,6 @@
         transform: translateY(-2px);
         opacity: 0.9;
     }
-    .linha-oculta {
-        display: none;
-    }
     .bloco-gap {
         background: #fff;
         border-radius: 30px;
@@ -106,6 +103,24 @@
         padding: 10px;
         margin-top: 8px;
     }
+    /* ADICIONADO: CSS para linhas ocultas */
+    .linha-oculta {
+        display: none;
+    }
+    .grafico-titulo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .grafico-titulo {
+        text-align: center;
+        color: #495057;
+        margin: 0;
+        font-size: 1.5em;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        display: inline-block;  
+    }
     </style>
     
     <div class="bloco-gap bloco-smp-eco" id="bloco-smp-eco" style="display:none;">
@@ -134,10 +149,12 @@
     </div>
     
     <script>
-    function toggleLinhasGap() {
-        const linhas = document.querySelectorAll('#tabela_gap_excedido .linha-extra-gap, #tabela_gap_excedido .linha-oculta');
-        const btn = document.getElementById('btn_gap_excedido');
+    // Função específica para o bloco gap, compatível com o botão universal
+    function toggleLinhasGap(tipo, total) {
+        const linhas = document.querySelectorAll('.linha-' + tipo);
+        const btn = document.getElementById('btn_' + tipo);
         const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        
         linhas.forEach(linha => {
             if (todasOcultas) {
                 linha.classList.remove('linha-oculta');
@@ -145,30 +162,19 @@
                 linha.classList.add('linha-oculta');
             }
         });
+        
         if (todasOcultas) {
             btn.textContent = 'Mostrar apenas 5 registros';
+            // Dispara evento personalizado para o botão universal detectar
+            const event = new CustomEvent('tabelaExpandida', { detail: { tabelaId: 'tabela_gap_excedido' } });
+            document.dispatchEvent(event);
         } else {
             btn.textContent = 'Ver todos os dados';
+            // Dispara evento personalizado para o botão universal detectar
+            const event = new CustomEvent('tabelaMinimizada', { detail: { tabelaId: 'tabela_gap_excedido' } });
+            document.dispatchEvent(event);
         }
     }
-    // Integração com botão flutuante universal do dashboard
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn-mostrar-todos') && e.target.id === 'btn_gap_excedido') {
-            const tabelaId = e.target.getAttribute('data-tabela');
-            if (e.target.textContent.includes('Mostrar apenas') || e.target.textContent.includes('menos')) {
-                if (window.mostrarFabMinimizar) window.mostrarFabMinimizar(tabelaId);
-                setTimeout(function() {
-                    const tabela = document.getElementById(tabelaId);
-                    if (tabela) {
-                        const y = tabela.getBoundingClientRect().top + window.scrollY - 80;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
-                    }
-                }, 200);
-            } else {
-                if (window.esconderFabMinimizar) window.esconderFabMinimizar();
-            }
-        }
-    });
     </script>
     
     

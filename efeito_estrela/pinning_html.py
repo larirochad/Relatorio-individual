@@ -100,10 +100,10 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
                             pass
                     html += f'<td>{val}</td>'
                 html += '</tr>'
-            # Linhas extras ocultas
+            # Linhas extras ocultas - CORRIGIDO: usando as classes corretas
             if tem_mais:
                 for _, row in df.iloc[max_linhas:].iterrows():
-                    html += '<tr class="linha-extra" data-tabela="tabela_' + tipo + '" style="display:none;">'
+                    html += f'<tr class="linha-oculta linha-{tipo}">'  # CORRIGIDO: classe correta
                     for col in data_columns:
                         val = row.get(col, "")
                         if col == dist_col and val != "":
@@ -115,9 +115,12 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
                     html += '</tr>'
         html += '</tbody></table>'
         if tem_mais and not df.empty:
+            # CORRIGIDO: usando data-tabela para compatibilidade com botão universal
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" data-tabela="tabela_{tipo}" data-mostrando="false">Ver todos os dados</button>
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo}', {len(df)})" id="btn_{tipo}" data-tabela="tabela_{tipo}">
+                    Ver todos os dados
+                </button>
             </div>
             '''
         html += '</div>'
@@ -285,6 +288,7 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
         transform: translateY(-2px);
         opacity: 0.9;
     }
+    /* ADICIONADO: CSS para linhas ocultas */
     .linha-oculta {
         display: none;
     }
@@ -327,6 +331,33 @@ def gerar_bloco_pinning(df_inc: pd.DataFrame, df_blocos: pd.DataFrame = None, fi
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
     <script>
+    // ADICIONADO: Função toggleLinhas compatível com o botão universal
+    function toggleLinhas(tipo, total) {{
+        const linhas = document.querySelectorAll('.linha-' + tipo);
+        const btn = document.getElementById('btn_' + tipo);
+        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        
+        linhas.forEach(linha => {{
+            if (todasOcultas) {{
+                linha.classList.remove('linha-oculta');
+            }} else {{
+                linha.classList.add('linha-oculta');
+            }}
+        }});
+        
+        if (todasOcultas) {{
+            btn.textContent = 'Mostrar apenas 5 registros';
+            // Dispara evento personalizado para o botão universal detectar
+            const event = new CustomEvent('tabelaExpandida', {{ detail: {{ tabelaId: 'tabela_' + tipo }} }});
+            document.dispatchEvent(event);
+        }} else {{
+            btn.textContent = 'Ver todos os dados';
+            // Dispara evento personalizado para o botão universal detectar
+            const event = new CustomEvent('tabelaMinimizada', {{ detail: {{ tabelaId: 'tabela_' + tipo }} }});
+            document.dispatchEvent(event);
+        }}
+    }}
+    
     document.addEventListener('DOMContentLoaded', function() {{
         setTimeout(function() {{
             if (typeof window.charts === 'undefined') {{ window.charts = {{}}; }}

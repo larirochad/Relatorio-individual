@@ -31,8 +31,6 @@ from L2.Sempre_modoeco import sempre_modoeco
 from L2.html_smp_eco import gerar_bloco_smp_eco
 from L2.GAP import gap
 from L2.gap_html import gerar_bloco_gap
-from mapa import gerar_bloco_trajetos
-
 
 
 def executar_analise_completa(input1):
@@ -52,21 +50,20 @@ def executar_analise_completa(input1):
         for col in ['Data/Hora Inclusão', 'Data/Hora Evento']:
             if col in df.columns:
                 df[col] = pd.to_datetime(df[col], errors='coerce')
-
-        df_sequencia = verificar_sequencia(df)
-        df_timefix = calcular_time_fix(df)
-        
+        # ORGANIZAÇÃO PADRÃO DO DATAFRAME
+        # df = organizar_dataframe(df)
+        # print(df.columns[10])
         
         df_eventos = eventos(df)
-        df_pinning = analise_pinning(df)
+        df_blocos, df_incremento = analise_pinning(df)
+        df_sequencia = verificar_sequencia(df)
         df_viagens = viagens(df)
         df_reg = regressao(df)
         df_logs, df_estatisticas_logs, df_temporizadas, df_periodicas, df_eco = logs(df)
         df_reboot = reboot(df)
         df_satelites_result = analise_medias(df)
         if df_satelites_result is not None:
-            (
-                df_satelites_todos,
+            (   df_satelites_todos,
                 df_satelites_validos,
                 df_satelites_invalidos,
                 df_satelites_resumo,
@@ -90,6 +87,7 @@ def executar_analise_completa(input1):
         df_velocidade = velocidade(df)
         df_temporizadas = temporizadas_entre_si_com_ign(df)
         df_ignicao = time_ign_por_viagem(df)
+        df_timefix = calcular_time_fix(df)
         df_smp_eco = sempre_modoeco(df)
         df_gap = gap(df)
 
@@ -101,34 +99,21 @@ def executar_analise_completa(input1):
             else:
                 # Se eventos retornou apenas contagem
                 gerar_bloco_eventos(df_eventos)
-        # Gerar bloco de trajetos (mapa interativo)
-        gerar_bloco_trajetos(df)
-        if df_pinning is not None:
-            gerar_bloco_pinning(df_pinning, df_pinning)
-            
-        else:
-            # Cria DataFrame vazio com as colunas esperadas
-            colunas = [
-                'linha', 'bloco', 'ordem_no_bloco', 'latitude', 'longitude', 'latitude_anterior', 'longitude_anterior',
-                'Hodômetro Total', 'Hodômetro anterior', 'Hodômetro incremental do bloco', 'Data/Hora Evento',
-                'GNSS UTC Time', 'Tipo Mensagem', 'Motion Status', 'Distância incremental (m)'
-            ]
-            df_vazio = pd.DataFrame(data=None, columns=colunas)
-            gerar_bloco_pinning(df_vazio, df_vazio)
+        if df_blocos is not None:
+            gerar_bloco_pinning(df_incremento, df_blocos)
         if df_sequencia is not None:
             gerar_bloco_sequenceNumber(df_sequencia)
         else:
             # Cria um DataFrame vazio com as colunas esperadas
             colunas = [
-                'linha_original', 'linha_proxima_original', 'sequencia_anterior', 'sequencia_atual', 'data_anterior', 'data_atual',
-                'tipo_mensagem_anterior', 'tipo_mensagem_atual', 'tipo_problema', 'diferenca'
+                'linha', 'sequencia_anterior', 'sequencia_atual', 'data_anterior', 'data_atual',
+                'tipo_mensagem_anterior', 'tipo_mensagem_atual', 'tipo_problema', 'Diferenca'
             ]
             df_vazio = pd.DataFrame(data=None, columns=colunas)
             gerar_bloco_sequenceNumber(df_vazio)
 
-        # Sempre gerar o bloco do hodômetro, independentemente do resultado de df_sequencia
         gerar_bloco_hodometro_from_csv(df_viagens, df_reg)
-
+       
         if df_logs is not None and df_estatisticas_logs is not None:
             gerar_bloco_log(df_logs, df_estatisticas_logs, df_temporizadas, df_periodicas, df_eco)
 
@@ -153,7 +138,6 @@ def executar_analise_completa(input1):
 
 if __name__ == "__main__":  
     executar_analise_completa(
-        input1='logs/867488061438379_decoded.csv',
+        input1='logs/867488061407846_decoded.csv',
     )
-
 

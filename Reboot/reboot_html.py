@@ -177,11 +177,10 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
     for idx, row in enumerate(df.iterrows()):
         row = row[1]  # row[1] é a Series
         is_extra = idx >= 5
-        extra_class = 'linha-extra' if is_extra else ''
-        data_tabela = " data-tabela=\"bloco-reboot\"" if is_extra else ''
+        extra_class = 'linha-extra-reboot' if is_extra else ''
         display_style = 'display:none;' if is_extra and not mostrar_todas else ''
         html += f"""
-        <tr class='linha-extra'{data_tabela} style='{display_style}'>
+        <tr class='{extra_class}' style='{display_style}'>
             <td>{row['linha']}</td>
             <td>{row['Data']}</td>
             <td>{row['Hora']}</td>
@@ -196,7 +195,19 @@ def gerar_bloco_reboot(df: pd.DataFrame, filename='bloco_reboot.html', mostrar_t
     # Adiciona botão se houver mais de 5 linhas
     if len(df) > 5:
         html += """
-            <button class='btn-mostrar-todos' data-tabela="bloco-reboot" data-mostrando="false">Ver todos os dados</button>
+            <button class='btn-mostrar-todos' id='btn-ver-todos-reboot' onclick="toggleLinhasReboot()" data-tabela="bloco-reboot">Ver todos os dados</button>
+            <script>
+            function toggleLinhasReboot() {
+                var extras = document.querySelectorAll('.linha-extra-reboot');
+                var btn = document.getElementById('btn-ver-todos-reboot');
+                var mostrando = btn.getAttribute('data-mostrando') === 'true';
+                for (var i = 0; i < extras.length; i++) {
+                    extras[i].style.display = mostrando ? 'none' : '';
+                }
+                btn.innerText = mostrando ? 'Ver todos os dados' : 'Mostrar menos';
+                btn.setAttribute('data-mostrando', mostrando ? 'false' : 'true');
+            }
+            </script>
         """
     html += """
         </div>

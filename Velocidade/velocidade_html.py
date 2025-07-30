@@ -211,6 +211,10 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         if df_data.empty or df_data[col].apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna().empty:
             return ''
         
+        # Limita a 5 linhas inicialmente
+        df_display = df_data.head(max_linhas)
+        tem_mais = len(df_data) > max_linhas
+        
         html = f'''
         <div class="tabela-velocidade-container">
             <div class="grafico-titulo-container">
@@ -230,10 +234,10 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                 <tbody>
         '''
         
-        # Mostrar primeiras linhas
-        for idx, row in df_data.head(max_linhas).iterrows():
+        for idx, row in df_display.iterrows():
             linha = row['Linha Original']
-            velocidade = row[col]
+            velocidade = row['Velocidade absurda'] if tipo_alerta == 'absurda' else row['Velocidade com ignição OFF']
+            # Trata valores NaN ou vazios
             if pd.isna(velocidade) or velocidade == '' or str(velocidade).lower() == 'nan':
                 velocidade_str = 'N/A'
             else:
@@ -250,18 +254,19 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             </tr>
             '''
         
-        # Adicionar linhas extras (ocultas)
-        if len(df_data) > max_linhas:
+        # Adiciona linhas ocultas se houver mais dados
+        if tem_mais:
             for idx, row in df_data.iloc[max_linhas:].iterrows():
                 linha = row['Linha Original']
-                velocidade = row[col]
+                velocidade = row['Velocidade absurda'] if tipo_alerta == 'absurda' else row['Velocidade com ignição OFF']
+                # Trata valores NaN ou vazios
                 if pd.isna(velocidade) or velocidade == '' or str(velocidade).lower() == 'nan':
                     velocidade_str = 'N/A'
                 else:
                     velocidade_str = f"{velocidade} km/h"
                 motion_status = row['Motion Status'] if 'Motion Status' in row else ''
                 html += f'''
-                <tr class="linha-extra" data-tabela="tabela_{tipo_alerta}" style="display:none;">
+                <tr class="linha-oculta linha-{tipo_alerta}">
                     <td>{linha}</td>
                     <td>{row['Data']}</td>
                     <td>{row['Hora']}</td>
@@ -276,10 +281,12 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             </table>
         '''
         
-        if len(df_data) > max_linhas:
+        if tem_mais:
             html += f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" data-tabela="tabela_{tipo_alerta}" data-mostrando="false">Ver todos os dados</button>
+                <button class="btn-mostrar-todos" onclick="toggleLinhas('{tipo_alerta}', {len(df_data)})" id="btn_{tipo_alerta}" data-tabela="tabela_{tipo_alerta}">
+                    Ver todos os dados
+                </button>
             </div>
             '''
         
@@ -380,7 +387,23 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
     <script>
-    // Remover função toggleLinhas que não é mais usada
+    function toggleLinhas(tipo, total) {{
+        const linhas = document.querySelectorAll('.linha-' + tipo);
+        const btn = document.getElementById('btn_' + tipo);
+        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        linhas.forEach(linha => {{
+            if (todasOcultas) {{
+                linha.classList.remove('linha-oculta');
+            }} else {{
+                linha.classList.add('linha-oculta');
+            }}
+        }});
+        if (todasOcultas) {{
+            btn.textContent = 'Mostrar apenas 5 registros';
+        }} else {{
+            btn.textContent = 'Ver todos os dados';
+        }}
+    }}
     // Alternar entre gráfico e tabela
     function toggleGraficoTabela() {{
         const containerTabela = document.getElementById('container-tabelas-velocidade');

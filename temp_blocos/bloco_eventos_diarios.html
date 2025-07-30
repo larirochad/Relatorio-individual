@@ -15,12 +15,104 @@
         .legend-controls { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
         .legend-controls button { padding: 6px 15px; border: none; border-radius: 15px; font-size: 12px; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 500; transition: all 0.3s ease; }
         .legend-controls button:hover { transform: translateY(-1px); opacity: 0.9; }
+        
+        /* Estilos para os botões de alternância */
+        .botoes-alternancia { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .btn-alternancia { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            padding: 8px 22px; 
+            cursor: pointer; 
+            font-size: 15px; 
+            margin: 3px 15px; 
+            transition: all 0.3s ease; 
+            font-family: 'Saira', sans-serif; 
+            font-weight: 700; 
+            box-shadow: 0px 8px rgba(102, 51, 153, 0.07); 
+        }
+        .btn-alternancia.ativo { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            transform: translateY(2px);
+            box-shadow: 0px 4px rgba(102, 51, 153, 0.07); 
+        }
+        .btn-alternancia.inativo { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            transform: translateY(0px);
+            box-shadow: 0px 8px rgba(102, 51, 153, 0.07); 
+        }
+        .btn-alternancia:hover { 
+            transform: translateY(1px);
+            box-shadow: 0px 6px rgba(102, 51, 153, 0.07); 
+        }
+        
+        /* Estilos para a tabela */
+        .tabela-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin: 0 auto 40px auto;
+            max-width: 900px;
+            overflow-x: auto;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .tabela-container:hover {
+            transform: translateY(-2px); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .tabela-eventos {
+            width: 100%; 
+            border-collapse: collapse; 
+            font-family: Arial, Helvetica, sans-serif; 
+            font-size: 1em; 
+            margin: 0 auto; 
+        }
+        .tabela-eventos th, .tabela-eventos td { 
+            border: 1px solid #e9ecef; 
+            padding: 12px 18px; 
+            text-align: center; 
+        }
+        .tabela-eventos th { 
+            background: #f8f9fa; 
+            color: #495057; 
+            font-weight: bold; 
+        }
         </style>
 
         <div class='dashboard-bloco-analise' id='bloco-eventos'>
             <span class='dashboard-title-analise'>Análise de eventos</span>
 
-            <div class='grafico-container'>
+            <!-- Botões de alternância -->
+            <div class='botoes-alternancia'>
+                <button id='btn-tabela' class='btn-alternancia ativo' onclick="mostrarTabela()">Visualizar em Tabela</button>
+                <button id='btn-grafico' class='btn-alternancia inativo' onclick="mostrarGrafico()">Visualizar em Gráfico</button>
+            </div>
+
+            <!-- Container da Tabela -->
+            <div id='container-tabela' class='tabela-container'>
+                <div class='grafico-titulo-container'>
+                    <h3 class='grafico-titulo'>Total de Eventos por Categoria</h3>
+                </div>
+                <table class='tabela-eventos'>
+                    <thead>
+                        <tr>
+                            <th>Tipo de Evento</th>
+                            <th>Quantidade</th>
+                        </tr>
+                    </thead>
+                    <tbody id='tbody-eventos'>
+                        <!-- Dados serão inseridos via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Container do Gráfico de Barras -->
+            <div id='container-grafico' class='grafico-container' style='display: none;'>
                 <button class='btn-maximizar' onclick="maximizeChart('barrasTotais')">🔍 Maximizar</button>
                 <div class='grafico-titulo-container'>
                     <h3 class='grafico-titulo'>Total de Eventos por Categoria</h3>
@@ -29,6 +121,7 @@
                 <div class='zoom-controls'><button onclick="resetZoom('barrasTotais')">Reset Zoom</button></div>
             </div>
 
+            <!-- Gráfico de Evolução Diária (sempre visível) -->
             <div class='grafico-container'>
                 <button class='btn-maximizar' onclick="maximizeChart('linhaEventos')">🔍 Maximizar</button>
                 <div class='grafico-titulo-container'>
@@ -45,8 +138,40 @@
 
         <script>
         let controleFiltros = { filtroAtivo: null, estadoOriginal: {}, estadoIndividual: {}, estadoMostrarTodos: false, estadoOcultarTodos: false };
+        const dadosTabela = [{"tipo": "Temporizadas", "quantidade": 6252}, {"tipo": "GTSTT", "quantidade": 1149}, {"tipo": "Modo Econ\u00f4mico", "quantidade": 1145}, {"tipo": "GTIGL", "quantidade": 546}, {"tipo": "GTPDP", "quantidade": 332}, {"tipo": "GTIGN", "quantidade": 274}, {"tipo": "GTIGF", "quantidade": 270}, {"tipo": "GTRTL", "quantidade": 8}, {"tipo": "GTASC", "quantidade": 8}, {"tipo": "GTPNR", "quantidade": 7}, {"tipo": "GTDOG", "quantidade": 4}, {"tipo": "GTPFR", "quantidade": 4}, {"tipo": "GTBTC", "quantidade": 1}, {"tipo": "GTSTC", "quantidade": 1}];
+
+        // Função para alternar entre tabela e gráfico
+        function mostrarTabela() {
+            document.getElementById('container-tabela').style.display = 'block';
+            document.getElementById('container-grafico').style.display = 'none';
+            document.getElementById('btn-tabela').className = 'btn-alternancia ativo';
+            document.getElementById('btn-grafico').className = 'btn-alternancia inativo';
+        }
+
+        function mostrarGrafico() {
+            document.getElementById('container-tabela').style.display = 'none';
+            document.getElementById('container-grafico').style.display = 'block';
+            document.getElementById('btn-tabela').className = 'btn-alternancia inativo';
+            document.getElementById('btn-grafico').className = 'btn-alternancia ativo';
+        }
+
+        // Função para popular a tabela
+        function popularTabela() {
+            const tbody = document.getElementById('tbody-eventos');
+            tbody.innerHTML = '';
+            dadosTabela.forEach(item => {
+                const row = tbody.insertRow();
+                const cellTipo = row.insertCell(0);
+                const cellQuantidade = row.insertCell(1);
+                cellTipo.textContent = item.tipo;
+                cellQuantidade.textContent = item.quantidade;
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Popular a tabela
+            popularTabela();
+            
             setTimeout(function() {
                 if (typeof window.charts === 'undefined') window.charts = {};
                 if (typeof Chart !== 'undefined' && Chart.register && typeof ChartZoom !== 'undefined') Chart.register(ChartZoom);
@@ -55,7 +180,7 @@
                 if (linhaCanvas && !window.charts['linhaEventos']) {
                     window.charts['linhaEventos'] = new Chart(linhaCanvas.getContext('2d'), {
                         type: 'line',
-                        data: { labels: ["11/06/2025", "12/06/2025", "13/06/2025", "14/06/2025", "15/06/2025", "16/06/2025", "17/06/2025", "18/06/2025", "19/06/2025", "20/06/2025", "21/06/2025", "22/06/2025", "23/06/2025", "24/06/2025", "25/06/2025", "26/06/2025", "27/06/2025", "28/06/2025", "29/06/2025", "30/06/2025", "01/07/2025", "02/07/2025", "03/07/2025", "04/07/2025", "05/07/2025", "06/07/2025", "07/07/2025", "08/07/2025", "09/07/2025", "10/07/2025", "11/07/2025", "12/07/2025", "13/07/2025", "14/07/2025", "15/07/2025", "16/07/2025", "17/07/2025", "18/07/2025", "19/07/2025", "20/07/2025", "21/07/2025", "22/07/2025", "23/07/2025", "24/07/2025", "25/07/2025", "26/07/2025", "27/07/2025", "28/07/2025", "29/07/2025"], datasets: [{"label": "Cornering", "data": [0, 67, 86, 113, 0, 146, 0, 0, 0, 0, 0, 0, 34, 235, 125, 0, 0, 0, 0, 150, 146, 282, 174, 138, 0, 0, 0, 0, 0, 89, 70, 0, 107, 0, 172, 17, 99, 93, 222, 118, 38, 130, 27, 235, 0, 0, 0, 0, 0], "borderColor": "#BDB76B", "backgroundColor": "#BDB76B", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#BDB76B", "pointBorderColor": "#BDB76B", "hidden": false}, {"label": "GTASC", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 17, 9, 1, 1, 5, 9, 0, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 2, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0], "borderColor": "#DAA520", "backgroundColor": "#DAA520", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#DAA520", "pointBorderColor": "#DAA520", "hidden": false}, {"label": "GTDOG", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#708090", "backgroundColor": "#708090", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#708090", "pointBorderColor": "#708090", "hidden": false}, {"label": "GTIGF", "data": [0, 10, 12, 11, 2, 8, 0, 0, 0, 0, 0, 0, 12, 12, 12, 0, 0, 4, 0, 16, 27, 18, 16, 12, 0, 0, 0, 0, 0, 17, 12, 0, 11, 0, 17, 9, 18, 8, 14, 12, 3, 12, 9, 22, 1, 0, 0, 0, 0], "borderColor": "#0000FF", "backgroundColor": "#0000FF", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#0000FF", "pointBorderColor": "#0000FF", "hidden": false}, {"label": "GTIGL", "data": [0, 20, 24, 22, 4, 16, 0, 0, 0, 0, 0, 0, 26, 24, 24, 0, 0, 8, 0, 32, 54, 36, 32, 24, 0, 0, 0, 0, 0, 34, 24, 0, 22, 0, 34, 18, 36, 16, 28, 24, 6, 24, 18, 44, 2, 0, 0, 0, 0], "borderColor": "#836FFF", "backgroundColor": "#836FFF", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#836FFF", "pointBorderColor": "#836FFF", "hidden": false}, {"label": "GTIGN", "data": [0, 10, 12, 11, 2, 8, 0, 0, 0, 0, 0, 0, 12, 12, 12, 0, 0, 4, 0, 16, 27, 18, 16, 12, 0, 0, 0, 0, 0, 17, 12, 0, 11, 0, 17, 9, 18, 8, 14, 12, 3, 12, 9, 22, 1, 0, 0, 0, 0], "borderColor": "#191970", "backgroundColor": "#191970", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#191970", "pointBorderColor": "#191970", "hidden": false}, {"label": "GTPDP", "data": [0, 4, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 5, 0, 1, 0, 1, 0, 0, 0, 7, 4, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 5, 2, 4, 1, 3, 3, 0, 3, 0, 5, 3, 0, 1, 0, 0], "borderColor": "#4B0082", "backgroundColor": "#4B0082", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#4B0082", "pointBorderColor": "#4B0082", "hidden": false}, {"label": "GTPFR", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#FF1493", "backgroundColor": "#FF1493", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#FF1493", "pointBorderColor": "#FF1493", "hidden": false}, {"label": "GTPNR", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 17, 8, 1, 0, 5, 8, 0, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#7FFFD4", "backgroundColor": "#7FFFD4", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#7FFFD4", "pointBorderColor": "#7FFFD4", "hidden": false}, {"label": "GTRTL", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 17, 8, 1, 0, 5, 8, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#66c7ff", "backgroundColor": "#66c7ff", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#66c7ff", "pointBorderColor": "#66c7ff", "hidden": false}, {"label": "GTSTT", "data": [0, 34, 35, 37, 5, 20, 0, 0, 0, 0, 0, 0, 32, 43, 35, 0, 0, 10, 0, 40, 69, 52, 44, 39, 0, 0, 0, 0, 0, 44, 37, 0, 39, 0, 58, 24, 40, 24, 37, 31, 11, 31, 23, 52, 3, 0, 0, 0, 0], "borderColor": "#1C1C1C", "backgroundColor": "#1C1C1C", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#1C1C1C", "pointBorderColor": "#1C1C1C", "hidden": false}, {"label": "Modo Econ\u00f4mico", "data": [8, 28, 27, 23, 25, 24, 24, 24, 24, 24, 24, 24, 28, 26, 28, 27, 33, 33, 24, 29, 41, 37, 27, 28, 24, 24, 24, 24, 24, 27, 26, 24, 30, 24, 24, 25, 26, 27, 26, 29, 26, 26, 27, 27, 24, 24, 24, 24, 9], "borderColor": "#808000", "backgroundColor": "#808000", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#808000", "pointBorderColor": "#808000", "hidden": false}, {"label": "Temporizadas", "data": [0, 12, 19, 61, 0, 19, 0, 0, 0, 0, 0, 0, 7, 52, 29, 0, 0, 2, 0, 27, 39, 70, 70, 33, 0, 0, 0, 0, 0, 23, 12, 0, 23, 0, 78, 10, 36, 17, 71, 61, 10, 60, 8, 73, 0, 0, 0, 0, 0], "borderColor": "#A020F0", "backgroundColor": "#A020F0", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#A020F0", "pointBorderColor": "#A020F0", "hidden": false}] },
+                        data: { labels: ["11/06/2025", "12/06/2025", "13/06/2025", "14/06/2025", "15/06/2025", "16/06/2025", "17/06/2025", "18/06/2025", "19/06/2025", "20/06/2025", "21/06/2025", "22/06/2025", "23/06/2025", "24/06/2025", "25/06/2025", "26/06/2025", "27/06/2025", "28/06/2025", "29/06/2025", "30/06/2025", "01/07/2025", "02/07/2025", "03/07/2025", "04/07/2025", "05/07/2025", "06/07/2025", "07/07/2025", "08/07/2025", "09/07/2025", "10/07/2025", "11/07/2025", "12/07/2025", "13/07/2025", "14/07/2025", "15/07/2025", "16/07/2025", "17/07/2025", "18/07/2025", "19/07/2025", "20/07/2025", "21/07/2025", "22/07/2025", "23/07/2025", "24/07/2025", "25/07/2025", "26/07/2025", "27/07/2025", "28/07/2025", "29/07/2025"], datasets: [{"label": "GTASC", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "borderColor": "#BDB76B", "backgroundColor": "#BDB76B", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#BDB76B", "pointBorderColor": "#BDB76B", "hidden": false}, {"label": "GTBTC", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#DAA520", "backgroundColor": "#DAA520", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#DAA520", "pointBorderColor": "#DAA520", "hidden": false}, {"label": "GTDOG", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "borderColor": "#708090", "backgroundColor": "#708090", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#708090", "pointBorderColor": "#708090", "hidden": false}, {"label": "GTIGF", "data": [1, 2, 3, 1, 0, 5, 11, 5, 0, 8, 8, 0, 11, 0, 6, 5, 8, 0, 0, 13, 7, 0, 0, 0, 0, 0, 7, 11, 10, 10, 9, 2, 0, 17, 20, 11, 18, 15, 8, 0, 7, 4, 8, 7, 5, 2, 0, 5, 0], "borderColor": "#0000FF", "backgroundColor": "#0000FF", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#0000FF", "pointBorderColor": "#0000FF", "hidden": false}, {"label": "GTIGL", "data": [1, 5, 7, 4, 0, 15, 18, 11, 0, 16, 16, 0, 22, 0, 12, 10, 16, 0, 0, 26, 14, 0, 0, 0, 0, 0, 14, 22, 20, 20, 18, 4, 0, 34, 40, 22, 36, 30, 16, 0, 8, 12, 13, 18, 11, 6, 0, 9, 0], "borderColor": "#836FFF", "backgroundColor": "#836FFF", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#836FFF", "pointBorderColor": "#836FFF", "hidden": false}, {"label": "GTIGN", "data": [1, 3, 2, 3, 0, 7, 10, 6, 0, 8, 8, 0, 11, 0, 6, 5, 8, 0, 0, 13, 7, 0, 0, 0, 0, 0, 7, 11, 10, 10, 9, 2, 0, 17, 20, 11, 18, 15, 8, 0, 5, 5, 8, 8, 6, 2, 0, 4, 0], "borderColor": "#191970", "backgroundColor": "#191970", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#191970", "pointBorderColor": "#191970", "hidden": false}, {"label": "GTPDP", "data": [0, 0, 1, 0, 0, 3, 2, 7, 1, 16, 2, 2, 0, 1, 14, 0, 5, 1, 2, 16, 20, 0, 2, 0, 1, 0, 2, 9, 2, 5, 11, 0, 0, 15, 0, 13, 4, 2, 0, 0, 9, 3, 1, 4, 0, 0, 0, 110, 46], "borderColor": "#4B0082", "backgroundColor": "#4B0082", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#4B0082", "pointBorderColor": "#4B0082", "hidden": false}, {"label": "GTPFR", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "borderColor": "#FF1493", "backgroundColor": "#FF1493", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#FF1493", "pointBorderColor": "#FF1493", "hidden": false}, {"label": "GTPNR", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "borderColor": "#7FFFD4", "backgroundColor": "#7FFFD4", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#7FFFD4", "pointBorderColor": "#7FFFD4", "hidden": false}, {"label": "GTRTL", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "borderColor": "#66c7ff", "backgroundColor": "#66c7ff", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#66c7ff", "pointBorderColor": "#66c7ff", "hidden": false}, {"label": "GTSTC", "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "borderColor": "#1C1C1C", "backgroundColor": "#1C1C1C", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#1C1C1C", "pointBorderColor": "#1C1C1C", "hidden": false}, {"label": "GTSTT", "data": [3, 13, 9, 10, 0, 22, 44, 16, 0, 35, 22, 0, 45, 0, 26, 15, 24, 0, 0, 61, 35, 0, 0, 0, 0, 0, 23, 43, 41, 52, 48, 7, 0, 80, 99, 59, 64, 70, 32, 0, 27, 15, 24, 35, 24, 12, 0, 14, 0], "borderColor": "#808000", "backgroundColor": "#808000", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#808000", "pointBorderColor": "#808000", "hidden": false}, {"label": "Modo Econ\u00f4mico", "data": [4, 12, 22, 17, 17, 20, 24, 18, 17, 29, 29, 24, 30, 24, 24, 25, 28, 24, 24, 30, 21, 24, 24, 24, 24, 24, 27, 29, 30, 26, 28, 25, 24, 34, 36, 28, 31, 29, 26, 24, 20, 21, 20, 22, 18, 15, 23, 20, 6], "borderColor": "#A020F0", "backgroundColor": "#A020F0", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#A020F0", "pointBorderColor": "#A020F0", "hidden": false}, {"label": "Temporizadas", "data": [19, 67, 47, 48, 0, 185, 141, 148, 0, 125, 130, 0, 248, 0, 216, 107, 198, 0, 0, 352, 267, 0, 0, 0, 0, 0, 172, 243, 208, 221, 293, 51, 0, 381, 431, 280, 312, 241, 202, 0, 246, 118, 132, 145, 99, 43, 0, 136, 0], "borderColor": "#87CEEB", "backgroundColor": "#87CEEB", "fill": false, "tension": 0.3, "pointRadius": 4, "pointHoverRadius": 6, "pointBackgroundColor": "#87CEEB", "pointBorderColor": "#87CEEB", "hidden": false}] },
                         options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -111,12 +236,12 @@
                     window.charts['barrasTotais'] = new Chart(barrasCanvas.getContext('2d'), {
                         type: 'bar',
                         data: {
-                            labels: ["Cornering", "Modo Econ\u00f4mico", "GTSTT", "Temporizadas", "GTIGL", "GTIGN", "GTIGF", "GTPDP", "GTASC", "GTRTL", "GTPNR", "GTDOG", "GTPFR"],
+                            labels: ["Temporizadas", "GTSTT", "Modo Econ\u00f4mico", "GTIGL", "GTPDP", "GTIGN", "GTIGF", "GTRTL", "GTASC", "GTPNR", "GTDOG", "GTPFR", "GTBTC", "GTSTC"],
                             datasets: [{
                                 label: 'Total por categoria',
-                                data: [3113, 1259, 949, 922, 676, 337, 337, 62, 56, 50, 50, 12, 12],
-                                backgroundColor: ["#BDB76B", "#DAA520", "#708090", "#0000FF", "#836FFF", "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#66c7ff", "#1C1C1C", "#808000", "#A020F0"],
-                                borderColor: ["#BDB76B", "#DAA520", "#708090", "#0000FF", "#836FFF", "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#66c7ff", "#1C1C1C", "#808000", "#A020F0"],
+                                data: [6252, 1149, 1145, 546, 332, 274, 270, 8, 8, 7, 4, 4, 1, 1],
+                                backgroundColor: ["#BDB76B", "#DAA520", "#708090", "#0000FF", "#836FFF", "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#66c7ff", "#1C1C1C", "#808000", "#A020F0", "#87CEEB"],
+                                borderColor: ["#BDB76B", "#DAA520", "#708090", "#0000FF", "#836FFF", "#191970", "#4B0082", "#FF1493", "#7FFFD4", "#66c7ff", "#1C1C1C", "#808000", "#A020F0", "#87CEEB"],
                                 borderWidth: 1
                             }]
                         },

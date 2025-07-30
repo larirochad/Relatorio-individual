@@ -32,9 +32,6 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
         transform: translateY(-2px);
         opacity: 0.9;
     }
-    .linha-oculta {
-        display: none;
-    }
     .bloco-gap {
         background: #fff;
         border-radius: 30px;
@@ -118,6 +115,24 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
         padding: 10px;
         margin-top: 8px;
     }
+    /* ADICIONADO: CSS para linhas ocultas */
+    .linha-oculta {
+        display: none;
+    }
+    .grafico-titulo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .grafico-titulo {
+        text-align: center;
+        color: #495057;
+        margin: 0;
+        font-size: 1.5em;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        display: inline-block;  
+    }
     </style>
     """
 
@@ -139,47 +154,61 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
             </thead>
             <tbody>
     '''
-    linhas = []
+    
+    linhas_visiveis = []
+    linhas_ocultas = []
     mensagem_sem_problemas = ''
+    
     if df_gap is not None and not df_gap.empty:
         for i, (_, row) in enumerate(df_gap.iterrows()):
-            extra_class = "linha-oculta linha-extra-gap" if i >= max_linhas else ""
             linha = row.get('linha_atual', '')
             data_hora = row.get('data_atual', '')
             tipo = 'Periódica' if row.get('tipo', '').upper() == 'PERI' else 'Modo Econômico'
             gap = f"{row.get('gap_s', ''):.0f}" if pd.notnull(row.get('gap_s', None)) else ''
-            linhas.append(f'''
-                <tr class='{extra_class}'>
+            
+            linha_html = f'''
+                <tr{' class="linha-oculta linha-gap-excedido"' if i >= max_linhas else ''}>
                     <td>{linha}</td>
                     <td>{data_hora}</td>
                     <td>{tipo}</td>
                     <td>{gap}</td>
                 </tr>
-            ''')
-        table_html += "".join(linhas)
+            '''
+            
+            if i < max_linhas:
+                linhas_visiveis.append(linha_html)
+            else:
+                linhas_ocultas.append(linha_html)
+        
+        table_html += "".join(linhas_visiveis + linhas_ocultas)
     else:
         table_html += '''<tr><td colspan="4">Nenhum gap excedido encontrado.</td></tr>'''
         mensagem_sem_problemas = '''<div class="mensagem-sem-problemas">Nenhum problema de gap excedido foi encontrado nos dados analisados.</div>'''
+    
     table_html += '''
             </tbody>
         </table>
     '''
-    # Botão para expandir/contrair se houver mais de 5 linhas
+    
+    # Botão para expandir/contrair se houver mais de 5 linhas - CORRIGIDO
     if df_gap is not None and len(df_gap) > max_linhas:
-        table_html += '''<div style="text-align: center;">
-            <button class="btn-mostrar-todos" onclick="toggleLinhasGap()" id="btn_gap_excedido" data-tabela="tabela_gap_excedido">
+        table_html += f'''<div style="text-align: center;">
+            <button class="btn-mostrar-todos" onclick="toggleLinhasGap('gap-excedido', {len(df_gap)})" id="btn_gap-excedido" data-tabela="tabela_gap_excedido">
                 Ver todos os dados
             </button>
         </div>'''
+    
     table_html += '</div>'
 
-    # JS para expandir/contrair linhas
-    js = '''
+    # ADICIONADO: JavaScript para a função toggleLinhasGap
+    javascript = '''
     <script>
-    function toggleLinhasGap() {
-        const linhas = document.querySelectorAll('#tabela_gap_excedido .linha-extra-gap, #tabela_gap_excedido .linha-oculta');
-        const btn = document.getElementById('btn_gap_excedido');
+    // Função específica para o bloco gap, compatível com o botão universal
+    function toggleLinhasGap(tipo, total) {
+        const linhas = document.querySelectorAll('.linha-' + tipo);
+        const btn = document.getElementById('btn_' + tipo);
         const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        
         linhas.forEach(linha => {
             if (todasOcultas) {
                 linha.classList.remove('linha-oculta');
@@ -187,30 +216,19 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
                 linha.classList.add('linha-oculta');
             }
         });
+        
         if (todasOcultas) {
             btn.textContent = 'Mostrar apenas 5 registros';
+            // Dispara evento personalizado para o botão universal detectar
+            const event = new CustomEvent('tabelaExpandida', { detail: { tabelaId: 'tabela_gap_excedido' } });
+            document.dispatchEvent(event);
         } else {
             btn.textContent = 'Ver todos os dados';
+            // Dispara evento personalizado para o botão universal detectar
+            const event = new CustomEvent('tabelaMinimizada', { detail: { tabelaId: 'tabela_gap_excedido' } });
+            document.dispatchEvent(event);
         }
     }
-    // Integração com botão flutuante universal do dashboard
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn-mostrar-todos') && e.target.id === 'btn_gap_excedido') {
-            const tabelaId = e.target.getAttribute('data-tabela');
-            if (e.target.textContent.includes('Mostrar apenas') || e.target.textContent.includes('menos')) {
-                if (window.mostrarFabMinimizar) window.mostrarFabMinimizar(tabelaId);
-                setTimeout(function() {
-                    const tabela = document.getElementById(tabelaId);
-                    if (tabela) {
-                        const y = tabela.getBoundingClientRect().top + window.scrollY - 80;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
-                    }
-                }, 200);
-            } else {
-                if (window.esconderFabMinimizar) window.esconderFabMinimizar();
-            }
-        }
-    });
     </script>
     '''
 
@@ -221,11 +239,8 @@ def gerar_bloco_gap(df_gap: pd.DataFrame, filename='bloco_gap.html'):
         {mensagem_sem_problemas}
         {table_html}
     </div>
-    {js}
+    {javascript}
     '''
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
-
-
-

@@ -1,4 +1,3 @@
-
 import os
 import re
 from pathlib import Path
@@ -564,11 +563,11 @@ def unir_blocos(df_raw):
             window.scrollTo({{ top: y, behavior: 'smooth' }});
           }}
         }};
-        // Observa cliques nos botões para mostrar/esconder o botão flutuante
+        // Observa cliques nos botões "Ver todos os dados" para mostrar/esconder o botão flutuante
         document.addEventListener('click', function(e) {{
           if (e.target.classList.contains('btn-mostrar-todos')) {{
             const tabelaId = e.target.getAttribute('data-tabela');
-            if (e.target.textContent.includes('Mostrar menos')) {{
+            if (e.target.textContent.includes('Mostrar apenas') || e.target.textContent.includes('menos')) {{
               mostrarFabMinimizar(tabelaId);
               // --- NOVO: Scroll para o topo do bloco ao minimizar ---
               setTimeout(function() {{
@@ -578,7 +577,7 @@ def unir_blocos(df_raw):
                   window.scrollTo({{ top: y, behavior: 'smooth' }});
                 }}
               }}, 200);
-            }} else if (e.target.textContent.includes('Ver todos os dados')) {{
+            }} else {{
               esconderFabMinimizar();
             }}
           }}
@@ -966,7 +965,7 @@ def unir_blocos(df_raw):
         }
         function showAnalisesL2() {
             // Esconde todos os blocos normais
-            document.querySelectorAll('.dashboard-bloco-analise, .bloco-hodometro, .bloco-eventos, .bloco-ignicao, .bloco-log, .bloco-reboot, .bloco-satelites, .bloco-sequenceNumber, .bloco-temporizadas, .bloco-pinning, .bloco-timefix, .bloco-velocidade, #bloco-resumo-tecnico').forEach(function(el) { el.style.display = 'none'; });
+            document.querySelectorAll('.dashboard-bloco-analise, .bloco-hodometro, .bloco-eventos, .bloco-ignicao, .bloco-log, .bloco-reboot, .bloco-satelites, .bloco-sequenceNumber, .bloco-temporizadas, .bloco-pinning, .bloco-timefix, .bloco-velocidade').forEach(function(el) { el.style.display = 'none'; });
             // Mostra o bloco de análises L2
             document.querySelectorAll('.bloco-smp-eco').forEach(function(el) { el.style.display = ''; });
             // Mostra o botão de voltar
@@ -998,26 +997,7 @@ def unir_blocos(df_raw):
         document.getElementById('floating-nav-toggle').onclick = function() {
             document.getElementById('floating-nav-wrapper').classList.toggle('open');
         };
-        </script>
-        <script>
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('btn-mostrar-todos')) {
-        const tabelaId = e.target.getAttribute('data-tabela');
-        const extras = document.querySelectorAll('.linha-extra[data-tabela="' + tabelaId + '"]');
-        const mostrando = e.target.getAttribute('data-mostrando') === 'true';
-        extras.forEach(linha => {
-            linha.style.display = mostrando ? 'none' : '';
-        });
-        if (mostrando) {
-            e.target.innerText = 'Ver todos os dados';
-            e.target.setAttribute('data-mostrando', 'false');
-        } else {
-            e.target.innerText = 'Mostrar menos';
-            e.target.setAttribute('data-mostrando', 'true');
-        }
-    }
-});
-</script>\n</body>'''
+        </script>\n</body>'''
     )
 
     # Write final file

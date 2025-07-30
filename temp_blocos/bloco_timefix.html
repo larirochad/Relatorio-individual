@@ -60,4 +60,24 @@
     
     </div>
     
+    <script>
+    function toggleLinhasTimefix() {
+        const linhas = document.querySelectorAll('#tabela_timefix .linha-extra-timefix');
+        const btn = document.getElementById('btn_timefix');
+        const todasOcultas = Array.from(linhas).every(linha => linha.classList.contains('linha-oculta'));
+        linhas.forEach(linha => {
+            if (todasOcultas) {
+                linha.classList.remove('linha-oculta');
+            } else {
+                linha.classList.add('linha-oculta');
+            }
+        });
+        if (todasOcultas) {
+            btn.textContent = 'Mostrar apenas 5 registros';
+        } else {
+            btn.textContent = 'Ver todos os dados';
+        }
+    }
+    </script>
+    
     

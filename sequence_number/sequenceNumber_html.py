@@ -2,8 +2,6 @@ import pandas as pd
 from pathlib import Path
 from typing import Union
 
-# Adiciona função utilitária para formatar datas
-
 def format_datetime(val):
     try:
         return pd.to_datetime(val).strftime('%d/%m/%y - %H:%M:%S') if pd.notnull(val) and val else ''
@@ -33,10 +31,10 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
             continue
         linhas_html = ""
         for i, (_, row) in enumerate(df_tipo.iterrows()):
-            extra_class = "linha-extra" if i >= max_linhas else ""
+            extra_class = "linha-oculta linha-extra-seq" if i >= max_linhas else ""
             if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
-                linha_val = row['linha_original']  # Usa APENAS linha_original
-                linha_rep_val = row['linha_repetida_original']  # Usa APENAS linha_repetida_original
+                linha_val = row['linha_original'] if 'linha_original' in row else row.get('linha', '')
+                linha_rep_val = row['linha_repetida_original'] if 'linha_repetida_original' in row else row.get('linha_repetida', '')
                 valor_anterior = row.get('valor_anterior', '')
                 valor_repetido = row.get('valor_repetido', '')
                 def format_int(val):
@@ -45,10 +43,8 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 valor_repetido_fmt = format_int(valor_repetido)
                 linha_val_fmt = format_int(linha_val)
                 linha_rep_val_fmt = format_int(linha_rep_val)
-                data_tabela = f' data-tabela="tabela_seq_{tipo}"' if i >= max_linhas else ''
-                style = ' style="display:none;"' if i >= max_linhas else ''
                 linhas_html += f"""
-                <tr class='{extra_class}'{data_tabela}{style}>
+                <tr class='{extra_class}'>
                     <td>{linha_val_fmt}</td>
                     <td>{linha_rep_val_fmt}</td>
                     <td>{valor_anterior_fmt}</td>
@@ -65,11 +61,9 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 diferenca = row['diferenca']
                 def format_int(val):
                     return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
-                data_tabela = f' data-tabela="tabela_seq_{tipo}"' if i >= max_linhas else ''
-                style = ' style="display:none;"' if i >= max_linhas else ''
                 linhas_html += f"""
-                <tr class='{extra_class}'{data_tabela}{style}>
-                    <td>{format_int(row['linha_original'])}</td>
+                <tr class='{extra_class}'>
+                    <td>{format_int(row['linha_original'] if 'linha_original' in row else row.get('linha', ''))}</td>
                     <td>{format_int(sequencia_anterior)}</td>
                     <td>{format_int(sequencia_atual)}</td>
                     <td>{row['tipo_mensagem_atual']}</td>
@@ -82,11 +76,9 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 diferenca = row['diferenca']
                 def format_int(val):
                     return int(val) if (isinstance(val, (int, float)) and pd.notnull(val)) else ''
-                data_tabela = f' data-tabela="tabela_seq_{tipo}"' if i >= max_linhas else ''
-                style = ' style="display:none;"' if i >= max_linhas else ''
                 linhas_html += f"""
-                <tr class='{extra_class}'{data_tabela}{style}>
-                    <td>{format_int(row['linha_original'])}</td>
+                <tr class='{extra_class}'>
+                    <td>{format_int(row['linha_original'] if 'linha_original' in row else row.get('linha', ''))}</td>
                     <td>{format_int(sequencia_anterior)}</td>
                     <td>{format_int(sequencia_atual)}</td>
                     <td>{row['tipo_mensagem_atual']}</td>
@@ -97,11 +89,12 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         if len(df_tipo) > max_linhas:
             botao_html = f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" data-tabela="tabela_seq_{tipo}" data-mostrando="false">Ver todos os dados</button>
+                <button class="btn-mostrar-todos" data-tabela="tabela_seq_{tipo}" onclick="toggleLinhasUniversal('tabela_seq_{tipo}')">
+                    Ver todos os dados
+                </button>
             </div>
             '''
         if tipo in ['valor_repetido_igual', 'valor_repetido_diferente']:
-            # Título descritivo
             tabela_titulo = f"Valores Repetidos ({'mensagem igual' if tipo == 'valor_repetido_igual' else 'mensagem diferente'})"
             tabelas[tipo] = f'''
             <div class="tabela-temporizadas-container">
@@ -192,7 +185,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
                 {botao_html}
             </div>
             '''
-    # Resumo
+    
     resumo_html = f'''
     <div class="resumo-anomalias-container">
         <div class="resumo-anomalia-card">
@@ -222,7 +215,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         </div>
     </div>
     '''
-    # Indicativo visual se não houver problemas de regressão de contagem
+    
     regressao_html = ""
     if resumos.get('regressao_de_contagem', 0) == 0:
         regressao_html = '''
@@ -230,7 +223,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
             <span style="color: #28a745; font-weight: bold; font-size: 1.2em;">Nenhum problema de regressão de contagem encontrado.</span>
         </div>
         '''
-    # CSS e JS
+    
     css = '''
     <style>
     .btn-mostrar-todos {
@@ -252,7 +245,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         transform: translateY(-2px);
         opacity: 0.9;
     }
-    .linha-extra {
+    .linha-oculta {
         display: none;
     }
     .resumo-anomalia-numero {
@@ -260,7 +253,40 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
     }
     </style>
     '''
-    js = ''
+    
+    js = '''
+    <script>
+    function toggleLinhasUniversal(tabelaId) {
+        const linhas = document.querySelectorAll(`#${tabelaId} .linha-extra-seq`);
+        const btn = document.querySelector(`[data-tabela="${tabelaId}"]`);
+        
+        const todasOcultas = Array.from(linhas).every(linha => 
+            linha.classList.contains('linha-oculta'));
+        
+        linhas.forEach(linha => {
+            if (todasOcultas) {
+                linha.classList.remove('linha-oculta');
+                btn.textContent = 'Mostrar apenas 5 registros';
+                // Dispara evento para o botão flutuante
+                mostrarFabMinimizar(tabelaId);
+            } else {
+                linha.classList.add('linha-oculta');
+                btn.textContent = 'Ver todos os dados';
+                // Dispara evento para o botão flutuante
+                esconderFabMinimizar();
+            }
+        });
+        
+        // Scroll suave para a tabela
+        const tabela = document.getElementById(tabelaId);
+        if (tabela) {
+            const y = tabela.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    }
+    </script>
+'''
+    
     html = f'''
     {css}
     <div class="bloco-temporizadas" id="bloco-sequenceNumber">
@@ -275,14 +301,9 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
     </div>
     {js}
     '''
+    
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
-    # print(f"✅ Bloco de sequence number salvo em: {output_path.resolve()}")
 
 if __name__ == "__main__":
-    # This part of the code is now redundant as the function expects a DataFrame.
-    # If you want to test, you'd need to load a DataFrame first.
-    # For example:
-    # df = pd.read_csv('sequence_number/problemas_ordenando_sequencia.csv', encoding='utf-8-sig')
-    # gerar_bloco_sequenceNumber(df)
-    pass 
+    pass
