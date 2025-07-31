@@ -136,7 +136,7 @@
         <span class="dashboard-title-reboot">Reboots do Equipamento</span>
         <div class="tabela-reboot-container">
             <div class="resumo-reboot">
-                Total de reboots encontrados: <b>8</b>
+                Total de reboots encontrados: <b>5</b>
             </div>
             <div class="grafico-titulo-container">
                 <h3 class="grafico-titulo">Histórico de Reboots</h3>
@@ -153,78 +153,43 @@
                 <tbody>
     
         <tr class='' style=''>
-            <td>8177</td>
-            <td>20/06</td>
-            <td>15:17:53</td>
+            <td>33644</td>
+            <td>31/12</td>
+            <td>21:00:07</td>
             <td>Normal power on: Acionamento normal do dispositivo.</td>
         </tr>
         
         <tr class='' style=''>
-            <td>27004</td>
-            <td>11/07</td>
-            <td>07:59:41</td>
-            <td>Watchdog reboot</td>
-        </tr>
-        
-        <tr class='' style=''>
-            <td>27011</td>
-            <td>11/07</td>
-            <td>09:02:14</td>
-            <td>Watchdog reboot</td>
-        </tr>
-        
-        <tr class='' style=''>
-            <td>27016</td>
-            <td>11/07</td>
-            <td>10:04:45</td>
-            <td>Watchdog reboot</td>
-        </tr>
-        
-        <tr class='' style=''>
-            <td>32657</td>
-            <td>16/07</td>
-            <td>15:08:44</td>
+            <td>34127</td>
+            <td>31/12</td>
+            <td>21:00:07</td>
             <td>Normal power on: Acionamento normal do dispositivo.</td>
         </tr>
         
-        <tr class='linha-extra-reboot' style='display:none;'>
-            <td>32669</td>
-            <td>16/07</td>
-            <td>15:23:40</td>
+        <tr class='' style=''>
+            <td>13192</td>
+            <td>24/06</td>
+            <td>05:18:29</td>
             <td>Normal power on: Acionamento normal do dispositivo.</td>
         </tr>
         
-        <tr class='linha-extra-reboot' style='display:none;'>
-            <td>43909</td>
-            <td>28/07</td>
-            <td>10:34:54</td>
-            <td>Watchdog reboot</td>
+        <tr class='' style=''>
+            <td>35503</td>
+            <td>14/07</td>
+            <td>04:42:19</td>
+            <td>Normal power on: Acionamento normal do dispositivo.</td>
         </tr>
         
-        <tr class='linha-extra-reboot' style='display:none;'>
-            <td>44260</td>
-            <td>28/07</td>
-            <td>17:30:13</td>
+        <tr class='' style=''>
+            <td>37892</td>
+            <td>15/07</td>
+            <td>05:33:15</td>
             <td>Normal power on: Acionamento normal do dispositivo.</td>
         </tr>
         
                 </tbody>
             </table>
     
-            <button class='btn-mostrar-todos' id='btn-ver-todos-reboot' onclick="toggleLinhasReboot()" data-tabela="bloco-reboot">Ver todos os dados</button>
-            <script>
-            function toggleLinhasReboot() {
-                var extras = document.querySelectorAll('.linha-extra-reboot');
-                var btn = document.getElementById('btn-ver-todos-reboot');
-                var mostrando = btn.getAttribute('data-mostrando') === 'true';
-                for (var i = 0; i < extras.length; i++) {
-                    extras[i].style.display = mostrando ? 'none' : '';
-                }
-                btn.innerText = mostrando ? 'Ver todos os dados' : 'Mostrar menos';
-                btn.setAttribute('data-mostrando', mostrando ? 'false' : 'true');
-            }
-            </script>
-        
         </div>
     </div>
     

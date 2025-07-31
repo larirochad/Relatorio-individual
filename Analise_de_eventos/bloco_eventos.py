@@ -65,6 +65,14 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js"></script>
+        </head>
+        <body>
         <style>
         .btn-maximizar {{ position: absolute; top: 15px; right: 15px; padding: 8px 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; z-index: 10; transition: all 0.3s ease; }}
         .btn-maximizar:hover {{ transform: scale(1.05); }}
@@ -148,6 +156,92 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             color: #495057; 
             font-weight: bold; 
         }}
+
+        /* Estilos para modo maximizado - CORRIGIDO */
+        .maximized-overlay {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+        }}
+        
+        .maximized-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }}
+        
+        .maximized-title {{
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #495057;
+            margin: 0;
+        }}
+        
+        .maximized-controls {{
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }}
+        
+        .maximized-controls button {{
+            padding: 10px 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }}
+        
+        .maximized-controls button:hover {{
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }}
+        
+        .btn-fechar-max {{
+            background: #dc3545 !important;
+            padding: 12px 20px !important;
+            font-weight: 600 !important;
+        }}
+        
+        .btn-fechar-max:hover {{
+            background: #c82333 !important;
+        }}
+        
+        .maximized-canvas-container {{
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }}
+        
+        .maximized-canvas-container canvas {{
+            max-width: 100%;
+            max-height: 100%;
+        }}
+
+        /* Ocultar controles originais quando maximizado */
+        .chart-maximized .btn-maximizar,
+        .chart-maximized .zoom-controls,
+        .chart-maximized .legend-controls {{
+            display: none !important;
+        }}
         </style>
 
         <div class='dashboard-bloco-analise' id='bloco-eventos'>
@@ -179,7 +273,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
             <!-- Container do Gráfico de Barras -->
             <div id='container-grafico' class='grafico-container' style='display: none;'>
-                <button class='btn-maximizar' onclick="maximizeChart('barrasTotais')">🔍 Maximizar</button>
+                <button class='btn-maximizar' onclick="maximizeChart('barrasTotais', 'Total de Eventos por Categoria')">🔍 Maximizar</button>
                 <div class='grafico-titulo-container'>
                     <h3 class='grafico-titulo'>Total de Eventos por Categoria</h3>
                 </div>
@@ -188,8 +282,8 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             </div>
 
             <!-- Gráfico de Evolução Diária (sempre visível) -->
-            <div class='grafico-container'>
-                <button class='btn-maximizar' onclick="maximizeChart('linhaEventos')">🔍 Maximizar</button>
+            <div id='container-linha' class='grafico-container'>
+                <button class='btn-maximizar' onclick="maximizeChart('linhaEventos', 'Evolução Diária dos Eventos')">🔍 Maximizar</button>
                 <div class='grafico-titulo-container'>
                     <h3 class='grafico-titulo'>Evolução Diária dos Eventos</h3>
                 </div>
@@ -202,9 +296,33 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             </div>
         </div>
 
+        <!-- Overlay para modo maximizado -->
+        <div id="maximized-overlay" class="maximized-overlay">
+            <div class="maximized-header">
+                <h2 id="maximized-title" class="maximized-title">Gráfico Maximizado</h2>
+                <div class="maximized-controls">
+                    <button onclick="resetZoomMaximized()">🔄 Reset Zoom</button>
+                    <div id="legend-controls-maximized" style="display: none;">
+                        <button onclick="mostrarTodosMaximized()">👁️ Mostrar Todos</button>
+                        <button onclick="ocultarTodosMaximized()">🚫 Ocultar Todos</button>
+                    </div>
+                    <button class="btn-fechar-max" onclick="closeMaximized()">✕ Fechar</button>
+                </div>
+            </div>
+            <div class="maximized-canvas-container">
+                <canvas id="maximized-canvas"></canvas>
+            </div>
+        </div>
+
         <script>
+        // Registro do plugin de zoom
+        Chart.register(ChartZoom);
+        
         let controleFiltros = {{ filtroAtivo: null, estadoOriginal: {{}}, estadoIndividual: {{}}, estadoMostrarTodos: false, estadoOcultarTodos: false }};
         const dadosTabela = {dados_tabela_json};
+        let currentMaximizedChart = null;
+        let maximizedChart = null;
+        window.charts = {{}};
 
         // Função para alternar entre tabela e gráfico
         function mostrarTabela() {{
@@ -234,38 +352,36 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             }});
         }}
 
+        // Inicialização
         document.addEventListener('DOMContentLoaded', function() {{
             // Popular a tabela
             popularTabela();
             
-            setTimeout(function() {{
-                if (typeof window.charts === 'undefined') window.charts = {{}};
-                if (typeof Chart !== 'undefined' && Chart.register && typeof ChartZoom !== 'undefined') Chart.register(ChartZoom);
-
-                const linhaCanvas = document.getElementById('linhaEventos');
-                if (linhaCanvas && !window.charts['linhaEventos']) {{
-                    window.charts['linhaEventos'] = new Chart(linhaCanvas.getContext('2d'), {{
-                        type: 'line',
-                        data: {{ labels: {labels_json}, datasets: {datasets_json} }},
-                        options: {{
+            // Criar gráfico de linha
+            const linhaCanvas = document.getElementById('linhaEventos');
+            if (linhaCanvas) {{
+                window.charts['linhaEventos'] = new Chart(linhaCanvas.getContext('2d'), {{
+                    type: 'line',
+                    data: {{ labels: {labels_json}, datasets: {datasets_json} }},
+                    options: {{
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: {{ mode: 'index', intersect: false }},
                         plugins: {{
                             legend: {{ position: 'top' }},
                             zoom: {{
-                            pan: {{ enabled: true, mode: 'xy' }},
-                            zoom: {{
-                                wheel: {{ enabled: true }},
-                                pinch: {{ enabled: true }},
-                                drag: {{ enabled: true }},
-                                mode: 'xy'
-                            }}
+                                pan: {{ enabled: true, mode: 'xy', scaleMode: 'xy' }},
+                                zoom: {{
+                                    wheel: {{ enabled: true, speed: 0.1 }},
+                                    pinch: {{ enabled: true }},
+                                    drag: {{ enabled: true }},
+                                    mode: 'xy',
+                                    scaleMode: 'xy'
+                                }}
                             }},
                             tooltip: {{
                                 callbacks: {{
                                     label: function(context) {{
-                                        // Mostra o nome da coluna e o valor do ponto
                                         let label = context.dataset.label || '';
                                         let value = context.parsed.y;
                                         return label + ': ' + value;
@@ -275,80 +391,81 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
                         }},
                         scales: {{
                             y: {{
-                            beginAtZero: true,
-                            title: {{
-                                display: true,
-                                text: 'QUANTIDADE',
-                                font: {{ size: 14, weight: 'bold', family: 'Arial' }},
-                                color: '#000000'
-                            }}
+                                beginAtZero: true,
+                                title: {{
+                                    display: true,
+                                    text: 'QUANTIDADE',
+                                    font: {{ size: 14, weight: 'bold', family: 'Arial' }},
+                                    color: '#000000'
+                                }}
                             }},
                             x: {{
-                            title: {{
-                                display: true,
-                                text: 'DIAS',
-                                font: {{ size: 14, weight: 'bold', family: 'Arial' }},
-                                color: '#000000'
-                            }}
+                                title: {{
+                                    display: true,
+                                    text: 'DIAS',
+                                    font: {{ size: 14, weight: 'bold', family: 'Arial' }},
+                                    color: '#000000'
+                                }}
                             }}
                         }}
-                        }}
-                    }});
-                    inicializarControle('linhaEventos');
-                }}
+                    }}
+                }});
+                inicializarControle('linhaEventos');
+            }}
 
-                const barrasCanvas = document.getElementById('barrasTotais');
-                if (barrasCanvas && !window.charts['barrasTotais']) {{
-                    window.charts['barrasTotais'] = new Chart(barrasCanvas.getContext('2d'), {{
-                        type: 'bar',
-                        data: {{
-                            labels: {labels_barras_json},
-                            datasets: [{{
-                                label: 'Total por categoria',
-                                data: {valores_barras_json},
-                                backgroundColor: {cores_barras_json},
-                                borderColor: {cores_barras_json},
-                                borderWidth: 1
-                            }}]
-                        }},
-                        options: {{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {{
-                                legend: {{ display: false }},
+            // Criar gráfico de barras
+            const barrasCanvas = document.getElementById('barrasTotais');
+            if (barrasCanvas) {{
+                window.charts['barrasTotais'] = new Chart(barrasCanvas.getContext('2d'), {{
+                    type: 'bar',
+                    data: {{
+                        labels: {labels_barras_json},
+                        datasets: [{{
+                            label: 'Total por categoria',
+                            data: {valores_barras_json},
+                            backgroundColor: {cores_barras_json},
+                            borderColor: {cores_barras_json},
+                            borderWidth: 1
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {{
+                            legend: {{ display: false }},
+                            zoom: {{
+                                pan: {{ enabled: true, mode: 'xy', scaleMode: 'xy' }},
                                 zoom: {{
-                                    pan: {{ enabled: true, mode: 'xy' }},
-                                    zoom: {{
-                                        wheel: {{ enabled: true }},
-                                        pinch: {{ enabled: true }},
-                                        drag: {{ enabled: true }},
-                                        mode: 'xy'
-                                    }}
+                                    wheel: {{ enabled: true, speed: 0.1 }},
+                                    pinch: {{ enabled: true }},
+                                    drag: {{ enabled: true }},
+                                    mode: 'xy',
+                                    scaleMode: 'xy'
+                                }}
+                            }}
+                        }},
+                        scales: {{
+                            y: {{
+                                beginAtZero: true,
+                                title: {{
+                                    display: true,
+                                    text: 'TOTAL',
+                                    font: {{ size: 14, weight: 'bold', family: 'Arial' }},
+                                    color: '#000000'
                                 }}
                             }},
-                            scales: {{
-                                y: {{
-                                    beginAtZero: true,
-                                    title: {{
-                                        display: true,
-                                        text: 'TOTAL',
-                                        font: {{ size: 14, weight: 'bold', family: 'Arial' }},
-                                        color: '#000000'
-                                    }}
-                                }},
-                                x: {{
-                                    title: {{
-                                        display: true,
-                                        text: 'CATEGORIA',
-                                        font: {{ size: 14, weight: 'bold', family: 'Arial' }},
-                                        color: '#000000'
-                                    }}
+                            x: {{
+                                title: {{
+                                    display: true,
+                                    text: 'CATEGORIA',
+                                    font: {{ size: 14, weight: 'bold', family: 'Arial' }},
+                                    color: '#000000'
                                 }}
                             }}
                         }}
-                    }});
-                }}
-            }}, 100);
+                    }}
+                }});
+            }}
         }});
 
         function inicializarControle(chartId) {{
@@ -363,57 +480,129 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
         }}
 
         function mostrarTodos(chartId) {{
-            controleFiltros.filtroAtivo = null;
-            controleFiltros.estadoMostrarTodos = true;
-            controleFiltros.estadoOcultarTodos = false;
             const chart = window.charts[chartId];
             if (!chart) return;
             chart.data.datasets.forEach((dataset, idx) => {{
                 dataset.hidden = false;
-                controleFiltros.estadoIndividual[chartId][dataset.label] = true;
-                controleFiltros.estadoOriginal[chartId][idx] = true;
             }});
             chart.update();
         }}
 
         function ocultarTodos(chartId) {{
-            controleFiltros.filtroAtivo = null;
-            controleFiltros.estadoMostrarTodos = false;
-            controleFiltros.estadoOcultarTodos = true;
             const chart = window.charts[chartId];
             if (!chart) return;
             chart.data.datasets.forEach((dataset, idx) => {{
                 dataset.hidden = true;
-                controleFiltros.estadoIndividual[chartId][dataset.label] = false;
-                controleFiltros.estadoOriginal[chartId][idx] = false;
             }});
             chart.update();
         }}
 
         function resetZoom(chartId) {{
             const chart = window.charts[chartId];
-            if (chart && chart.resetZoom) chart.resetZoom();
+            if (chart && chart.resetZoom) {{
+                chart.resetZoom();
+            }}
         }}
 
-        function maximizeChart(chartId) {{
-            const canvas = document.getElementById(chartId);
-            if (!canvas) return;
-            const chart = window.charts[chartId];
-            if (!chart) return;
-            if (canvas.style.position === 'fixed') {{
-                canvas.style = '';
+        // Funções para modo maximizado
+        function maximizeChart(chartId, title) {{
+            const originalChart = window.charts[chartId];
+            if (!originalChart) return;
+            
+            currentMaximizedChart = chartId;
+            const overlay = document.getElementById('maximized-overlay');
+            const titleElement = document.getElementById('maximized-title');
+            const legendControls = document.getElementById('legend-controls-maximized');
+            
+            titleElement.textContent = title;
+            overlay.style.display = 'flex';
+            
+            // Mostrar controles de legenda apenas para gráfico de linha
+            if (chartId === 'linhaEventos') {{
+                legendControls.style.display = 'flex';
             }} else {{
-                canvas.style.position = 'fixed';
-                canvas.style.top = '0';
-                canvas.style.left = '0';
-                canvas.style.width = '100vw';
-                canvas.style.height = '100vh';
-                canvas.style.zIndex = '9999';
-                canvas.style.backgroundColor = 'white';
+                legendControls.style.display = 'none';
             }}
-            chart.resize();
+            
+            // Adicionar classe para ocultar controles originais
+            const container = document.getElementById(chartId === 'linhaEventos' ? 'container-linha' : 'container-grafico');
+            if (container) {{
+                container.classList.add('chart-maximized');
+            }}
+            
+            // Criar novo gráfico no canvas maximizado
+            const maximizedCanvas = document.getElementById('maximized-canvas');
+            const ctx = maximizedCanvas.getContext('2d');
+            
+            // Limpar canvas anterior se existir
+            if (maximizedChart) {{
+                maximizedChart.destroy();
+            }}
+            
+            // Copiar configuração do gráfico original
+            const config = JSON.parse(JSON.stringify(originalChart.config));
+            config.options.responsive = true;
+            config.options.maintainAspectRatio = false;
+            
+            maximizedChart = new Chart(ctx, config);
         }}
+
+        function closeMaximized() {{
+            const overlay = document.getElementById('maximized-overlay');
+            overlay.style.display = 'none';
+            
+            // Remover classe dos controles originais
+            const containers = document.querySelectorAll('.chart-maximized');
+            containers.forEach(container => {{
+                container.classList.remove('chart-maximized');
+            }});
+            
+            if (maximizedChart) {{
+                maximizedChart.destroy();
+                maximizedChart = null;
+            }}
+            currentMaximizedChart = null;
+        }}
+
+        function resetZoomMaximized() {{
+            if (maximizedChart && maximizedChart.resetZoom) {{
+                maximizedChart.resetZoom();
+            }}
+        }}
+
+        function mostrarTodosMaximized() {{
+            if (!maximizedChart || currentMaximizedChart !== 'linhaEventos') return;
+            
+            maximizedChart.data.datasets.forEach((dataset) => {{
+                dataset.hidden = false;
+            }});
+            maximizedChart.update();
+            
+            // Sincronizar com gráfico original
+            mostrarTodos(currentMaximizedChart);
+        }}
+
+        function ocultarTodosMaximized() {{
+            if (!maximizedChart || currentMaximizedChart !== 'linhaEventos') return;
+            
+            maximizedChart.data.datasets.forEach((dataset) => {{
+                dataset.hidden = true;
+            }});
+            maximizedChart.update();
+            
+            // Sincronizar com gráfico original
+            ocultarTodos(currentMaximizedChart);
+        }}
+
+        // Fechar com ESC
+        document.addEventListener('keydown', function(e) {{
+            if (e.key === 'Escape' && currentMaximizedChart) {{
+                closeMaximized();
+            }}
+        }});
         </script>
+        </body>
+        </html>
         """)
 
 if __name__ == "__main__":

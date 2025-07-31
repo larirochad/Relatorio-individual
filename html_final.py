@@ -359,6 +359,18 @@ def unir_blocos(df_raw):
         max-height: 90vh;
         overflow: auto;
     }
+    
+    /* Garantir que os botões de controle permaneçam visíveis no modal */
+    .modal .btn-mostrar-todos,
+    .modal .legend-controls button {
+        z-index: 1001;
+        position: relative;
+    }
+    
+    /* Manter o botão de análise L2 visível e suspenso quando o gráfico está maximizado */
+    .modal ~ .btn-flutuante-l2 {
+        z-index: 1001;
+    }
 
     .close-modal {
         color: #aaa;
@@ -432,9 +444,11 @@ def unir_blocos(df_raw):
             
             const modal = document.getElementById('maximizedModal');
             const modalTitle = document.getElementById('modalTitle');
+            const container = document.querySelector('#' + chartId).closest('.grafico-container');
             
             // Update modal title
-            modalTitle.textContent = document.querySelector('#' + chartId).closest('.grafico-container').querySelector('.grafico-titulo').textContent;
+            modalTitle.textContent = container.querySelector('.grafico-titulo').textContent;
+            
             
             modal.style.display = 'block';
             
@@ -775,7 +789,7 @@ def unir_blocos(df_raw):
         </style>
     </head>
     <body>
-        <button id="btn-analises-l2" class="btn-flutuante-l2" onclick="showAnalisesL2()">Análises L2</button>
+        <button id="btn-analises-l2" class="btn-flutuante-l2" onclick="showAnalisesL2()" style="display: block !important; z-index: 99999;">Análises L2</button>
         <button id="btn-analises-gerais" class="btn-flutuante-l2" style="display:none;" onclick="showAnalisesGerais()">Análises gerais</button>
         <div id="floating-nav-wrapper">
             <div id="floating-nav-toggle">
@@ -970,9 +984,11 @@ def unir_blocos(df_raw):
             document.querySelectorAll('.bloco-smp-eco').forEach(function(el) { el.style.display = ''; });
             // Mostra o botão de voltar
             document.getElementById('btn-analises-l2').style.display = 'none';
-            document.getElementById('btn-analises-gerais').style.display = '';
+            document.getElementById('btn-analises-gerais').style.display = 'block';
             // Esconde o menu lateral
             document.getElementById('floating-nav-wrapper').style.display = 'none';
+            // Esconde o botão flutuante de minimizar
+            document.getElementById('fabMinimizar').style.display = 'none';
             // Scroll para o bloco de análises L2
             const bloco = document.getElementById('bloco-smp-eco');
             if (bloco) {

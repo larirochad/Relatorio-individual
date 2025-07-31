@@ -78,7 +78,7 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
             report_type = ''
             try:
                 if report_type_raw is not None and str(report_type_raw).strip():
-                    report_type = str(int(float(str(report_type_raw))))
+                    report_type = str(int(float(str(report_type_raw)))) if report_type_raw not in [None, ''] else ''
             except (ValueError, TypeError):
                 pass
 
@@ -86,27 +86,16 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
 
             # Lógica para dispositivos específicos
             if dispositivo == '802003':
-                if evento == 'GTIGN':
-                    ign_on += 1
-                    modo_eco_ativo = False
-                    periodicas = True
-                elif evento == 'GTIGF':
-                    ign_off += 1
-                    modo_eco_ativo = True
-                    periodicas = False
-                elif evento == 'GTERI':
+                if evento == 'GTERI':
                     if motion_prefix == '1':
-                        eco += 1
                         final = 'Modo Econômico'
-                    elif motion_prefix == '2':
-                        peri += 1
+                    elif motion_prefix == '2' and report_type == '10':
                         final = 'Posicionamento por tempo em movimento'
-                    elif (motion_prefix == '2' and report_type == '10') or codigo == '30':
-                        peri += 1
-                elif evento == 'MODOECO':
-                    eco += 1
-
-
+                    elif report_type == '11':
+                        final = 'Cornering'
+                    else:
+                        continue  # Pula outros GTERI
+            # Demais eventos contam normalmente
 
             df.at[idx, 'Evento Classificado'] = final
 
