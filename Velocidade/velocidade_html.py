@@ -25,8 +25,8 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             data_hora = str(row['Data/Hora Evento'])
             if ' ' in data_hora:
                 data, hora = data_hora.split(' ', 1)
-                df_absurda.at[idx, 'Data'] = data[8:10] + '/' + data[5:7]  # Extrai dd/mm
-                df_absurda.at[idx, 'Hora'] = hora[:8]  # Extrai HH:MM:SS
+                df_absurda.at[idx, 'Data'] = data[8:10] + '/' + data[5:7]
+                df_absurda.at[idx, 'Hora'] = hora[:8]
         except:
             pass
     
@@ -35,14 +35,18 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             data_hora = str(row['Data/Hora Evento'])
             if ' ' in data_hora:
                 data, hora = data_hora.split(' ', 1)
-                df_ignicao_off.at[idx, 'Data'] = data[8:10] + '/' + data[5:7]  # Extrai dd/mm
-                df_ignicao_off.at[idx, 'Hora'] = hora[:8]  # Extrai HH:MM:SS
+                df_ignicao_off.at[idx, 'Data'] = data[8:10] + '/' + data[5:7]
+                df_ignicao_off.at[idx, 'Hora'] = hora[:8]
         except:
             pass
 
     # Conta os totais
     total_absurda = len(df_absurda)
     total_ignicao_off = len(df_ignicao_off)
+
+    # Verifica se há dados para cada tipo
+    tem_absurda = total_absurda > 0
+    tem_ignicao_off = total_ignicao_off > 0
 
     # CSS isolado
     css = """
@@ -181,6 +185,12 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
     .linha-oculta {
         display: none;
     }
+    .botoes-graficos-container {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
     </style>
     """
 
@@ -203,7 +213,6 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
 
     # Função para montar tabela
     def tabela_html(df_data, titulo, tipo_alerta, max_linhas=5):
-        # Só mostra se houver pelo menos um valor numérico válido na coluna correta
         if tipo_alerta == 'absurda':
             col = 'Velocidade absurda'
         else:
@@ -211,7 +220,6 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         if df_data.empty or df_data[col].apply(lambda x: pd.to_numeric(x, errors='coerce')).dropna().empty:
             return ''
         
-        # Limita a 5 linhas inicialmente
         df_display = df_data.head(max_linhas)
         tem_mais = len(df_data) > max_linhas
         
@@ -237,7 +245,6 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         for idx, row in df_display.iterrows():
             linha = row['Linha Original']
             velocidade = row['Velocidade absurda'] if tipo_alerta == 'absurda' else row['Velocidade com ignição OFF']
-            # Trata valores NaN ou vazios
             if pd.isna(velocidade) or velocidade == '' or str(velocidade).lower() == 'nan':
                 velocidade_str = 'N/A'
             else:
@@ -254,12 +261,10 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             </tr>
             '''
         
-        # Adiciona linhas ocultas se houver mais dados
         if tem_mais:
             for idx, row in df_data.iloc[max_linhas:].iterrows():
                 linha = row['Linha Original']
                 velocidade = row['Velocidade absurda'] if tipo_alerta == 'absurda' else row['Velocidade com ignição OFF']
-                # Trata valores NaN ou vazios
                 if pd.isna(velocidade) or velocidade == '' or str(velocidade).lower() == 'nan':
                     velocidade_str = 'N/A'
                 else:
@@ -293,90 +298,79 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
         html += '</div>'
         return html
 
-    # Preparar dados para o gráfico
-    # Se só houver uma das séries, usar só ela
+    # Preparar dados para os gráficos
+    import json
+
     x_absurda = df_absurda['Linha Original'].tolist() if not df_absurda.empty else []
     y_absurda = pd.to_numeric(df_absurda['Velocidade absurda'], errors='coerce').tolist() if not df_absurda.empty else []
     x_ignicao = df_ignicao_off['Linha Original'].tolist() if not df_ignicao_off.empty else []
     y_ignicao = pd.to_numeric(df_ignicao_off['Velocidade com ignição OFF'], errors='coerce').tolist() if not df_ignicao_off.empty else []
 
-    import json
-
-    # Lógica para montar datasets e labels do gráfico
-    chart_labels = []
-    datasets = []
-    if x_absurda and y_absurda:
-        chart_labels = x_absurda
-        datasets.append({
-            'label': 'Velocidade Absurda',
-            'data': y_absurda,
-            'borderColor': 'red',
-            'backgroundColor': 'rgba(220,53,69,0.08)',
-            'borderWidth': 2,
-            'pointRadius': 2,
-            'fill': False,
-            'tension': 0.2
-        })
-    if x_ignicao and y_ignicao:
-        # Se não há absurda, usar x_ignicao como labels
-        if not chart_labels:
-            chart_labels = x_ignicao
-            ignicao_data = y_ignicao
-        else:
-            # Alinhar ignicao_off com x_absurda
-            ignicao_data = [None]*len(chart_labels)
-            for i, x in enumerate(x_ignicao):
-                if x in chart_labels:
-                    idx = chart_labels.index(x)
-                    ignicao_data[idx] = y_ignicao[i]
-        datasets.append({
-            'label': 'Velocidade com Ignição OFF',
-            'data': ignicao_data,
-            'borderColor': 'blue',
-            'backgroundColor': 'rgba(30,136,229,0.08)',
-            'borderWidth': 2,
-            'pointRadius': 2,
-            'fill': False,
-            'tension': 0.2
-        })
-    # Se não houver dados, mostrar label dummy
-    if not chart_labels:
-        chart_labels = ['']
-        datasets = [{
-            'label': 'Sem dados',
-            'data': [None],
-            'borderColor': 'gray',
-            'backgroundColor': 'rgba(200,200,200,0.08)',
-            'borderWidth': 2,
-            'pointRadius': 2,
-            'fill': False,
-            'tension': 0.2
-        }]
+    # Criar botões baseado na disponibilidade de dados
+    botoes_html = '<div style="text-align:center; margin-bottom: 24px;">'
+    
+    if tem_absurda and tem_ignicao_off:
+        # Dois botões se tiver ambos os dados
+        botoes_html += '''
+            <div class="botoes-graficos-container">
+                <button id="btn-grafico-absurda" class="btn-mostrar-todos" onclick="mostrarGrafico('absurda')">Ver Gráfico de Velocidades Absurdas</button>
+                <button id="btn-grafico-ignicao" class="btn-mostrar-todos" onclick="mostrarGrafico('ignicao')">Ver Gráfico de Velocidades com Ignição OFF</button>
+            </div>
+        '''
+    elif tem_absurda:
+        # Um botão só para absurda
+        botoes_html += '<button id="btn-grafico-absurda" class="btn-mostrar-todos" onclick="mostrarGrafico(\'absurda\')">Ver Gráfico de Velocidades Absurdas</button>'
+    elif tem_ignicao_off:
+        # Um botão só para ignição off
+        botoes_html += '<button id="btn-grafico-ignicao" class="btn-mostrar-todos" onclick="mostrarGrafico(\'ignicao\')">Ver Gráfico de Velocidades com Ignição OFF</button>'
+    
+    botoes_html += '</div>'
 
     # Montar HTML completo
     html = f"""
     {css}
     <div class="bloco-velocidade" id="bloco-velocidade">
         <span class="dashboard-title-velocidade">Análise de Velocidade</span>
-        <div style='text-align:center; margin-bottom: 24px;'>
-            <button id="btn-toggle-grafico-tabela" class="btn-mostrar-todos" onclick="toggleGraficoTabela()">Ver Gráfico</button>
-        </div>
+        {botoes_html}
         <div id="container-tabelas-velocidade">
             {resumo_html()}
             {tabela_html(df_absurda, "Velocidades Absurdas (>150 km/h)", "absurda")}
             {tabela_html(df_ignicao_off, "Velocidades com Ignição OFF", "ignicao_off")}
         </div>
-        <div id="container-grafico-velocidade" style="display:none;">
+        <div id="container-grafico-absurda" style="display:none;">
+            <div style="text-align:center; margin-bottom:16px;">
+                <button class="btn-mostrar-todos" onclick="voltarTabelas()">Voltar para Tabelas</button>
+            </div>
             <div class='grafico-container'>
-                <button class='btn-maximizar' onclick="maximizeChart('graficoVelocidade')">🔍 Maximizar</button>
+                <button class='btn-maximizar' onclick="maximizeChart('graficoAbsurda')">🔍 Maximizar</button>
                 <div class='grafico-titulo-container'>
-                    <h3 class='grafico-titulo'>Gráfico das Velocidades com Ignição OFF </h3>
+                    <h3 class='grafico-titulo'>Gráfico de Velocidades Absurdas (>150 km/h)</h3>
                 </div>
                 <div class='chart-wrapper'>
-                    <canvas id="graficoVelocidade"></canvas>
+                    <canvas id="graficoAbsurda"></canvas>
                 </div>
                 <div class='zoom-controls'>
-                    <button onclick="resetZoom('graficoVelocidade')">Reset Zoom</button>
+                    <button onclick="resetZoom('graficoAbsurda')">Reset Zoom</button>
+                </div>
+                <div class='zoom-instruction' style='margin-top:8px; color:#666; font-size:0.8em; font-style:italic;'>
+                    Use o scroll do mouse para zoom ou duplo clique para resetar
+                </div>
+            </div>
+        </div>
+        <div id="container-grafico-ignicao" style="display:none;">
+            <div style="text-align:center; margin-bottom:16px;">
+                <button class="btn-mostrar-todos" onclick="voltarTabelas()">Voltar para Tabelas</button>
+            </div>
+            <div class='grafico-container'>
+                <button class='btn-maximizar' onclick="maximizeChart('graficoIgnicao')">🔍 Maximizar</button>
+                <div class='grafico-titulo-container'>
+                    <h3 class='grafico-titulo'>Gráfico de Velocidades com Ignição OFF</h3>
+                </div>
+                <div class='chart-wrapper'>
+                    <canvas id="graficoIgnicao"></canvas>
+                </div>
+                <div class='zoom-controls'>
+                    <button onclick="resetZoom('graficoIgnicao')">Reset Zoom</button>
                 </div>
                 <div class='zoom-instruction' style='margin-top:8px; color:#666; font-size:0.8em; font-style:italic;'>
                     Use o scroll do mouse para zoom ou duplo clique para resetar
@@ -404,25 +398,31 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             btn.textContent = 'Ver todos os dados';
         }}
     }}
-    // Alternar entre gráfico e tabela
-    function toggleGraficoTabela() {{
-        const containerTabela = document.getElementById('container-tabelas-velocidade');
-        const containerGrafico = document.getElementById('container-grafico-velocidade');
-        const btn = document.getElementById('btn-toggle-grafico-tabela');
-        if (containerTabela.style.display === 'none') {{
-            containerTabela.style.display = '';
-            containerGrafico.style.display = 'none';
-            btn.textContent = 'Ver Gráfico';
+    
+    function voltarTabelas() {{
+        document.getElementById('container-tabelas-velocidade').style.display = '';
+        document.getElementById('container-grafico-absurda').style.display = 'none';
+        document.getElementById('container-grafico-ignicao').style.display = 'none';
+    }}
+    
+    function mostrarGrafico(tipo) {{
+        document.getElementById('container-tabelas-velocidade').style.display = 'none';
+        
+        if (tipo === 'absurda') {{
+            document.getElementById('container-grafico-absurda').style.display = '';
+            document.getElementById('container-grafico-ignicao').style.display = 'none';
+            if (!window.charts || !window.charts['graficoAbsurda']) {{
+                renderGraficoAbsurda();
+            }}
         }} else {{
-            containerTabela.style.display = 'none';
-            containerGrafico.style.display = '';
-            btn.textContent = 'Ver Tabela';
-            if (!window.charts || !window.charts['graficoVelocidade']) {{
-                renderGraficoVelocidade();
+            document.getElementById('container-grafico-ignicao').style.display = '';
+            document.getElementById('container-grafico-absurda').style.display = 'none';
+            if (!window.charts || !window.charts['graficoIgnicao']) {{
+                renderGraficoIgnicao();
             }}
         }}
     }}
-    // Função para maximizar o gráfico
+    
     function maximizeChart(id) {{
         const canvas = document.getElementById(id);
         if (!canvas) return;
@@ -443,21 +443,30 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
             canvas.onclick = null;
         }}
     }}
-    // Função para resetar zoom
+    
     function resetZoom(id) {{
         if(window.charts && window.charts[id]) {{ window.charts[id].resetZoom(); }}
     }}
-    // Renderizar o gráfico de velocidade
-    function renderGraficoVelocidade() {{
+    
+    function renderGraficoAbsurda() {{
         if (typeof window.charts === 'undefined') {{ window.charts = {{}}; }}
         if (typeof Chart !== 'undefined' && Chart.register && typeof ChartZoom !== 'undefined') {{ Chart.register(ChartZoom); }}
-        const ctx = document.getElementById('graficoVelocidade').getContext('2d');
-        if (!window.charts['graficoVelocidade']) {{
-            window.charts['graficoVelocidade'] = new Chart(ctx, {{
+        const ctx = document.getElementById('graficoAbsurda').getContext('2d');
+        if (!window.charts['graficoAbsurda']) {{
+            window.charts['graficoAbsurda'] = new Chart(ctx, {{
                 type: 'line',
                 data: {{
-                    labels: {json.dumps(chart_labels)},
-                    datasets: {json.dumps(datasets)}
+                    labels: {json.dumps(x_absurda if x_absurda else [''])},
+                    datasets: [{{
+                        label: 'Velocidade Absurda',
+                        data: {json.dumps(y_absurda if y_absurda else [None])},
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(220,53,69,0.08)',
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        fill: false,
+                        tension: 0.2
+                    }}]
                 }},
                 options: {{
                     responsive: true,
@@ -482,7 +491,55 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
                 }}
             }});
             ctx.canvas.addEventListener('dblclick', function() {{
-                if(window.charts['graficoVelocidade']) {{ window.charts['graficoVelocidade'].resetZoom(); }}
+                if(window.charts['graficoAbsurda']) {{ window.charts['graficoAbsurda'].resetZoom(); }}
+            }});
+        }}
+    }}
+    
+    function renderGraficoIgnicao() {{
+        if (typeof window.charts === 'undefined') {{ window.charts = {{}}; }}
+        if (typeof Chart !== 'undefined' && Chart.register && typeof ChartZoom !== 'undefined') {{ Chart.register(ChartZoom); }}
+        const ctx = document.getElementById('graficoIgnicao').getContext('2d');
+        if (!window.charts['graficoIgnicao']) {{
+            window.charts['graficoIgnicao'] = new Chart(ctx, {{
+                type: 'line',
+                data: {{
+                    labels: {json.dumps(x_ignicao if x_ignicao else [''])},
+                    datasets: [{{
+                        label: 'Velocidade com Ignição OFF',
+                        data: {json.dumps(y_ignicao if y_ignicao else [None])},
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(30,136,229,0.08)',
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        fill: false,
+                        tension: 0.2
+                    }}]
+                }},
+                options: {{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {{ mode: 'nearest', intersect: false }},
+                    plugins: {{
+                        legend: {{ position: 'top' }},
+                        zoom: {{
+                            pan: {{ enabled: true, mode: 'xy' }},
+                            zoom: {{ wheel: {{ enabled: true }}, pinch: {{ enabled: true }}, drag: {{ enabled: true }}, mode: 'xy' }}
+                        }}
+                    }},
+                    scales: {{
+                        y: {{
+                            beginAtZero: true,
+                            title: {{ display: true, text: 'VELOCIDADE (km/h)', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
+                        }},
+                        x: {{
+                            title: {{ display: true, text: 'LINHA DA PLANILHA', font: {{ size: 14, weight: 'bold', family: 'Arial' }}, color: '#000' }}
+                        }}
+                    }}
+                }}
+            }});
+            ctx.canvas.addEventListener('dblclick', function() {{
+                if(window.charts['graficoIgnicao']) {{ window.charts['graficoIgnicao'].resetZoom(); }}
             }});
         }}
     }}
@@ -491,8 +548,3 @@ def gerar_bloco_velocidade(df: pd.DataFrame, filename='bloco_velocidade.html'):
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
-
-    # print(f"✅ Bloco de velocidade salvo em: {output_path.resolve()}")
-
-# if __name__ == "__main__":
-#     gerar_bloco_velocidade(csv_path='Velocidade/velocidade_analisada.csv')

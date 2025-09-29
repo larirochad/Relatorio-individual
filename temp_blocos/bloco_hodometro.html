@@ -31,7 +31,7 @@
             <div style="position: absolute; right: 0px; font-size: 15px; color: #888; font-family: Arial, Helvetica, sans-serif;">12000 km</div>
         </div>
         <div style="text-align:center; font-size: 1.3em; font-weight: bold; margin-top: 20px; color: #222; font-family: Arial, Helvetica, sans-serif;">
-            2.673,10 km
+            2.119,30 km
         </div>
     </div>
 
@@ -52,27 +52,11 @@
             <tbody>
     
                 <tr>
-                    <td>35507</td>
-                    <td>1840.7</td>
-                    <td>1840.1</td>
-                    <td>GTRTL</td>
-                    <td>-0.6</td>
-                </tr>
-        
-                <tr>
-                    <td>35697</td>
-                    <td>1860.7</td>
-                    <td>1860.6</td>
-                    <td>GTMPN</td>
-                    <td>-0.1</td>
-                </tr>
-        
-                <tr>
-                    <td>37857</td>
-                    <td>2258.4</td>
-                    <td>2258.3</td>
-                    <td>GTIGF</td>
-                    <td>-0.1</td>
+                    <td>4</td>
+                    <td>2113.7</td>
+                    <td>0.0</td>
+                    <td>GTPDP</td>
+                    <td>-2113.7</td>
                 </tr>
         
             </tbody>
@@ -89,7 +73,7 @@
         data: {
             labels: ['Concluído', 'Restante'],
             datasets: [{
-                data: [22.28, 77.72],
+                data: [17.66, 82.34],
                 backgroundColor: ['#17becf', '#f5f5f5'],
                 borderWidth: 0
             }]
@@ -105,9 +89,9 @@
                     callbacks: {
                         label: function(context) {
                             if(context.dataIndex === 0) {
-                                return 'Concluído: 2.673,10 km';
+                                return 'Concluído: 2.119,30 km';
                             } else {
-                                return 'Restante: ' + (12000 - 2673.1).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' km';
+                                return 'Restante: ' + (12000 - 2119.2999999999997).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' km';
                             }
                         }
                     }

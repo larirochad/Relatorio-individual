@@ -89,7 +89,7 @@ def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd
         df_periodicas = df_temporizadas[(df_temporizadas['motion_prefix'] == '2') & (df_temporizadas['report_type'] == '10')].copy()
         df_eco = df_temporizadas[df_temporizadas['motion_prefix'] == '1'].copy()
         # Salvar o DataFrame filtrado em um arquivo CSV
-        df_filtrado.to_csv('resultado_logs.csv', index=False, encoding='utf-8')
+        # df_filtrado.to_csv('resultado_logs.csv', index=False, encoding='utf-8')
         df_resultado = df_filtrado  # Mantém o DataFrame para uso posterior
         return df_resultado, df_estatisticas, df_temporizadas, df_periodicas, df_eco
         

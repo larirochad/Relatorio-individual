@@ -90,6 +90,10 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
         .legend-controls button {{ padding: 6px 15px; border: none; border-radius: 15px; font-size: 12px; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 500; transition: all 0.3s ease; }}
         .legend-controls button:hover {{ transform: translateY(-1px); opacity: 0.9; }}
         
+        .linha-oculta {{
+            display: none;
+        }}
+        
         /* Estilos para os botões de alternância */
         .botoes-alternancia {{ display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }}
         .btn-alternancia {{ 
@@ -121,6 +125,26 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
         .btn-alternancia:hover {{ 
             transform: translateY(1px);
             box-shadow: 0px 6px rgba(102, 51, 153, 0.07); 
+        }}
+        
+        .btn-mostrar-todos {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 22px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Saira', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(102,51,153,0.07);
+        }}
+        .btn-mostrar-todos:hover {{
+            transform: translateY(-2px);
+            opacity: 0.9;
         }}
         
         /* Estilos para a tabela */
@@ -157,7 +181,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             font-weight: bold; 
         }}
 
-        /* Estilos para modo maximizado - CORRIGIDO */
+        /* Estilos para modo maximizado */
         .maximized-overlay {{
             position: fixed;
             top: 0;
@@ -258,7 +282,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
                 <div class='grafico-titulo-container'>
                     <h3 class='grafico-titulo'>Total de Eventos por Categoria</h3>
                 </div>
-                <table class='tabela-eventos'>
+                <table class='tabela-eventos' id='tabela-eventos'>
                     <thead>
                         <tr>
                             <th>Tipo de Evento</th>
@@ -269,6 +293,11 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
                         <!-- Dados serão inseridos via JavaScript -->
                     </tbody>
                 </table>
+                <div id='btn-ver-todos-container' style='text-align: center; display: none;'>
+                    <button class='btn-mostrar-todos' data-tabela='tabela-eventos' onclick="toggleLinhasUniversal('tabela-eventos')">
+                        Ver todos os dados
+                    </button>
+                </div>
             </div>
 
             <!-- Container do Gráfico de Barras -->
@@ -324,15 +353,61 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
         let maximizedChart = null;
         window.charts = {{}};
 
-        // Função para alternar entre tabela e gráfico
-        function mostrarTabela() {{
+        // Função GLOBAL para toggle de linhas (DEVE estar no escopo global)
+        window.toggleLinhasUniversal = function(tabelaId) {{
+            console.log('toggleLinhasUniversal chamada com:', tabelaId);
+            
+            const tabela = document.getElementById(tabelaId);
+            const btn = document.querySelector(`[data-tabela="${{tabelaId}}"]`);
+            
+            console.log('Tabela encontrada:', tabela);
+            console.log('Botão encontrado:', btn);
+            
+            if (!tabela || !btn) {{
+                console.error('Tabela ou botão não encontrado:', tabelaId);
+                return;
+            }}
+            
+            const linhas = tabela.querySelectorAll('.linha-extra-eventos');
+            console.log('Linhas encontradas:', linhas.length);
+            
+            if (!linhas.length) {{
+                console.error('Nenhuma linha extra encontrada');
+                return;
+            }}
+            
+            const todasOcultas = Array.from(linhas).every(linha => 
+                linha.classList.contains('linha-oculta'));
+            
+            console.log('Todas ocultas?', todasOcultas);
+            
+            linhas.forEach(linha => {{
+                if (todasOcultas) {{
+                    linha.classList.remove('linha-oculta');
+                }} else {{
+                    linha.classList.add('linha-oculta');
+                }}
+            }});
+            
+            // Atualiza texto do botão
+            btn.textContent = todasOcultas ? 'Mostrar apenas 5 registros' : 'Ver todos os dados';
+            
+            // Scroll suave para a tabela
+            const y = tabela.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({{ top: y, behavior: 'smooth' }});
+        }};
+
+        // Funções GLOBAIS para alternar entre tabela e gráfico
+        window.mostrarTabela = function() {{
+            console.log('mostrarTabela() chamada');
             document.getElementById('container-tabela').style.display = 'block';
             document.getElementById('container-grafico').style.display = 'none';
             document.getElementById('btn-tabela').className = 'btn-alternancia ativo';
             document.getElementById('btn-grafico').className = 'btn-alternancia inativo';
-        }}
+        }};
 
-        function mostrarGrafico() {{
+        window.mostrarGrafico = function() {{
+            console.log('mostrarGrafico() chamada');
             document.getElementById('container-tabela').style.display = 'none';
             document.getElementById('container-grafico').style.display = 'block';
             document.getElementById('btn-tabela').className = 'btn-alternancia inativo';
@@ -341,15 +416,35 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
 
         // Função para popular a tabela
         function popularTabela() {{
+            console.log('popularTabela() chamada');
+            console.log('Dados da tabela:', dadosTabela);
+            
             const tbody = document.getElementById('tbody-eventos');
+            const btnContainer = document.getElementById('btn-ver-todos-container');
             tbody.innerHTML = '';
-            dadosTabela.forEach(item => {{
+            
+            const maxLinhas = 5;
+            dadosTabela.forEach((item, index) => {{
                 const row = tbody.insertRow();
                 const cellTipo = row.insertCell(0);
                 const cellQuantidade = row.insertCell(1);
                 cellTipo.textContent = item.tipo;
                 cellQuantidade.textContent = item.quantidade;
+                
+                // Adiciona classe para linhas ocultas
+                if (index >= maxLinhas) {{
+                    row.classList.add('linha-oculta', 'linha-extra-eventos');
+                    console.log('Linha', index, 'marcada como oculta');
+                }}
             }});
+            
+            // Mostra botão apenas se houver mais de 5 registros
+            if (dadosTabela.length > maxLinhas) {{
+                btnContainer.style.display = 'block';
+                console.log('Botão Ver todos os dados exibido');
+            }} else {{
+                console.log('Menos de 5 registros, botão não será exibido');
+            }}
         }}
 
         // Inicialização
@@ -479,33 +574,33 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             }});
         }}
 
-        function mostrarTodos(chartId) {{
+        window.mostrarTodos = function(chartId) {{
             const chart = window.charts[chartId];
             if (!chart) return;
             chart.data.datasets.forEach((dataset, idx) => {{
                 dataset.hidden = false;
             }});
             chart.update();
-        }}
+        }};
 
-        function ocultarTodos(chartId) {{
+        window.ocultarTodos = function(chartId) {{
             const chart = window.charts[chartId];
             if (!chart) return;
             chart.data.datasets.forEach((dataset, idx) => {{
                 dataset.hidden = true;
             }});
             chart.update();
-        }}
+        }};
 
-        function resetZoom(chartId) {{
+        window.resetZoom = function(chartId) {{
             const chart = window.charts[chartId];
             if (chart && chart.resetZoom) {{
                 chart.resetZoom();
             }}
-        }}
+        }};
 
         // Funções para modo maximizado
-        function maximizeChart(chartId, title) {{
+        window.maximizeChart = function(chartId, title) {{
             const originalChart = window.charts[chartId];
             if (!originalChart) return;
             
@@ -547,7 +642,7 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             maximizedChart = new Chart(ctx, config);
         }}
 
-        function closeMaximized() {{
+        window.closeMaximized = function() {{
             const overlay = document.getElementById('maximized-overlay');
             overlay.style.display = 'none';
             
@@ -562,15 +657,15 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
                 maximizedChart = null;
             }}
             currentMaximizedChart = null;
-        }}
+        }};
 
-        function resetZoomMaximized() {{
+        window.resetZoomMaximized = function() {{
             if (maximizedChart && maximizedChart.resetZoom) {{
                 maximizedChart.resetZoom();
             }}
-        }}
+        }};
 
-        function mostrarTodosMaximized() {{
+        window.mostrarTodosMaximized = function() {{
             if (!maximizedChart || currentMaximizedChart !== 'linhaEventos') return;
             
             maximizedChart.data.datasets.forEach((dataset) => {{
@@ -579,10 +674,10 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
             maximizedChart.update();
             
             // Sincronizar com gráfico original
-            mostrarTodos(currentMaximizedChart);
-        }}
+            window.mostrarTodos(currentMaximizedChart);
+        }};
 
-        function ocultarTodosMaximized() {{
+        window.ocultarTodosMaximized = function() {{
             if (!maximizedChart || currentMaximizedChart !== 'linhaEventos') return;
             
             maximizedChart.data.datasets.forEach((dataset) => {{

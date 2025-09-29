@@ -233,7 +233,7 @@ def regressao(df: pd.DataFrame) -> pd.DataFrame:
     df_ordenado = df_ordenado.drop(columns=['data_problematica'])
     
     # Salva debug
-    df_ordenado.to_csv('hodometro_ordenado_debug_corrigido.csv', index=False, encoding='utf-8-sig')
+    # df_ordenado.to_csv('hodometro_ordenado_debug_corrigido.csv', index=False, encoding='utf-8-sig')
     # print(f"✅ Dados ordenados salvos em 'hodometro_ordenado_debug_corrigido.csv' ({len(df_ordenado)} registros)")
     
     # Análise de regressão apenas com registros que têm hodômetro
