@@ -138,5 +138,5 @@ def executar_analise_completa(input1):
 
 if __name__ == "__main__":  
     executar_analise_completa(
-        input1='logs/867488068342780_decoded.csv',
+        input1='logs/teste_mapeado.csv',
     )

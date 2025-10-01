@@ -12,10 +12,13 @@ def sempre_modoeco(df: pd.DataFrame) -> dict:
             print("❌ A coluna 'Tipo Mensagem' não foi encontrada no arquivo.")
             return None
 
-        # Função para classificar o evento
+        # Usa apenas o valor numérico em 'Tipo Mensagem'
         def get_evento(row):
-            tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
-            return tipo
+            valor = row.get('Tipo Mensagem', '')
+            try:
+                return int(float(valor)) if not pd.isna(valor) and str(valor).strip() != '' else ''
+            except Exception:
+                return ''
 
         def tipo_dispositivo(df):
             tipo_dispositivo = ''
@@ -82,17 +85,16 @@ def sempre_modoeco(df: pd.DataFrame) -> dict:
                 pass
 
             if dispositivo == '802003':
-                if evento == 'GTIGN':
-                    ign_on += 1                           
-                elif evento == 'GTIGF':
-                    ign_off += 1                   
-                elif evento == 'GTERI':
-                    if motion_prefix == '1':
-                        eco += 1
-                        indices_eco.append(idx)  # Armazena o índice do evento ECO
-                    elif (motion_prefix == '2' and report_type == '10') or codigo == '30':
-                        peri += 1
-                elif evento == 'GTMPF':
+                if evento == 667:
+                    ign_on += 1
+                elif evento == 668:
+                    ign_off += 1
+                elif evento == 760:
+                    eco += 1
+                    indices_eco.append(idx)
+                elif evento == 761:
+                    peri += 1
+                elif evento == 776:
                     desconexao += 1 
 
         # Análise de velocidade para eventos ECO (fora do loop)

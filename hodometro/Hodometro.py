@@ -13,14 +13,11 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
         df['Hodômetro Total'] = pd.to_numeric(df['Hodômetro Total'], errors='coerce')
 
     def get_evento(row):
-        tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
-        codigo = str(row.get('Event Code', '')).strip()
-        if tipo:
-            return tipo
-        elif codigo:
-            mapa = {'20': 'GTIGF', '21': 'GTIGN'}
-            return mapa.get(codigo, '')
-        return ''
+        valor = row.get('Tipo Mensagem', '')
+        try:
+            return int(float(valor)) if not pd.isna(valor) and str(valor).strip() != '' else ''
+        except Exception:
+            return ''
 
     def extrair_viagens(df):
         df = df.copy()
@@ -33,8 +30,8 @@ def viagens(df: pd.DataFrame) -> pd.DataFrame:
         if 'Hodômetro Total' in df.columns:
             df['Hodômetro Total'] = pd.to_numeric(df['Hodômetro Total'], errors='coerce')
 
-        ignicoes = df[df.apply(lambda row: get_evento(row) == 'GTIGN', axis=1)].reset_index(drop=True)
-        desligamentos = df[df.apply(lambda row: get_evento(row) == 'GTIGF', axis=1)].reset_index(drop=True)
+        ignicoes = df[df.apply(lambda row: get_evento(row) == 667, axis=1)].reset_index(drop=True)
+        desligamentos = df[df.apply(lambda row: get_evento(row) == 668, axis=1)].reset_index(drop=True)
 
         viagens = []
 

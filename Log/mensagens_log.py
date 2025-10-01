@@ -84,10 +84,16 @@ def logs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd
             'Linha_Maior_Delay': [linha_maior_delay]
         })
 
-        # Filtros para temporizadas, periódicas e modo econômico
-        df_temporizadas = df_filtrado[df_filtrado['Tipo Mensagem'] == 'GTERI'].copy()
-        df_periodicas = df_temporizadas[(df_temporizadas['motion_prefix'] == '2') & (df_temporizadas['report_type'] == '10')].copy()
-        df_eco = df_temporizadas[df_temporizadas['motion_prefix'] == '1'].copy()
+        # Filtros para temporizadas, periódicas e modo econômico (apenas por códigos numéricos)
+        def to_int_safe(v):
+            try:
+                return int(float(v)) if pd.notna(v) and str(v).strip() != '' else None
+            except Exception:
+                return None
+        tipo_num = df_filtrado['Tipo Mensagem'].apply(to_int_safe)
+        df_temporizadas = df_filtrado[tipo_num.isin([760, 761])].copy()
+        df_periodicas = df_filtrado[tipo_num == 761].copy()
+        df_eco = df_filtrado[tipo_num == 760].copy()
         # Salvar o DataFrame filtrado em um arquivo CSV
         # df_filtrado.to_csv('resultado_logs.csv', index=False, encoding='utf-8')
         df_resultado = df_filtrado  # Mantém o DataFrame para uso posterior

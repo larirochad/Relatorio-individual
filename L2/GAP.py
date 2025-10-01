@@ -79,34 +79,16 @@ def gap(df: pd.DataFrame) -> pd.DataFrame:
         last_eco_row = None
 
         for idx, row in df_ordenado.iterrows():
-            evento = str(row.get('Tipo Mensagem', '')).strip().upper()
-            report_type_raw = row.get('Position Report Type', '')
+            # Usa apenas os códigos numéricos em 'Tipo Mensagem'
+            valor = row.get('Tipo Mensagem', '')
             try:
-                # DEBUG: print valor antes de tentar converter
-                # print(f"DEBUG report_type_raw: {repr(report_type_raw)}")
-                # Nova lógica simplificada: só considera 10.0 como válido
-                if report_type_raw == 10.0:
-                    report_type = '10'
-                else:
-                    report_type = ''
-            except (ValueError, TypeError) as e:
-                # print(f"DEBUG erro conversao report_type_raw: {repr(report_type_raw)} -> {e}")
-                report_type = ''
-            motion = row.get('Motion Status', '')
-            if isinstance(motion, (float, int)):
-                if isinstance(motion, float) and math.isnan(motion):
-                    motion_str = ''
-                else:
-                    motion_str = str(int(motion))
-            elif isinstance(motion, (str, bytes)):
-                motion_str = str(motion)
-            else:
-                motion_str = ''
-            motion_prefix = motion_str[0] if len(motion_str) > 0 else None
+                evento = int(float(valor)) if not pd.isna(valor) and str(valor).strip() != '' else None
+            except Exception:
+                evento = None
             data = row['Data/Hora Evento']
 
             # Reinicia a contagem ao encontrar evento de ignição
-            if evento in ['GTIGN', 'GTIGF']:
+            if evento in [667, 668]:
                 last_peri_time = None
                 last_eco_time = None
                 last_peri_idx = None
@@ -116,7 +98,7 @@ def gap(df: pd.DataFrame) -> pd.DataFrame:
                 continue
 
             # Periódico
-            if evento == 'GTERI' and report_type == '10' and motion_prefix == '2':
+            if evento == 761:
                 if last_peri_time is not None:
                     gap = (data - last_peri_time).total_seconds()
                     if gap > 240: # 240s = 4 minutos
@@ -136,7 +118,7 @@ def gap(df: pd.DataFrame) -> pd.DataFrame:
                 last_peri_idx = idx
                 last_peri_row = row
             # Econômico
-            elif evento == 'GTERI' and motion_prefix == '1':
+            elif evento == 760:
                 if last_eco_time is not None:
                     gap = (data - last_eco_time).total_seconds()
                     if gap > 7200: # 7200s = 2 horas

@@ -16,10 +16,36 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
     if df_diario is None:
         df_diario = df.copy()
 
+    # Mapeia os códigos numéricos para rótulos legíveis
+    def map_tipo_label(valor):
+        try:
+            if pd.isna(valor):
+                return ''
+        except Exception:
+            pass
+        texto = str(valor).strip()
+        try:
+            codigo = int(float(texto))
+        except Exception:
+            codigo = None
+        if codigo == 667:
+            return 'Ignição ligada'
+        if codigo == 668:
+            return 'Ignição desligada'
+        if codigo == 760:
+            return 'Modo econômico'
+        if codigo == 761:
+            return 'Posicionamento por tempo em movimento'
+        if codigo == 775:
+            return 'GTMPN'
+        if codigo == 776:
+            return 'GTMPF'
+        return texto
+
     label_map = {
         'Posicionamento por tempo em movimento': 'Temporizadas',
     }
-    labels_barras = [label_map.get(lbl, lbl) for lbl in df['Tipo mensagem'].tolist()]
+    labels_barras = [label_map.get(map_tipo_label(lbl), map_tipo_label(lbl)) for lbl in df['Tipo mensagem'].tolist()]
     valores_barras = df['Quantidade'].tolist()
 
     # Criar dados para a tabela
@@ -41,7 +67,8 @@ def gerar_bloco_eventos(df: pd.DataFrame, df_diario: pd.DataFrame = None, filena
     labels_linha = df_diario['Dia'].dt.strftime('%d/%m/%Y').tolist()
     datasets_linha = []
     for idx, col in enumerate(df_diario.columns[1:]):
-        label = label_map.get(col, col)
+        mapped = map_tipo_label(col)
+        label = label_map.get(mapped, mapped)
         datasets_linha.append({
             "label": label,
             "data": df_diario[col].tolist(),

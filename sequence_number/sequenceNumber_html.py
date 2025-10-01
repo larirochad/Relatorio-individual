@@ -89,7 +89,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
         if len(df_tipo) > max_linhas:
             botao_html = f'''
             <div style="text-align: center;">
-                <button class="btn-mostrar-todos" data-tabela="tabela_seq_{tipo}" onclick="toggleLinhasUniversal('tabela_seq_{tipo}')">
+                <button class="btn-mostrar-todos" data-tabela="tabela_seq_{tipo}" onclick="sequenceToggleLinhasUniversal('tabela_seq_{tipo}')">
                     Ver todos os dados
                 </button>
             </div>
@@ -256,7 +256,7 @@ def gerar_bloco_sequenceNumber(df: pd.DataFrame, filename='bloco_sequenceNumber.
     
     js = '''
     <script>
-    function toggleLinhasUniversal(tabelaId) {
+    function sequenceToggleLinhasUniversal(tabelaId) {
         const linhas = document.querySelectorAll(`#${tabelaId} .linha-extra-seq`);
         const btn = document.querySelector(`[data-tabela="${tabelaId}"]`);
         

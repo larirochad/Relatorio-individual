@@ -73,40 +73,18 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     # === NOVO: INVÁLIDOS ECO/PERIODICO ===
     # Considera inválidos apenas onde hdop == 0
     df_invalidos = df_filtrado[hdop == 0].copy()
-    # motion_prefix e report_type
-    def get_motion_prefix(row):
-        motion = row.get('Motion Status', '')
-        if isinstance(motion, (float, int)):
-            if pd.notna(motion):
-                motion_str = str(int(motion))
-            else:
-                motion_str = ''
-        elif isinstance(motion, (str, bytes)):
-            motion_str = str(motion)
-        else:
-            motion_str = ''
-        return motion_str[0] if len(motion_str) > 0 else None
-    def get_report_type(row):
-        report_type_raw = row.get('Position Report Type', '')
-        report_type = ''
+    # Funções baseadas apenas nos códigos numéricos em 'Tipo Mensagem'
+    def to_int_safe(v):
         try:
-            if report_type_raw is not None and str(report_type_raw).strip():
-                report_type = str(int(float(str(report_type_raw))))
-        except (ValueError, TypeError):
-            pass
-        return report_type
-    def get_codigo(row):
-        return str(row.get('Tipo Mensagem', '')).strip()
+            return int(float(v)) if pd.notna(v) and str(v).strip() != '' else None
+        except Exception:
+            return None
     def is_eco(row):
-        tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
-        motion = str(row.get('Motion Status', '')).strip()
-        motion_prefix = motion[0] if motion else ''
-        return tipo == 'GTERI' and motion_prefix == '1'
+        codigo = to_int_safe(row.get('Tipo Mensagem', ''))
+        return codigo == 760
     def is_periodico(row):
-        motion_prefix = get_motion_prefix(row)
-        report_type = get_report_type(row)
-        codigo = get_codigo(row)
-        return (motion_prefix == '2' and report_type == '10') or codigo == '30'
+        codigo = to_int_safe(row.get('Tipo Mensagem', ''))
+        return codigo == 761
 
     # === NOVO: CONTAGEM TOTAL DE ECO E PERIÓDICO ===
     total_eco = df_filtrado.apply(is_eco, axis=1).sum()
@@ -116,16 +94,25 @@ def analise_medias(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Dat
         {'Métrica': 'Total de registros modo periódico', 'Valor': total_peri}
     ])
 
-    df_invalidos_eco = df_invalidos[df_invalidos.apply(is_eco, axis=1)]
-    df_invalidos_peri = df_invalidos[df_invalidos.apply(is_periodico, axis=1)]
+    # Use máscaras booleanas com .loc para garantir preservação das colunas
+    mask_eco = df_invalidos.apply(is_eco, axis=1)
+    mask_peri = df_invalidos.apply(is_periodico, axis=1)
+    df_invalidos_eco = df_invalidos.loc[mask_eco].copy()
+    df_invalidos_peri = df_invalidos.loc[mask_peri].copy()
+
+    # Acessos seguros às colunas para evitar KeyError em datasets sem essas colunas
+    sat_eco = df_invalidos_eco['Satélites'] if 'Satélites' in df_invalidos_eco.columns else pd.Series(dtype=float)
+    hdop_eco = df_invalidos_eco['Precisão GNSS'] if 'Precisão GNSS' in df_invalidos_eco.columns else pd.Series(dtype=float)
+    sat_peri = df_invalidos_peri['Satélites'] if 'Satélites' in df_invalidos_peri.columns else pd.Series(dtype=float)
+    hdop_peri = df_invalidos_peri['Precisão GNSS'] if 'Precisão GNSS' in df_invalidos_peri.columns else pd.Series(dtype=float)
 
     tabela_invalidos_eco = pd.DataFrame([
-        {'Dado': 'Satélites', **stats_serie(df_invalidos_eco['Satélites'])},
-        {'Dado': 'Hdop', **stats_serie(df_invalidos_eco['Precisão GNSS'])}
+        {'Dado': 'Satélites', **stats_serie(sat_eco)},
+        {'Dado': 'Hdop', **stats_serie(hdop_eco)}
     ])
     tabela_invalidos_peri = pd.DataFrame([
-        {'Dado': 'Satélites', **stats_serie(df_invalidos_peri['Satélites'])},
-        {'Dado': 'Hdop', **stats_serie(df_invalidos_peri['Precisão GNSS'])}
+        {'Dado': 'Satélites', **stats_serie(sat_peri)},
+        {'Dado': 'Hdop', **stats_serie(hdop_peri)}
     ])
 
     # === RESUMO ===

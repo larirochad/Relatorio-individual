@@ -8,28 +8,24 @@ def time_ign_por_viagem(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=['Data/Hora Evento'])
     df = df.sort_values('Data/Hora Evento')
 
-    # Mapeamento de evento baseado no Motion Status
+    # Mapeamento de evento baseado APENAS em 'Tipo Mensagem' numérico (667/668)
     def get_evento(row):
-        motion_status = str(row.get('Motion Status', '')).strip()
-        if motion_status.startswith('1'):
-            return 'IGF'  # Ignição desligada
-        elif motion_status.startswith('2'):
-            return 'IGN'  # Ignição ligada
-        else:
-            # Fallback para o método anterior se Motion Status não estiver disponível
-            tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
-            codigo = str(row.get('Event Code', '')).strip()
-            if tipo:
-                return tipo
-            elif codigo:
-                return {'20': 'GTIGF', '21': 'GTIGN'}.get(codigo, '')
+        valor = row.get('Tipo Mensagem', '')
+        try:
+            codigo = int(float(valor)) if pd.notna(valor) and str(valor).strip() != '' else None
+        except Exception:
+            codigo = None
+        if codigo == 668:
+            return 'IGF'
+        if codigo == 667:
+            return 'IGN'
         return ''
 
     df['Evento'] = df.apply(get_evento, axis=1)
 
     # Separar IGN/IGF mantendo o índice original
-    igns = df[df['Evento'].isin(['GTIGN', 'IGN'])]
-    igfs = df[df['Evento'].isin(['GTIGF', 'IGF'])]
+    igns = df[df['Evento'].isin(['IGN'])]
+    igfs = df[df['Evento'].isin(['IGF'])]
 
     # Montar ciclos completos: IGN -> IGF -> próximo IGN
     ciclos = []

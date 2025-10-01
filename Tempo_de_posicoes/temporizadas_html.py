@@ -7,13 +7,13 @@ def gerar_bloco_temporizadas(df: pd.DataFrame, filename='bloco_temporizadas.html
     base_dir.mkdir(parents=True, exist_ok=True)
     output_path = base_dir / filename
 
-    # GTERI com ignição ligada: Motion Status começa com '2', tempo diferente de 180s
-    df_on = df[(df['Tipo Mensagem'] == 'GTERI') & df['Motion Status'].astype(str).str.startswith('2') & (df['Diferença entre GTERI (IGN)'] != '')].copy()
+    # Temporizadas em movimento (código 761): tempo diferente de 180s
+    df_on = df[(df['Tipo Mensagem'] == 761) & (df['Diferença entre GTERI (IGN)'] != '')].copy()
     df_on['tempo'] = pd.to_numeric(df_on['Diferença entre GTERI (IGN)'], errors='coerce')
     anomalias_on = df_on[df_on['tempo'] != 180]
 
-    # GTERI com ignição desligada: Motion Status começa com '1', tempo diferente de 3600s
-    df_off = df[(df['Tipo Mensagem'] == 'GTERI') & df['Motion Status'].astype(str).str.startswith('1') & (df['Diferença entre GTERI (IGF)'] != '')].copy()
+    # Temporizadas em modo econômico (código 760): tempo diferente de 3600s
+    df_off = df[(df['Tipo Mensagem'] == 760) & (df['Diferença entre GTERI (IGF)'] != '')].copy()
     df_off['tempo'] = pd.to_numeric(df_off['Diferença entre GTERI (IGF)'], errors='coerce')
     anomalias_off = df_off[df_off['tempo'] != 3600]
 

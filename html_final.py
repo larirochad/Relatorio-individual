@@ -663,6 +663,39 @@ def unir_blocos(df_raw):
                 block = block.replace(f'class="{class_name}"', f'class="{class_name}" id="{block_id}"')
         clean_blocks_with_ids.append(block)
 
+    # Substituição dos códigos numéricos de eventos por descrições legíveis no HTML final
+    # Esta normalização atua somente no HTML montado (não altera os dados originais)
+    def substituir_codigos_evento_html(html_text: str) -> str:
+        import re
+        # 1) Substituições entre tags (caso mais comum em tabelas)
+        tag_subs = [
+            (r">\s*667\s*<", ">Ignição ligada<"),
+            (r">\s*668\s*<", ">Ignição desligada<"),
+            (r">\s*760\s*<", ">Modo econômico<"),
+            (r">\s*761\s*<", ">Posicionamento por tempo em movimento<"),
+            (r">\s*775\s*<", ">GTMPN<"),
+            (r">\s*776\s*<", ">GTMPF<"),
+        ]
+        for padrao, repl in tag_subs:
+            html_text = re.sub(padrao, repl, html_text)
+
+        # 2) Substituições com fronteiras de palavra (para textos puros)
+        # Evita substituir dentro de números maiores, datas ou palavras
+        wb_subs = [
+            (r"(?<![\\dA-Za-z])667(?![\\dA-Za-z])", "Ignição ligada"),
+            (r"(?<![\\dA-Za-z])668(?![\\dA-Za-z])", "Ignição desligada"),
+            (r"(?<![\\dA-Za-z])760(?![\\dA-Za-z])", "Modo econômico"),
+            (r"(?<![\\dA-Za-z])761(?![\\dA-Za-z])", "Posicionamento por tempo em movimento"),
+            (r"(?<![\\dA-Za-z])775(?![\\dA-Za-z])", "GTMPN"),
+            (r"(?<![\\dA-Za-z])776(?![\\dA-Za-z])", "GTMPF"),
+        ]
+        for padrao, repl in wb_subs:
+            html_text = re.sub(padrao, repl, html_text)
+        
+        return html_text
+
+    clean_blocks_with_ids = [substituir_codigos_evento_html(b) for b in clean_blocks_with_ids]
+
     PNG_FILE = Path(__file__).parent / "logo-golfleet-cor.png"
 
         

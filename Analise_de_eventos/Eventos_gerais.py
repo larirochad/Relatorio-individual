@@ -10,24 +10,41 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
             print("❌ A coluna 'Tipo Mensagem' não foi encontrada no arquivo.")
             return None
 
-        # Função para classificar o evento
+        # Função para classificar o evento com base APENAS nos códigos numéricos
         def get_evento(row):
-            tipo = str(row.get('Tipo Mensagem', '')).strip().upper()
-            codigo = str(row.get('Event Code', '')).strip()
-
-            if tipo:
-                if 'MODO ECONÔMICO' in tipo:
-                    return 'MODOECO'
-                return tipo
-            elif codigo:
-                mapa = {
-                    '20': 'GTIGF',
-                    '21': 'GTIGN',
-                    '30': 'GTERI',
-                    '27': 'GTERI'
-                }
-                return mapa.get(codigo, '')
-            return ''
+            try:
+                valor = row.get('Tipo Mensagem', '')
+                if pd.isna(valor):
+                    return ''
+                # Normaliza para int quando possível
+                if isinstance(valor, str) and valor.strip() != '':
+                    try:
+                        valor_int = int(float(valor))
+                    except Exception:
+                        return valor  # mantém como está se não for número
+                elif isinstance(valor, (int, float)):
+                    try:
+                        valor_int = int(valor)
+                    except Exception:
+                        return ''
+                else:
+                    return ''
+                # Mapas de classificação amigável
+                if valor_int == 667:
+                    return 667  # GTIGN
+                if valor_int == 668:
+                    return 668  # GTIGF
+                if valor_int == 760:
+                    return 760  # ECO
+                if valor_int == 761:
+                    return 761  # PERIÓDICO
+                if valor_int == 775:
+                    return 775  # GTMPN
+                if valor_int == 776:
+                    return 776  # GTMPF
+                return valor_int
+            except Exception:
+                return ''
 
         # Função para identificar o tipo de dispositivo
         def tipo_dispositivo(df):
@@ -50,9 +67,7 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
 
         df['Evento Classificado'] = ''
 
-        # Inicialização das variáveis de controle
-        modo_eco_ativo = False
-        periodicas = False
+        # Inicialização das variáveis de controle (não utilizadas fora, mas mantidas)
         ign_on = 0
         ign_off = 0
         eco = 0
@@ -60,42 +75,23 @@ def eventos(df: pd.DataFrame) -> pd.DataFrame:
 
         for idx, row in df.iterrows():
             evento = get_evento(row)
-            # Garante que motion seja string simples e nunca NDFrame
-            motion = row.get('Motion Status', '')
-            if isinstance(motion, (float, int)):
-                if pd.notna(motion):
-                    motion_str = str(int(motion))
-                else:
-                    motion_str = ''
-            elif isinstance(motion, (str, bytes)):
-                motion_str = str(motion)
-            else:
-                motion_str = ''
-            motion_prefix = motion_str[0] if len(motion_str) > 0 else None
-            codigo = str(row.get('Event Code', '')).strip()
+            final = evento
 
-            report_type_raw = row.get('Position Report Type', '')
-            report_type = ''
-            try:
-                if report_type_raw is not None and str(report_type_raw).strip():
-                    report_type = str(int(float(str(report_type_raw)))) if report_type_raw not in [None, ''] else ''
-            except (ValueError, TypeError):
-                pass
-
-            final = evento  # valor padrão
-
-            # Lógica para dispositivos específicos
-            if dispositivo == '802003':
-                if evento == 'GTERI':
-                    if motion_prefix == '1':
-                        final = 'Modo Econômico'
-                    elif motion_prefix == '2' and report_type == '10':
-                        final = 'Posicionamento por tempo em movimento'
-                    elif report_type == '11':
-                        final = 'Cornering'
-                    else:
-                        continue  # Pula outros GTERI
-            # Demais eventos contam normalmente
+            # Classificação textual simples baseada nos códigos definidos
+            if evento == 760:
+                final = 'Modo Econômico'
+                eco += 1
+            elif evento == 761:
+                final = 'Posicionamento por tempo em movimento'
+                peri += 1
+            elif evento == 667:
+                final = 667
+                ign_on += 1
+            elif evento == 668:
+                final = 668
+                ign_off += 1
+            elif evento in [775, 776]:
+                final = evento
 
             df.at[idx, 'Evento Classificado'] = final
 

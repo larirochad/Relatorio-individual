@@ -7,12 +7,13 @@ def temporizadas_entre_si_com_ign(df: pd.DataFrame) -> pd.DataFrame:
     try:
         # Padronizações
         df['Data/Hora Evento'] = pd.to_datetime(df['Data/Hora Evento'], errors='coerce')
-        df['Tipo Mensagem'] = df['Tipo Mensagem'].astype(str).str.strip().str.upper()
-
-        df['Position Report Type'] = df['Position Report Type'].apply(
-            lambda x: str(int(float(x))) if pd.notna(x) and str(x).strip() != '' else ''
-        )
-        df['Motion Status'] = df['Motion Status'].astype(str).str.strip()
+        # Usa somente numéricos na coluna Tipo Mensagem
+        def to_int_safe(v):
+            try:
+                return int(float(v)) if pd.notna(v) and str(v).strip() != '' else None
+            except Exception:
+                return None
+        df['Tipo Mensagem'] = df['Tipo Mensagem'].apply(to_int_safe)
 
         df = df.dropna(subset=['Data/Hora Evento']).copy()
         df.sort_values(by='Data/Hora Evento', inplace=True)
@@ -37,50 +38,42 @@ def temporizadas_entre_si_com_ign(df: pd.DataFrame) -> pd.DataFrame:
             except Exception:
                 idx_int = 0
             tipo = row['Tipo Mensagem']
-            report_type = row['Position Report Type']
-            motion_status = row['Motion Status']
             data = row['Data/Hora Evento']
 
             diffON = None
             diffOFF = None
 
-            motion_prefix = motion_status[0] if len(motion_status) > 0 else None
-
-            if tipo == 'GTIGN':
+            if tipo == 667:
                 last_ign = data
                 last_gteri_ign = None
                 resultado.append({
                     'linha': idx_int + 2,
                     'Data/Hora Evento': data,
                     'Tipo Mensagem': tipo,
-                    # 'Position Report Type': '',
-                    'Motion Status': '',
                     'Diferença entre GTERI (IGN)': '',
                     'Diferença entre GTERI (IGF)': ''
                 })
 
-            elif tipo == 'GTIGF':
+            elif tipo == 668:
                 last_igf = data
                 last_gteri_igf = None
                 resultado.append({
                     'linha': idx_int + 2,
                     'Data/Hora Evento': data,
                     'Tipo Mensagem': tipo,
-                    # 'Position Report Type': '',
-                    'Motion Status': '',
                     'Diferença entre GTERI (IGN)': '',
                     'Diferença entre GTERI (IGF)': ''
                 })
 
-            elif tipo == 'GTERI' and report_type == '10':
-                if motion_prefix == '2':  # IGN ligado
+            elif tipo in [760, 761]:
+                if tipo == 761:  # Periódico (movimento)
                     if last_gteri_ign is not None:
                         diffON = (data - last_gteri_ign).total_seconds()
                     elif last_ign is not None:
                         diffON = (data - last_ign).total_seconds()
                     last_gteri_ign = data
 
-                elif motion_prefix == '1':  # IGF desligado
+                elif tipo == 760:  # Econômico (ignição desligada)
                     if last_gteri_igf is not None:
                         diffOFF = (data - last_gteri_igf).total_seconds()
                     elif last_igf is not None:
@@ -91,8 +84,6 @@ def temporizadas_entre_si_com_ign(df: pd.DataFrame) -> pd.DataFrame:
                     'linha': idx_int + 2,
                     'Data/Hora Evento': data,
                     'Tipo Mensagem': tipo,
-                    # 'Position Report Type': report_type,
-                    'Motion Status': motion_status,
                     'Diferença entre GTERI (IGN)': diffON if diffON is not None else '',
                     'Diferença entre GTERI (IGF)': diffOFF if diffOFF is not None else ''
                 })
